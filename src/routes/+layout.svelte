@@ -6,6 +6,7 @@
 	import { REPO_URL } from '$lib/repo';
 	import '../app.css';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
+	import SearchDialog from '$lib/components/SearchDialog.svelte';
 
 	let { children } = $props();
 
@@ -56,7 +57,7 @@
 		>Skip to content</a
 	>
 
-	<AppBar class="saturn-nav sticky top-0 z-40">
+	<AppBar class="saturn-nav sticky top-0 z-40" data-pagefind-ignore>
 		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto] px-4 py-2">
 			<AppBar.Lead>
 				<a
@@ -73,8 +74,13 @@
 					{#each navLinks as { href, label } (href)}
 						<a {href} class="hover:text-primary-500 transition-colors" aria-label={label}>{label}</a>
 					{/each}
+					<SearchDialog />
 					<ThemeSwitcher />
 				</nav>
+
+				<div class="lg:hidden">
+					<SearchDialog />
+				</div>
 
 				<!-- Mobile drawer -->
 				<Dialog
@@ -130,7 +136,11 @@
 		{@render children?.()}
 	</div>
 
-	<footer id="contact" class="border-surface-200-800 bg-surface-100-900/80 mt-16 border-t backdrop-blur-sm">
+	<footer
+		id="contact"
+		class="border-surface-200-800 bg-surface-100-900/80 mt-16 border-t backdrop-blur-sm"
+		data-pagefind-ignore
+	>
 		<div class="container mx-auto flex flex-col gap-4 px-6 py-8 text-sm md:flex-row md:items-center md:justify-between">
 			<p class="text-surface-700-300">
 				A reading surface for the DSA study packet. Content is tracked in git; every page links to its source.

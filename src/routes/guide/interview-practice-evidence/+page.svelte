@@ -18,7 +18,7 @@
 </svelte:head>
 
 <main class="mx-auto max-w-3xl px-6 py-16">
-	<article class="prose max-w-none">
+	<article class="prose max-w-none" data-pagefind-body>
 		<Content />
 	</article>
 	<SourceLink {sourcePath} />

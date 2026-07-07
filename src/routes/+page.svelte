@@ -30,7 +30,7 @@
 	<meta name="description" content={brand.blurb} />
 </svelte:head>
 
-<main class="mx-auto max-w-5xl px-6 py-16 md:py-24">
+<main class="mx-auto max-w-5xl px-6 py-16 md:py-24" data-pagefind-body>
 	<header class="max-w-3xl space-y-4">
 		<p class="text-surface-500 text-xs tracking-widest uppercase">{brand.tier}</p>
 		<h1 class="text-4xl leading-tight font-bold md:text-5xl">{brand.domain}</h1>
