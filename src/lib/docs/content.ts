@@ -23,3 +23,20 @@ export async function loadRawBody(out: string): Promise<string | undefined> {
 	const loader = rawModules[`/src/content/${out}`];
 	return loader ? await loader() : undefined;
 }
+
+// Raw source for the `.svx` (mdsvex) lane — used ONLY for extracting a page's
+// table of contents (see $lib/docs/markdown.ts `extractHeadings`), never for
+// re-rendering: the actual svx render path stays the mdsvex-compiled `<Content>`
+// import in the route component. Kept as its own glob so `rawModules` above
+// stays exactly what its doc comment says it is (the markdown raw lane).
+const rawSvxModules = import.meta.glob('/src/content/**/*.svx', {
+	query: '?raw',
+	import: 'default',
+}) as Record<string, () => Promise<string>>;
+
+/** Load the raw source text (markdown OR svx) for a manifest `out` path, for TOC extraction. */
+export async function loadRawSource(out: string): Promise<string | undefined> {
+	const path = `/src/content/${out}`;
+	const loader = rawModules[path] ?? rawSvxModules[path];
+	return loader ? await loader() : undefined;
+}

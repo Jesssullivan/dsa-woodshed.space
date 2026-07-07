@@ -165,6 +165,19 @@ export function getEntry(section: SectionId, slug: string): ContentEntry | undef
 	return contentEntries.find((e) => e.section === section && e.slug === slug);
 }
 
+/** The entry's URL — uniform `/{section}/{slug}` shape used by every routed section. */
+export function entryHref(entry: ContentEntry): string {
+	return `/${entry.section}/${entry.slug}`;
+}
+
+/** Adjacent entries (in display order) within the same section, for prev/next footer nav. */
+export function neighbors(section: SectionId, slug: string): { prev?: ContentEntry; next?: ContentEntry } {
+	const list = entriesInSection(section);
+	const i = list.findIndex((e) => e.slug === slug);
+	if (i === -1) return {};
+	return { prev: list[i - 1], next: list[i + 1] };
+}
+
 // ── Reference-sheet helpers (kept stable for existing /reference routes) ────────
 /** Reference sheets in display order. */
 export function sheetsInOrder(): ContentEntry[] {

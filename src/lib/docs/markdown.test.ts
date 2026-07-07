@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { renderMarkdown, slugify } from './markdown';
+import { extractHeadings, renderMarkdown, slugify } from './markdown';
 
 // Contract for the dependency-free operator-docs markdown renderer (see the
 // header of markdown.ts for why mdsvex is deliberately NOT reused here). These
@@ -101,5 +101,32 @@ describe('renderMarkdown', () => {
 describe('slugify', () => {
 	it('lowercases, drops punctuation, and dashes spaces', () => {
 		expect(slugify('1. Purpose & non-goals')).toBe('1-purpose-non-goals');
+	});
+});
+
+describe('extractHeadings', () => {
+	it('extracts headings in document order with slugs matching renderMarkdown ids', () => {
+		const src = ['# Title', 'body', '## Purpose & non-goals', 'more', '### Sub point'].join('\n');
+		expect(extractHeadings(src)).toEqual([
+			{ depth: 1, text: 'Title', slug: 'title' },
+			{ depth: 2, text: 'Purpose & non-goals', slug: 'purpose-non-goals' },
+			{ depth: 3, text: 'Sub point', slug: 'sub-point' },
+		]);
+		expect(renderMarkdown('## Purpose & non-goals')).toContain('id="purpose-non-goals"');
+	});
+
+	it('ignores a heading-shaped line inside a fenced code block', () => {
+		const src = ['## Real heading', '```bash', '# not a heading', '```'].join('\n');
+		expect(extractHeadings(src)).toEqual([{ depth: 2, text: 'Real heading', slug: 'real-heading' }]);
+	});
+
+	it('strips a leading YAML frontmatter block before scanning', () => {
+		expect(extractHeadings('---\ntitle: x\n---\n# Body')).toEqual([{ depth: 1, text: 'Body', slug: 'body' }]);
+	});
+
+	it('strips inline code/bold/italic markers from the plain-text label', () => {
+		expect(extractHeadings('## The **daily** block')).toEqual([
+			{ depth: 2, text: 'The daily block', slug: 'the-daily-block' },
+		]);
 	});
 });

@@ -16,6 +16,7 @@ export const load: PageLoad = async ({ params }) => {
 	const raw = await loadRawBody(entry.out);
 	if (raw === undefined) throw error(404, `No synced body for guide page: ${params.slug}`);
 	return {
+		slug: entry.slug,
 		title: entry.title,
 		summary: entry.summary,
 		sourcePath: entry.sourcePath,

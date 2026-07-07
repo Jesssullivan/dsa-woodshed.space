@@ -354,3 +354,47 @@ export function renderMarkdown(src: string, options: MarkdownOptions = {}): stri
 	text = text.replace(/^---\n[\s\S]*?\n---\n/, '');
 	return renderBlocks(text.split('\n'), options);
 }
+
+export interface Heading {
+	/** Heading level 1-6 (the number of leading `#`). */
+	depth: number;
+	/** Plain-text label with inline markdown markers (code/bold/italic) stripped. */
+	text: string;
+	/** GitHub-style slug — identical to the `id` renderMarkdown gives this same heading. */
+	slug: string;
+}
+
+/**
+ * Extract every ATX heading from markdown source, in document order, for
+ * building a page table of contents. Shares the exact slug algorithm
+ * renderBlocks uses for heading `id`s (both call `slugify` on the raw heading
+ * text), so a TOC link built from this list always resolves to a real anchor.
+ * Headings inside fenced code blocks (e.g. a `#` shell comment) are skipped,
+ * matching renderBlocks' own fence handling.
+ */
+export function extractHeadings(src: string): Heading[] {
+	let text = src.replace(/\r\n?/g, '\n');
+	text = text.replace(/^---\n[\s\S]*?\n---\n/, '');
+	const headings: Heading[] = [];
+	let fenceMarker: string | null = null;
+	for (const line of text.split('\n')) {
+		if (fenceMarker) {
+			if (line.startsWith(fenceMarker)) fenceMarker = null;
+			continue;
+		}
+		const fence = line.match(FENCE_RE);
+		if (fence) {
+			fenceMarker = fence[1];
+			continue;
+		}
+		const heading = line.match(HEADING_RE);
+		if (heading) {
+			headings.push({
+				depth: heading[1].length,
+				text: heading[2].replace(/[`*_]/g, '').trim(),
+				slug: slugify(heading[2]),
+			});
+		}
+	}
+	return headings;
+}

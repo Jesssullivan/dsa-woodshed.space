@@ -1,8 +1,11 @@
 <script lang="ts">
-	import { Menu, X } from '@lucide/svelte';
+	import { Menu } from '@lucide/svelte';
+	import { page } from '$app/state';
+	import BindableDrawer from '$lib/components/BindableDrawer.svelte';
 	import SaturnMark from '$lib/components/SaturnMark.svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { AppBar, Dialog, Navigation } from '@skeletonlabs/skeleton-svelte';
+	import SiteNav from '$lib/components/SiteNav.svelte';
+	import { AppBar } from '@skeletonlabs/skeleton-svelte';
 	import { REPO_URL } from '$lib/repo';
 	import '../app.css';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
@@ -13,7 +16,7 @@
 
 	// Absolute paths keep section navigation stable from any route.
 	const navLinks: { href: string; label: string }[] = [
-		{ href: '/', label: 'Overview' },
+		{ href: '/', label: 'Home' },
 		{ href: '/guide/interview-practice-evidence', label: 'Guide' },
 		{ href: '/reference', label: 'Reference' },
 	];
@@ -71,57 +74,49 @@
 			<AppBar.Trail>
 				<nav class="hidden items-center gap-4 text-sm lg:flex" aria-label="Section navigation">
 					{#each navLinks as { href, label } (href)}
-						<a {href} class="hover:text-primary-500 transition-colors" aria-label={label}>{label}</a>
+						<a
+							{href}
+							class="hover:text-primary-500 transition-colors"
+							aria-label={label}
+							aria-current={page.url.pathname === href ? 'page' : undefined}>{label}</a
+						>
 					{/each}
+					<!-- Placeholder: no Algorithms surface exists yet, so this is inert text
+					     (not a link) rather than a route that would 404. -->
+					<span class="text-surface-400 cursor-default" title="Coming soon">Algorithms</span>
 					<ThemeSwitcher />
 				</nav>
 
-				<!-- Mobile drawer -->
-				<Dialog
-					open={mobileOpen}
-					onOpenChange={(d) => {
-						mobileOpen = d.open;
-					}}
-					closeOnInteractOutside
-					closeOnEscape
-					preventScroll
+				<!-- Mobile drawer: reuses the house BindableDrawer + the same <SiteNav>
+				     the desktop persistent sidebar renders, so mobile gets the full
+				     section/entry IA instead of just the three top-level links. -->
+				<button
+					type="button"
+					class="hover:bg-surface-200-800 rounded-sm p-2 lg:hidden"
+					aria-label="Open navigation"
+					onclick={() => (mobileOpen = true)}
 				>
-					<Dialog.Trigger class="hover:bg-surface-200-800 rounded-sm p-2 lg:hidden" aria-label="Open navigation">
-						<Menu class="h-5 w-5" />
-					</Dialog.Trigger>
-					<Dialog.Backdrop class="fixed inset-0 z-40 bg-black/40" />
-					<Dialog.Positioner class="fixed inset-y-0 right-0 z-50 flex w-72 max-w-[85vw]">
-						<Dialog.Content class="bg-surface-50-950 flex w-full flex-col">
-							<div class="border-surface-200-800 flex items-center justify-between border-b px-4 py-3">
-								<span class="font-mono text-sm font-semibold">{SITE_NAME}</span>
-								<Dialog.CloseTrigger class="hover:bg-surface-200-800 rounded-sm p-2" aria-label="Close navigation">
-									<X class="h-5 w-5" />
-								</Dialog.CloseTrigger>
-							</div>
-							<Navigation layout="sidebar">
-								<Navigation.Content>
-									<Navigation.Menu>
-										{#each navLinks as { href, label } (href)}
-											<Navigation.TriggerAnchor
-												{href}
-												onclick={() => {
-													mobileOpen = false;
-												}}
-											>
-												<Navigation.TriggerText>{label}</Navigation.TriggerText>
-											</Navigation.TriggerAnchor>
-										{/each}
-									</Navigation.Menu>
-								</Navigation.Content>
-								<Navigation.Footer>
-									<div class="flex w-full justify-center py-2">
-										<ThemeSwitcher />
-									</div>
-								</Navigation.Footer>
-							</Navigation>
-						</Dialog.Content>
-					</Dialog.Positioner>
-				</Dialog>
+					<Menu class="h-5 w-5" />
+				</button>
+				<BindableDrawer bind:open={mobileOpen} title={SITE_NAME}>
+					<nav aria-label="Primary" class="mb-6 space-y-0.5 text-sm">
+						{#each navLinks as { href, label } (href)}
+							<a
+								{href}
+								aria-current={page.url.pathname === href ? 'page' : undefined}
+								onclick={() => (mobileOpen = false)}
+								class="hover:bg-surface-200-800 block rounded-sm px-2 py-1.5">{label}</a
+							>
+						{/each}
+						<span class="text-surface-400 block cursor-default rounded-sm px-2 py-1.5" title="Coming soon"
+							>Algorithms</span
+						>
+					</nav>
+					<SiteNav onNavigate={() => (mobileOpen = false)} />
+					<div class="border-surface-200-800 mt-6 flex justify-center border-t pt-4">
+						<ThemeSwitcher />
+					</div>
+				</BindableDrawer>
 			</AppBar.Trail>
 		</AppBar.Toolbar>
 	</AppBar>

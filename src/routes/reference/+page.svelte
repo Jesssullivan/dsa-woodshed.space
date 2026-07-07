@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import { sheetsInOrder } from '$lib/docs/registry';
 
 	const sheets = sheetsInOrder();
@@ -9,7 +10,8 @@
 	<meta name="description" content="Copy-ready algorithm reference sheets from the DSA study packet." />
 </svelte:head>
 
-<main class="mx-auto max-w-3xl px-6 py-16">
+<main class="mx-auto max-w-3xl py-16">
+	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Reference sheets' }]} />
 	<h1 class="text-3xl font-bold">Reference sheets</h1>
 	<p class="text-surface-700 dark:text-surface-300 mt-3 leading-relaxed">
 		Copy-ready templates and problem patterns, rendered from the study packet's reference sheets.

@@ -17,6 +17,7 @@ export const load: PageLoad = async ({ params }) => {
 	const raw = await loadRawBody(sheet.out);
 	if (raw === undefined) throw error(404, `No synced body for reference sheet: ${params.slug}`);
 	return {
+		slug: sheet.slug,
 		title: sheet.title,
 		summary: sheet.summary,
 		sourcePath: sheet.sourcePath,
