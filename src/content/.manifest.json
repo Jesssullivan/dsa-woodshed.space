@@ -4,6 +4,1126 @@
 	"sourceCommit": "d375089860fde2f18db3363f42022ac19ec753de",
 	"entries": [
 		{
+			"section": "algorithms",
+			"slug": "a_star_search",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "A* Search",
+			"summary": "A* pathfinding on a weighted grid",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/graphs/a_star_search.md",
+			"sourcePath": "src/algo/graphs/a_star_search.py",
+			"inputs": [
+				"src/algo/graphs/a_star_search.py"
+			],
+			"sha256": "a2a750205f411eefb2635ce42610f51b857639cacc4af828c22986a0ca89672e"
+		},
+		{
+			"section": "algorithms",
+			"slug": "binary_search",
+			"topic": "searching",
+			"topicTitle": "Searching",
+			"title": "Binary Search",
+			"summary": "Binary search",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/searching/binary_search.md",
+			"sourcePath": "src/algo/searching/binary_search.py",
+			"inputs": [
+				"src/algo/searching/binary_search.py"
+			],
+			"sha256": "e84595faee3b42b55f4d4811dee61b8668ecd23d7bf0962cb1f7a9e2211e64ca"
+		},
+		{
+			"section": "algorithms",
+			"slug": "climbing_stairs",
+			"topic": "dp",
+			"topicTitle": "Dynamic Programming",
+			"title": "Climbing Stairs",
+			"summary": "Climbing Stairs — ways to climb n stairs taking 1 or 2 steps",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/dp/climbing_stairs.md",
+			"sourcePath": "src/algo/dp/climbing_stairs.py",
+			"inputs": [
+				"src/algo/dp/climbing_stairs.py"
+			],
+			"sha256": "baac420f3f76790887c95e447f14385a83388f322280419ab22cfedc12655da4"
+		},
+		{
+			"section": "algorithms",
+			"slug": "combination_sum",
+			"topic": "backtracking",
+			"topicTitle": "Backtracking",
+			"title": "Combination Sum",
+			"summary": "Combination Sum — find combinations that sum to target",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/backtracking/combination_sum.md",
+			"sourcePath": "src/algo/backtracking/combination_sum.py",
+			"inputs": [
+				"src/algo/backtracking/combination_sum.py"
+			],
+			"sha256": "e143b833662e43da1b1a196d0d26264633e1230599e2bbe25a19342ec50007eb"
+		},
+		{
+			"section": "algorithms",
+			"slug": "container_with_most_water",
+			"topic": "two_pointers",
+			"topicTitle": "Two Pointers",
+			"title": "Container With Most Water",
+			"summary": "Container With Most Water — max area between two vertical lines",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/two_pointers/container_with_most_water.md",
+			"sourcePath": "src/algo/two_pointers/container_with_most_water.py",
+			"inputs": [
+				"src/algo/two_pointers/container_with_most_water.py"
+			],
+			"sha256": "0d247172fae7bf97f0c9df0d9c7b3ca73e0d6c4aad6d7754bd10266f5d763e4f"
+		},
+		{
+			"section": "algorithms",
+			"slug": "counting_bits",
+			"topic": "bit_manipulation",
+			"topicTitle": "Bit Manipulation",
+			"title": "Counting Bits",
+			"summary": "Counting Bits — count 1-bits for all numbers 0..n",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/bit_manipulation/counting_bits.md",
+			"sourcePath": "src/algo/bit_manipulation/counting_bits.py",
+			"inputs": [
+				"src/algo/bit_manipulation/counting_bits.py"
+			],
+			"sha256": "025f6fa26aeee244e3cdd14d838302acb9bc18c8d30964b5b3ebe49a65c62bf3"
+		},
+		{
+			"section": "algorithms",
+			"slug": "daily_temperatures",
+			"topic": "stacks_queues",
+			"topicTitle": "Stacks & Queues",
+			"title": "Daily Temperatures",
+			"summary": "Daily temperatures",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/stacks_queues/daily_temperatures.md",
+			"sourcePath": "src/algo/stacks_queues/daily_temperatures.py",
+			"inputs": [
+				"src/algo/stacks_queues/daily_temperatures.py"
+			],
+			"sha256": "e42f0016958ad56123d3a7e750eae8919abdcdca4de914abc6d3450d229e313b"
+		},
+		{
+			"section": "algorithms",
+			"slug": "flatten_nested_list",
+			"topic": "recursion",
+			"topicTitle": "Recursion",
+			"title": "Flatten Nested List",
+			"summary": "Flatten Nested List — recursively flatten arbitrarily deep lists",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/recursion/flatten_nested_list.md",
+			"sourcePath": "src/algo/recursion/flatten_nested_list.py",
+			"inputs": [
+				"src/algo/recursion/flatten_nested_list.py"
+			],
+			"sha256": "3fbca6f6062c89851b8c4576e38e641ed1a645added78bc6893367671e6326a1"
+		},
+		{
+			"section": "algorithms",
+			"slug": "group_anagrams",
+			"topic": "arrays",
+			"topicTitle": "Arrays",
+			"title": "Group Anagrams",
+			"summary": "Group Anagrams — group strings that are anagrams of each other",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/arrays/group_anagrams.md",
+			"sourcePath": "src/algo/arrays/group_anagrams.py",
+			"inputs": [
+				"src/algo/arrays/group_anagrams.py"
+			],
+			"sha256": "8bc5f6812ea0ce36cf5b53c00f8f7eecffff9247654906586f0c48e558093171"
+		},
+		{
+			"section": "algorithms",
+			"slug": "interval_scheduling",
+			"topic": "greedy",
+			"topicTitle": "Greedy",
+			"title": "Interval Scheduling",
+			"summary": "Interval Scheduling — maximum non-overlapping intervals",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/greedy/interval_scheduling.md",
+			"sourcePath": "src/algo/greedy/interval_scheduling.py",
+			"inputs": [
+				"src/algo/greedy/interval_scheduling.py"
+			],
+			"sha256": "34d774ba93197d2650e2148d3b0b23f8519ac10f73ccfe35c3a6470830459b0a"
+		},
+		{
+			"section": "algorithms",
+			"slug": "invert_tree",
+			"topic": "trees",
+			"topicTitle": "Trees",
+			"title": "Invert Tree",
+			"summary": "Invert (mirror) a binary tree",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/trees/invert_tree.md",
+			"sourcePath": "src/algo/trees/invert_tree.py",
+			"inputs": [
+				"src/algo/trees/invert_tree.py"
+			],
+			"sha256": "0915781f00f3737e094c72e75e9a1d41a356431fbe66ac484b53ba3bd5d23e9f"
+		},
+		{
+			"section": "algorithms",
+			"slug": "kth_largest",
+			"topic": "heaps",
+			"topicTitle": "Heaps",
+			"title": "Kth Largest",
+			"summary": "Find the kth largest element",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/heaps/kth_largest.md",
+			"sourcePath": "src/algo/heaps/kth_largest.py",
+			"inputs": [
+				"src/algo/heaps/kth_largest.py"
+			],
+			"sha256": "ea9813c7b2e478798f4387063e2dbb0e41d349f8540bf4f9e8476d0f526a286c"
+		},
+		{
+			"section": "algorithms",
+			"slug": "longest_common_prefix",
+			"topic": "strings",
+			"topicTitle": "Strings",
+			"title": "Longest Common Prefix",
+			"summary": "Longest Common Prefix — find the longest common prefix among strings",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/strings/longest_common_prefix.md",
+			"sourcePath": "src/algo/strings/longest_common_prefix.py",
+			"inputs": [
+				"src/algo/strings/longest_common_prefix.py"
+			],
+			"sha256": "804b29cc9a96e02f9f35815c954ee4e7dd77417832e377b94cb2ba1817dee487"
+		},
+		{
+			"section": "algorithms",
+			"slug": "longest_substring_no_repeat",
+			"topic": "sliding_window",
+			"topicTitle": "Sliding Window",
+			"title": "Longest Substring No Repeat",
+			"summary": "Longest substring without repeating characters",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/sliding_window/longest_substring_no_repeat.md",
+			"sourcePath": "src/algo/sliding_window/longest_substring_no_repeat.py",
+			"inputs": [
+				"src/algo/sliding_window/longest_substring_no_repeat.py"
+			],
+			"sha256": "67f0c76786085604c28d6584f0b2c167fa0757cacc36c96bc506573434efeb6a"
+		},
+		{
+			"section": "algorithms",
+			"slug": "lru_cache",
+			"topic": "linked_lists",
+			"topicTitle": "Linked Lists",
+			"title": "LRU Cache",
+			"summary": "LRU Cache implementation",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/linked_lists/lru_cache.md",
+			"sourcePath": "src/algo/linked_lists/lru_cache.py",
+			"inputs": [
+				"src/algo/linked_lists/lru_cache.py"
+			],
+			"sha256": "f46e5ab458f5da92dedc1916d6ef018c9cc76948051650fb6a545a30e0660ad7"
+		},
+		{
+			"section": "algorithms",
+			"slug": "merge_sort_inversions",
+			"topic": "sorting",
+			"topicTitle": "Sorting",
+			"title": "Merge Sort Inversions",
+			"summary": "Merge Sort Inversions — count inversions using merge sort",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/sorting/merge_sort_inversions.md",
+			"sourcePath": "src/algo/sorting/merge_sort_inversions.py",
+			"inputs": [
+				"src/algo/sorting/merge_sort_inversions.py"
+			],
+			"sha256": "83601f24bbd5a95c96b0cc2ad79236d7377568ddeee8439758bd3b3602ed8ce7"
+		},
+		{
+			"section": "algorithms",
+			"slug": "sliding_window",
+			"topic": "patterns",
+			"topicTitle": "Patterns",
+			"title": "Sliding Window",
+			"summary": "Sliding window pattern template",
+			"lane": "markdown",
+			"order": 1,
+			"out": "algorithms/patterns/sliding_window.md",
+			"sourcePath": "src/algo/patterns/sliding_window.py",
+			"inputs": [
+				"src/algo/patterns/sliding_window.py"
+			],
+			"sha256": "be1299ba78c7bc42cfcd843088a750425eac04e97a7e9f5ce4c991ef328b6105"
+		},
+		{
+			"section": "algorithms",
+			"slug": "bellman_ford",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Bellman Ford",
+			"summary": "Shortest paths allowing negative edge weights",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/graphs/bellman_ford.md",
+			"sourcePath": "src/algo/graphs/bellman_ford.py",
+			"inputs": [
+				"src/algo/graphs/bellman_ford.py"
+			],
+			"sha256": "465ab673bdf94c5aeff94ce509156e1307a9e31997367f51cdd1230c316d3495"
+		},
+		{
+			"section": "algorithms",
+			"slug": "coin_change",
+			"topic": "dp",
+			"topicTitle": "Dynamic Programming",
+			"title": "Coin Change",
+			"summary": "Coin Change — minimum coins to make amount",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/dp/coin_change.md",
+			"sourcePath": "src/algo/dp/coin_change.py",
+			"inputs": [
+				"src/algo/dp/coin_change.py"
+			],
+			"sha256": "89b4bc0a6c9b7a33ff4165eb70c1de888c66500d5d371ac78dbae3b1c035e70c"
+		},
+		{
+			"section": "algorithms",
+			"slug": "find_minimum_rotated",
+			"topic": "searching",
+			"topicTitle": "Searching",
+			"title": "Find Minimum Rotated",
+			"summary": "Find minimum in rotated sorted array",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/searching/find_minimum_rotated.md",
+			"sourcePath": "src/algo/searching/find_minimum_rotated.py",
+			"inputs": [
+				"src/algo/searching/find_minimum_rotated.py"
+			],
+			"sha256": "8c2bea38be97890388cccb5b99f2fb360131beced1d499fa3b23b20c4f33f2db"
+		},
+		{
+			"section": "algorithms",
+			"slug": "generate_parentheses",
+			"topic": "recursion",
+			"topicTitle": "Recursion",
+			"title": "Generate Parentheses",
+			"summary": "Generate Parentheses — all valid combinations of n pairs",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/recursion/generate_parentheses.md",
+			"sourcePath": "src/algo/recursion/generate_parentheses.py",
+			"inputs": [
+				"src/algo/recursion/generate_parentheses.py"
+			],
+			"sha256": "d77e15950d27606e0785432d63fcaeb127ea0d7694a09cc5b05e9d1135523ed4"
+		},
+		{
+			"section": "algorithms",
+			"slug": "jump_game",
+			"topic": "greedy",
+			"topicTitle": "Greedy",
+			"title": "Jump Game",
+			"summary": "Jump Game — can you reach the last index? / minimum jumps",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/greedy/jump_game.md",
+			"sourcePath": "src/algo/greedy/jump_game.py",
+			"inputs": [
+				"src/algo/greedy/jump_game.py"
+			],
+			"sha256": "80d62646fbe78728b4568f21a18d9984066198d22115c4796ab85022cff0a67f"
+		},
+		{
+			"section": "algorithms",
+			"slug": "level_order_traversal",
+			"topic": "trees",
+			"topicTitle": "Trees",
+			"title": "Level Order Traversal",
+			"summary": "Level-order (BFS) traversal of a binary tree",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/trees/level_order_traversal.md",
+			"sourcePath": "src/algo/trees/level_order_traversal.py",
+			"inputs": [
+				"src/algo/trees/level_order_traversal.py"
+			],
+			"sha256": "3ed77352cefb6988de333e8ebabc20b5bad91acd99e7aa8fe0cc9f96351c1560"
+		},
+		{
+			"section": "algorithms",
+			"slug": "longest_palindromic_substring",
+			"topic": "strings",
+			"topicTitle": "Strings",
+			"title": "Longest Palindromic Substring",
+			"summary": "Longest Palindromic Substring — find the longest palindromic substring",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/strings/longest_palindromic_substring.md",
+			"sourcePath": "src/algo/strings/longest_palindromic_substring.py",
+			"inputs": [
+				"src/algo/strings/longest_palindromic_substring.py"
+			],
+			"sha256": "b3b5383633d60f7a63af3ca40f306ad18d241f59f1d38f31b52d6fd979c64fae"
+		},
+		{
+			"section": "algorithms",
+			"slug": "merge_k_sorted_lists",
+			"topic": "heaps",
+			"topicTitle": "Heaps",
+			"title": "Merge K Sorted Lists",
+			"summary": "Merge k sorted linked lists",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/heaps/merge_k_sorted_lists.md",
+			"sourcePath": "src/algo/heaps/merge_k_sorted_lists.py",
+			"inputs": [
+				"src/algo/heaps/merge_k_sorted_lists.py"
+			],
+			"sha256": "3a24f3dcbb0d0d34ce73c9f262833cdf47275a94b573704b352a90a3a23884df"
+		},
+		{
+			"section": "algorithms",
+			"slug": "merge_two_sorted",
+			"topic": "linked_lists",
+			"topicTitle": "Linked Lists",
+			"title": "Merge Two Sorted",
+			"summary": "Merge two sorted linked lists",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/linked_lists/merge_two_sorted.md",
+			"sourcePath": "src/algo/linked_lists/merge_two_sorted.py",
+			"inputs": [
+				"src/algo/linked_lists/merge_two_sorted.py"
+			],
+			"sha256": "aed7b8ef0ce01e527618a2c366ffbfc8e55d2a3bd31fbe5bd922ba56f752e460"
+		},
+		{
+			"section": "algorithms",
+			"slug": "min_stack",
+			"topic": "stacks_queues",
+			"topicTitle": "Stacks & Queues",
+			"title": "Min Stack",
+			"summary": "Min stack",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/stacks_queues/min_stack.md",
+			"sourcePath": "src/algo/stacks_queues/min_stack.py",
+			"inputs": [
+				"src/algo/stacks_queues/min_stack.py"
+			],
+			"sha256": "1915d8fbc777a3b1dde35e75a1d2f3dacfffd9b1ffcd73e659b41b0ea8b53b91"
+		},
+		{
+			"section": "algorithms",
+			"slug": "min_window_substring",
+			"topic": "sliding_window",
+			"topicTitle": "Sliding Window",
+			"title": "Min Window Substring",
+			"summary": "Minimum window substring",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/sliding_window/min_window_substring.md",
+			"sourcePath": "src/algo/sliding_window/min_window_substring.py",
+			"inputs": [
+				"src/algo/sliding_window/min_window_substring.py"
+			],
+			"sha256": "e757a37ebd827908ece68dcca9e527d0b4679703aa9144dbc04105e503fb78a4"
+		},
+		{
+			"section": "algorithms",
+			"slug": "n_queens",
+			"topic": "backtracking",
+			"topicTitle": "Backtracking",
+			"title": "N Queens",
+			"summary": "N-Queens — place n queens on n x n board with no attacks",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/backtracking/n_queens.md",
+			"sourcePath": "src/algo/backtracking/n_queens.py",
+			"inputs": [
+				"src/algo/backtracking/n_queens.py"
+			],
+			"sha256": "19b3cc369506f1f9a6283b587137ffff4df23707135b64dd829a65a5fea8bd33"
+		},
+		{
+			"section": "algorithms",
+			"slug": "product_except_self",
+			"topic": "arrays",
+			"topicTitle": "Arrays",
+			"title": "Product Except Self",
+			"summary": "Product of Array Except Self — product of all elements except self",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/arrays/product_except_self.md",
+			"sourcePath": "src/algo/arrays/product_except_self.py",
+			"inputs": [
+				"src/algo/arrays/product_except_self.py"
+			],
+			"sha256": "198546a4ae190666de29095908581165c38b9058d2b2a721c0b024e8e90d9581"
+		},
+		{
+			"section": "algorithms",
+			"slug": "quickselect",
+			"topic": "sorting",
+			"topicTitle": "Sorting",
+			"title": "Quickselect",
+			"summary": "Quickselect — find the kth smallest element",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/sorting/quickselect.md",
+			"sourcePath": "src/algo/sorting/quickselect.py",
+			"inputs": [
+				"src/algo/sorting/quickselect.py"
+			],
+			"sha256": "4910d81c9caf5845da044c5e9febd1ae346d7104365041bb78759df51418d12f"
+		},
+		{
+			"section": "algorithms",
+			"slug": "reverse_bits",
+			"topic": "bit_manipulation",
+			"topicTitle": "Bit Manipulation",
+			"title": "Reverse Bits",
+			"summary": "Reverse Bits — reverse the bits of a 32-bit unsigned integer",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/bit_manipulation/reverse_bits.md",
+			"sourcePath": "src/algo/bit_manipulation/reverse_bits.py",
+			"inputs": [
+				"src/algo/bit_manipulation/reverse_bits.py"
+			],
+			"sha256": "0522f5fd934353b900a5f45a625b026bcbcab1a633e2b0b1348dbaec90385d89"
+		},
+		{
+			"section": "algorithms",
+			"slug": "three_sum",
+			"topic": "two_pointers",
+			"topicTitle": "Two Pointers",
+			"title": "Three Sum",
+			"summary": "3Sum — find all unique triplets that sum to zero",
+			"lane": "markdown",
+			"order": 2,
+			"out": "algorithms/two_pointers/three_sum.md",
+			"sourcePath": "src/algo/two_pointers/three_sum.py",
+			"inputs": [
+				"src/algo/two_pointers/three_sum.py"
+			],
+			"sha256": "8aa5a71f43d140b5d5fe3b2080554516853356e060b55e10ecf2f95122531b83"
+		},
+		{
+			"section": "algorithms",
+			"slug": "clone_graph",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Clone Graph",
+			"summary": "Deep copy an undirected graph",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/graphs/clone_graph.md",
+			"sourcePath": "src/algo/graphs/clone_graph.py",
+			"inputs": [
+				"src/algo/graphs/clone_graph.py"
+			],
+			"sha256": "b6230453b7dd93a24ebcc31142f11136668ec60e8aa5ff1f2eb35257bf727659"
+		},
+		{
+			"section": "algorithms",
+			"slug": "constraint_satisfaction",
+			"topic": "dp",
+			"topicTitle": "Dynamic Programming",
+			"title": "Constraint Satisfaction",
+			"summary": "Constraint Satisfaction Problem — generic CSP solver with Sudoku example",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/dp/constraint_satisfaction.md",
+			"sourcePath": "src/algo/dp/constraint_satisfaction.py",
+			"inputs": [
+				"src/algo/dp/constraint_satisfaction.py"
+			],
+			"sha256": "f32164ccbc442a0c67690f2493537db94f90d7b67a4916b2192f6482c242b45e"
+		},
+		{
+			"section": "algorithms",
+			"slug": "letter_combinations_phone",
+			"topic": "recursion",
+			"topicTitle": "Recursion",
+			"title": "Letter Combinations Phone",
+			"summary": "Letter Combinations of a Phone Number — digit-to-letter mapping",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/recursion/letter_combinations_phone.md",
+			"sourcePath": "src/algo/recursion/letter_combinations_phone.py",
+			"inputs": [
+				"src/algo/recursion/letter_combinations_phone.py"
+			],
+			"sha256": "f1182b31377a7ce768ee383aa8d3773b9de81319bfee3e21e2b056af37de9ae9"
+		},
+		{
+			"section": "algorithms",
+			"slug": "max_depth",
+			"topic": "trees",
+			"topicTitle": "Trees",
+			"title": "Max Depth",
+			"summary": "Maximum depth of a binary tree",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/trees/max_depth.md",
+			"sourcePath": "src/algo/trees/max_depth.py",
+			"inputs": [
+				"src/algo/trees/max_depth.py"
+			],
+			"sha256": "816b96e8b0a38e8b3f0a3ce1ec97a88ebbb0fb60a13e5deeddf98bddf5047001"
+		},
+		{
+			"section": "algorithms",
+			"slug": "merge_intervals",
+			"topic": "greedy",
+			"topicTitle": "Greedy",
+			"title": "Merge Intervals",
+			"summary": "Merge Intervals — merge overlapping intervals",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/greedy/merge_intervals.md",
+			"sourcePath": "src/algo/greedy/merge_intervals.py",
+			"inputs": [
+				"src/algo/greedy/merge_intervals.py"
+			],
+			"sha256": "5062b04aaf3a10376961d6576414cea3d0619ca7a505497ca3565b88729892b5"
+		},
+		{
+			"section": "algorithms",
+			"slug": "permutations",
+			"topic": "backtracking",
+			"topicTitle": "Backtracking",
+			"title": "Permutations",
+			"summary": "Permutations — generate all permutations of a list",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/backtracking/permutations.md",
+			"sourcePath": "src/algo/backtracking/permutations.py",
+			"inputs": [
+				"src/algo/backtracking/permutations.py"
+			],
+			"sha256": "571fed75d31ebf29ae1730e8eb6ae9c2065d8de6a477b895d88d730ce5354b58"
+		},
+		{
+			"section": "algorithms",
+			"slug": "reverse_linked_list",
+			"topic": "linked_lists",
+			"topicTitle": "Linked Lists",
+			"title": "Reverse Linked List",
+			"summary": "Reverse a singly linked list",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/linked_lists/reverse_linked_list.md",
+			"sourcePath": "src/algo/linked_lists/reverse_linked_list.py",
+			"inputs": [
+				"src/algo/linked_lists/reverse_linked_list.py"
+			],
+			"sha256": "99948b485781acfed66f5f3502d057c7481edd21ecad67ba3d381b34223105ab"
+		},
+		{
+			"section": "algorithms",
+			"slug": "search_rotated_array",
+			"topic": "searching",
+			"topicTitle": "Searching",
+			"title": "Search Rotated Array",
+			"summary": "Search in rotated sorted array",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/searching/search_rotated_array.md",
+			"sourcePath": "src/algo/searching/search_rotated_array.py",
+			"inputs": [
+				"src/algo/searching/search_rotated_array.py"
+			],
+			"sha256": "0698c0882df6d9b0ff594f325b3184de41b6df4b3b552e3ee41970d9a4e6e97d"
+		},
+		{
+			"section": "algorithms",
+			"slug": "single_number",
+			"topic": "bit_manipulation",
+			"topicTitle": "Bit Manipulation",
+			"title": "Single Number",
+			"summary": "Single Number — find the element appearing once (others twice)",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/bit_manipulation/single_number.md",
+			"sourcePath": "src/algo/bit_manipulation/single_number.py",
+			"inputs": [
+				"src/algo/bit_manipulation/single_number.py"
+			],
+			"sha256": "1f540a14ae7f39bc6daa3693e1276a0edd70089f63e4c9c57defe9b529cd0040"
+		},
+		{
+			"section": "algorithms",
+			"slug": "string_to_integer_atoi",
+			"topic": "strings",
+			"topicTitle": "Strings",
+			"title": "String To Integer Atoi",
+			"summary": "String to Integer (atoi) — convert a string to a 32-bit signed integer",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/strings/string_to_integer_atoi.md",
+			"sourcePath": "src/algo/strings/string_to_integer_atoi.py",
+			"inputs": [
+				"src/algo/strings/string_to_integer_atoi.py"
+			],
+			"sha256": "66c8740302e87cb39c2b613e1d1097fe995bf77159e53c9e3880c082e21e19ad"
+		},
+		{
+			"section": "algorithms",
+			"slug": "task_scheduler",
+			"topic": "heaps",
+			"topicTitle": "Heaps",
+			"title": "Task Scheduler",
+			"summary": "Task scheduler with cooldown",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/heaps/task_scheduler.md",
+			"sourcePath": "src/algo/heaps/task_scheduler.py",
+			"inputs": [
+				"src/algo/heaps/task_scheduler.py"
+			],
+			"sha256": "be84f5d6258a53a1f5eeea611201a84c555bbd42fa2b6ea9e9df9822313f5c1c"
+		},
+		{
+			"section": "algorithms",
+			"slug": "top_k_frequent",
+			"topic": "arrays",
+			"topicTitle": "Arrays",
+			"title": "Top K Frequent",
+			"summary": "Top K Frequent Elements — return the k most frequent elements",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/arrays/top_k_frequent.md",
+			"sourcePath": "src/algo/arrays/top_k_frequent.py",
+			"inputs": [
+				"src/algo/arrays/top_k_frequent.py"
+			],
+			"sha256": "c9292079896ee9105d6a3b13eb8b9bf7c8a9c5da1fa140eedaf97042d9a7beee"
+		},
+		{
+			"section": "algorithms",
+			"slug": "trapping_rain_water",
+			"topic": "two_pointers",
+			"topicTitle": "Two Pointers",
+			"title": "Trapping Rain Water",
+			"summary": "Trapping Rain Water — total water trapped between bars",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/two_pointers/trapping_rain_water.md",
+			"sourcePath": "src/algo/two_pointers/trapping_rain_water.py",
+			"inputs": [
+				"src/algo/two_pointers/trapping_rain_water.py"
+			],
+			"sha256": "6e67adc6c2a5f6e8660952d8875197e65bf9da32fc58d170bd135ac27ed0c5cb"
+		},
+		{
+			"section": "algorithms",
+			"slug": "valid_parentheses",
+			"topic": "stacks_queues",
+			"topicTitle": "Stacks & Queues",
+			"title": "Valid Parentheses",
+			"summary": "Valid parentheses",
+			"lane": "markdown",
+			"order": 3,
+			"out": "algorithms/stacks_queues/valid_parentheses.md",
+			"sourcePath": "src/algo/stacks_queues/valid_parentheses.py",
+			"inputs": [
+				"src/algo/stacks_queues/valid_parentheses.py"
+			],
+			"sha256": "ae04b7e547fa5a885316a969c9a2c619899e1415c91af47ece53239aa510f4ad"
+		},
+		{
+			"section": "algorithms",
+			"slug": "course_schedule",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Course Schedule",
+			"summary": "Determine if all courses can be finished (cycle detection)",
+			"lane": "markdown",
+			"order": 4,
+			"out": "algorithms/graphs/course_schedule.md",
+			"sourcePath": "src/algo/graphs/course_schedule.py",
+			"inputs": [
+				"src/algo/graphs/course_schedule.py"
+			],
+			"sha256": "4380c0cc6b0fc032d26458318c901a21a8ef4dd4cba39935fb0bb6bbf775d73a"
+		},
+		{
+			"section": "algorithms",
+			"slug": "edit_distance",
+			"topic": "dp",
+			"topicTitle": "Dynamic Programming",
+			"title": "Edit Distance",
+			"summary": "Edit Distance — minimum operations to convert word1 to word2",
+			"lane": "markdown",
+			"order": 4,
+			"out": "algorithms/dp/edit_distance.md",
+			"sourcePath": "src/algo/dp/edit_distance.py",
+			"inputs": [
+				"src/algo/dp/edit_distance.py"
+			],
+			"sha256": "617e2c3f554478321468d64524397dcfa54b8015ecd07a44741a32c369d4cb1e"
+		},
+		{
+			"section": "algorithms",
+			"slug": "pow_x_n",
+			"topic": "recursion",
+			"topicTitle": "Recursion",
+			"title": "Pow X N",
+			"summary": "Pow(x, n) — compute x raised to the power n using fast exponentiation",
+			"lane": "markdown",
+			"order": 4,
+			"out": "algorithms/recursion/pow_x_n.md",
+			"sourcePath": "src/algo/recursion/pow_x_n.py",
+			"inputs": [
+				"src/algo/recursion/pow_x_n.py"
+			],
+			"sha256": "e4a930d1480fd4ebee573760ef3e8a0b0738c8abdd33368c3c0b9aa938b3bc04"
+		},
+		{
+			"section": "algorithms",
+			"slug": "subsets",
+			"topic": "backtracking",
+			"topicTitle": "Backtracking",
+			"title": "Subsets",
+			"summary": "Subsets — generate all subsets of a set",
+			"lane": "markdown",
+			"order": 4,
+			"out": "algorithms/backtracking/subsets.md",
+			"sourcePath": "src/algo/backtracking/subsets.py",
+			"inputs": [
+				"src/algo/backtracking/subsets.py"
+			],
+			"sha256": "d32b129c2c2310d4c5d1cb244606dc7e1797cc3283cbaa4c2812a475da71debd"
+		},
+		{
+			"section": "algorithms",
+			"slug": "trie",
+			"topic": "trees",
+			"topicTitle": "Trees",
+			"title": "Trie",
+			"summary": "Trie (prefix tree) for efficient string operations",
+			"lane": "markdown",
+			"order": 4,
+			"out": "algorithms/trees/trie.md",
+			"sourcePath": "src/algo/trees/trie.py",
+			"inputs": [
+				"src/algo/trees/trie.py"
+			],
+			"sha256": "be60190cfb675b3cc612af03343c4d9936647c7eb6203522be0adcc669fd1a04"
+		},
+		{
+			"section": "algorithms",
+			"slug": "two_sum",
+			"topic": "arrays",
+			"topicTitle": "Arrays",
+			"title": "Two Sum",
+			"summary": "Two Sum — find two indices whose values sum to target",
+			"lane": "markdown",
+			"order": 4,
+			"out": "algorithms/arrays/two_sum.md",
+			"sourcePath": "src/algo/arrays/two_sum.py",
+			"inputs": [
+				"src/algo/arrays/two_sum.py"
+			],
+			"sha256": "c5ed0ad4f04de658e1521c083023325795dbdd2d36636f829eb678fcff750c3f"
+		},
+		{
+			"section": "algorithms",
+			"slug": "valid_anagram",
+			"topic": "strings",
+			"topicTitle": "Strings",
+			"title": "Valid Anagram",
+			"summary": "Valid Anagram — check if two strings are anagrams of each other",
+			"lane": "markdown",
+			"order": 4,
+			"out": "algorithms/strings/valid_anagram.md",
+			"sourcePath": "src/algo/strings/valid_anagram.py",
+			"inputs": [
+				"src/algo/strings/valid_anagram.py"
+			],
+			"sha256": "75c485d9fd097635574af3f7d51aa35e1f8107f3c8cb9c1b69d5c0a9f85a608c"
+		},
+		{
+			"section": "algorithms",
+			"slug": "dijkstra",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Dijkstra",
+			"summary": "Single-source shortest paths with non-negative edge weights",
+			"lane": "markdown",
+			"order": 5,
+			"out": "algorithms/graphs/dijkstra.md",
+			"sourcePath": "src/algo/graphs/dijkstra.py",
+			"inputs": [
+				"src/algo/graphs/dijkstra.py"
+			],
+			"sha256": "f349125f450dc8ee6180b1638d2867bf70877bdbbe3daf08ca0cb21dff0deb96"
+		},
+		{
+			"section": "algorithms",
+			"slug": "knapsack",
+			"topic": "dp",
+			"topicTitle": "Dynamic Programming",
+			"title": "Knapsack",
+			"summary": "0/1 Knapsack — maximize value within weight capacity",
+			"lane": "markdown",
+			"order": 5,
+			"out": "algorithms/dp/knapsack.md",
+			"sourcePath": "src/algo/dp/knapsack.py",
+			"inputs": [
+				"src/algo/dp/knapsack.py"
+			],
+			"sha256": "927ac4cc940b646fe5e9148c0fb75e8948f2d8dfc2c903c47dc55038dfe4ecf1"
+		},
+		{
+			"section": "algorithms",
+			"slug": "tower_of_hanoi",
+			"topic": "recursion",
+			"topicTitle": "Recursion",
+			"title": "Tower Of Hanoi",
+			"summary": "Tower of Hanoi — move n disks between pegs",
+			"lane": "markdown",
+			"order": 5,
+			"out": "algorithms/recursion/tower_of_hanoi.md",
+			"sourcePath": "src/algo/recursion/tower_of_hanoi.py",
+			"inputs": [
+				"src/algo/recursion/tower_of_hanoi.py"
+			],
+			"sha256": "3bf92ee98db3fba9b976674540bd073890837f05741f0e176d15d98bdd3d22ec"
+		},
+		{
+			"section": "algorithms",
+			"slug": "valid_palindrome",
+			"topic": "strings",
+			"topicTitle": "Strings",
+			"title": "Valid Palindrome",
+			"summary": "Valid Palindrome — check if string is a palindrome ignoring non-alnum and case",
+			"lane": "markdown",
+			"order": 5,
+			"out": "algorithms/strings/valid_palindrome.md",
+			"sourcePath": "src/algo/strings/valid_palindrome.py",
+			"inputs": [
+				"src/algo/strings/valid_palindrome.py"
+			],
+			"sha256": "25fc2dec85df7da61a7050e3eaf4423eb31be91e9e89d4b6b93950a215af62c9"
+		},
+		{
+			"section": "algorithms",
+			"slug": "validate_bst",
+			"topic": "trees",
+			"topicTitle": "Trees",
+			"title": "Validate BST",
+			"summary": "Validate binary search tree",
+			"lane": "markdown",
+			"order": 5,
+			"out": "algorithms/trees/validate_bst.md",
+			"sourcePath": "src/algo/trees/validate_bst.py",
+			"inputs": [
+				"src/algo/trees/validate_bst.py"
+			],
+			"sha256": "96fa7103cc37343a251fea1daf0c05139259111e3676c4dd33cb4b9d467bd3e7"
+		},
+		{
+			"section": "algorithms",
+			"slug": "geohash_grid",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Geohash Grid",
+			"summary": "Geohash encoding, decoding, and neighbor lookup",
+			"lane": "markdown",
+			"order": 6,
+			"out": "algorithms/graphs/geohash_grid.md",
+			"sourcePath": "src/algo/graphs/geohash_grid.py",
+			"inputs": [
+				"src/algo/graphs/geohash_grid.py"
+			],
+			"sha256": "75ed5fb7c61a5a78b69002efee951826517c284919c741d959c4308bd48e3c37"
+		},
+		{
+			"section": "algorithms",
+			"slug": "longest_common_subseq",
+			"topic": "dp",
+			"topicTitle": "Dynamic Programming",
+			"title": "Longest Common Subseq",
+			"summary": "Longest Common Subsequence — length of LCS of two strings",
+			"lane": "markdown",
+			"order": 6,
+			"out": "algorithms/dp/longest_common_subseq.md",
+			"sourcePath": "src/algo/dp/longest_common_subseq.py",
+			"inputs": [
+				"src/algo/dp/longest_common_subseq.py"
+			],
+			"sha256": "5c6cca55f4b200ad877972d82e9c37fe3434030ac7fe66d086b501aecc2a32bf"
+		},
+		{
+			"section": "algorithms",
+			"slug": "kd_tree",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "KD-Tree",
+			"summary": "K-dimensional tree for nearest neighbor search",
+			"lane": "markdown",
+			"order": 7,
+			"out": "algorithms/graphs/kd_tree.md",
+			"sourcePath": "src/algo/graphs/kd_tree.py",
+			"inputs": [
+				"src/algo/graphs/kd_tree.py"
+			],
+			"sha256": "f074d3b310c93c9bbf548f83d833111542d03ba1e5b7989c85c664f24aa0547a"
+		},
+		{
+			"section": "algorithms",
+			"slug": "longest_increasing_subseq",
+			"topic": "dp",
+			"topicTitle": "Dynamic Programming",
+			"title": "Longest Increasing Subseq",
+			"summary": "Longest Increasing Subsequence — length of LIS",
+			"lane": "markdown",
+			"order": 7,
+			"out": "algorithms/dp/longest_increasing_subseq.md",
+			"sourcePath": "src/algo/dp/longest_increasing_subseq.py",
+			"inputs": [
+				"src/algo/dp/longest_increasing_subseq.py"
+			],
+			"sha256": "ae735f96308ba09cba3109f4a798671ac57aa4de5324ed0c4d73919e4f667fe2"
+		},
+		{
+			"section": "algorithms",
+			"slug": "minimum_spanning_tree",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Minimum Spanning Tree",
+			"summary": "Minimum spanning tree: Kruskal's and Prim's algorithms",
+			"lane": "markdown",
+			"order": 8,
+			"out": "algorithms/graphs/minimum_spanning_tree.md",
+			"sourcePath": "src/algo/graphs/minimum_spanning_tree.py",
+			"inputs": [
+				"src/algo/graphs/minimum_spanning_tree.py"
+			],
+			"sha256": "dc7d6ab25af6cbc2434b1a8427a52e5ec0401fa59c293070e5b6608c728fdcdf"
+		},
+		{
+			"section": "algorithms",
+			"slug": "traveling_salesman_dp",
+			"topic": "dp",
+			"topicTitle": "Dynamic Programming",
+			"title": "Traveling Salesman DP",
+			"summary": "Traveling Salesman Problem — bitmask DP solution",
+			"lane": "markdown",
+			"order": 8,
+			"out": "algorithms/dp/traveling_salesman_dp.md",
+			"sourcePath": "src/algo/dp/traveling_salesman_dp.py",
+			"inputs": [
+				"src/algo/dp/traveling_salesman_dp.py"
+			],
+			"sha256": "b7905519e62007f54b0e79508a3ff478c38b7cb193be6a3e45674852327f5ed1"
+		},
+		{
+			"section": "algorithms",
+			"slug": "network_delay_time",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Network Delay Time",
+			"summary": "Time for a signal to reach all nodes (Dijkstra variant)",
+			"lane": "markdown",
+			"order": 9,
+			"out": "algorithms/graphs/network_delay_time.md",
+			"sourcePath": "src/algo/graphs/network_delay_time.py",
+			"inputs": [
+				"src/algo/graphs/network_delay_time.py"
+			],
+			"sha256": "e4213d7066fb45ff014586ec41b21e883b26e241f8123d043cd3bf067a6f5081"
+		},
+		{
+			"section": "algorithms",
+			"slug": "network_flow",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Network Flow",
+			"summary": "Maximum flow via Edmonds-Karp (BFS-based Ford-Fulkerson)",
+			"lane": "markdown",
+			"order": 10,
+			"out": "algorithms/graphs/network_flow.md",
+			"sourcePath": "src/algo/graphs/network_flow.py",
+			"inputs": [
+				"src/algo/graphs/network_flow.py"
+			],
+			"sha256": "e663d9c3be78603360728f15ab16590e8364f8737f978c37cbf83071a70aa4a8"
+		},
+		{
+			"section": "algorithms",
+			"slug": "number_of_islands",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Number Of Islands",
+			"summary": "Count islands in a 2D grid of '1's (land) and '0's (water)",
+			"lane": "markdown",
+			"order": 11,
+			"out": "algorithms/graphs/number_of_islands.md",
+			"sourcePath": "src/algo/graphs/number_of_islands.py",
+			"inputs": [
+				"src/algo/graphs/number_of_islands.py"
+			],
+			"sha256": "b6153979aca397ea0a15922dde2b499ad69e0a4d5eb9df413575450f6832cb3f"
+		},
+		{
+			"section": "algorithms",
+			"slug": "topological_sort",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Topological Sort",
+			"summary": "Topological ordering of a directed acyclic graph (DAG)",
+			"lane": "markdown",
+			"order": 12,
+			"out": "algorithms/graphs/topological_sort.md",
+			"sourcePath": "src/algo/graphs/topological_sort.py",
+			"inputs": [
+				"src/algo/graphs/topological_sort.py"
+			],
+			"sha256": "f946e653fae5154a5bb6d16d07986a903b6339b367847e7748148e14c299f628"
+		},
+		{
+			"section": "algorithms",
+			"slug": "word_ladder",
+			"topic": "graphs",
+			"topicTitle": "Graphs",
+			"title": "Word Ladder",
+			"summary": "Shortest transformation sequence from beginWord to endWord",
+			"lane": "markdown",
+			"order": 13,
+			"out": "algorithms/graphs/word_ladder.md",
+			"sourcePath": "src/algo/graphs/word_ladder.py",
+			"inputs": [
+				"src/algo/graphs/word_ladder.py"
+			],
+			"sha256": "d6e991c436cea0650b1108d9125e28988eebf9d5ec5b433465c46e307bea3eb8"
+		},
+		{
 			"section": "challenges",
 			"slug": "index",
 			"title": "Daily Drill",
