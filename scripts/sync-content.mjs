@@ -28,6 +28,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { syncAlgorithms } from './sync-algorithms.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(HERE, '..');
@@ -286,6 +287,15 @@ function main() {
 			sha256: sha256(resolved),
 		});
 	}
+
+	// Algorithms lane: one markdown doc per packet src/algo/<topic>/<problem>.py
+	// implementation. A dedicated module (scripts/sync-algorithms.mjs) owns the
+	// docstring parsing and per-problem doc rendering; every file it reads comes
+	// from `git show HEAD:...`, never the working tree (see that file's header),
+	// so a stripped practice file in the packet checkout never leaks into the site.
+	entries.push(
+		...syncAlgorithms({ packetPath: PACKET_PATH, contentDir: CONTENT_DIR, mkdirSync, writeFileSync, sha256 }),
+	);
 
 	// Deterministic ordering: section, then display order, then slug.
 	entries.sort((a, b) => a.section.localeCompare(b.section) || a.order - b.order || a.slug.localeCompare(b.slug));

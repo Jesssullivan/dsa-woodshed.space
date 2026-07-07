@@ -22,12 +22,12 @@ import { REPO_URL, REPO_DEFAULT_BRANCH } from '$lib/repo';
 import manifestJson from '$content/.manifest.json';
 
 export type Lane = 'markdown' | 'svx';
-export type SectionId = 'guide' | 'reference' | 'printables' | 'practice' | 'challenges';
+export type SectionId = 'guide' | 'reference' | 'algorithms' | 'printables' | 'practice' | 'challenges';
 
 export interface ContentEntry {
 	/** Section this entry belongs to. */
 	section: SectionId;
-	/** URL slug, unique within its section. */
+	/** URL slug, unique within its section (for `algorithms`, unique within `topic`). */
 	slug: string;
 	/** Display title, sourced from the packet doc (frontmatter title, else first H1). */
 	title: string;
@@ -37,10 +37,14 @@ export interface ContentEntry {
 	sourcePath: string;
 	/** Render lane: `markdown` (raw lane) or `svx` (mdsvex component). */
 	lane: Lane;
-	/** Display order within the section. */
+	/** Display order within the section (for `algorithms`, within its topic). */
 	order: number;
 	/** Path under src/content — the key $lib/docs/content.ts loads a raw body by. */
 	out: string;
+	/** Topic slug — only set for `section: 'algorithms'` entries. */
+	topic?: string;
+	/** Topic display title — only set for `section: 'algorithms'` entries. */
+	topicTitle?: string;
 }
 
 interface ManifestEntry {
@@ -53,6 +57,10 @@ interface ManifestEntry {
 	sourcePath: string;
 	inputs: string[];
 	sha256: string;
+	topic?: string;
+	topicTitle?: string;
+	/** Auto-derived one-line summary (algorithms only — the docstring's first line). */
+	summary?: string;
 }
 
 interface Manifest {
@@ -110,10 +118,11 @@ export interface Section {
 // final navigation shape.
 const SECTION_META: Record<SectionId, { title: string; order: number }> = {
 	guide: { title: 'Guide', order: 1 },
-	reference: { title: 'Reference sheets', order: 2 },
-	practice: { title: 'Practice', order: 3 },
-	challenges: { title: 'Challenges', order: 4 },
-	printables: { title: 'Printables', order: 5 },
+	algorithms: { title: 'Algorithms', order: 2 },
+	reference: { title: 'Reference sheets', order: 3 },
+	practice: { title: 'Practice', order: 4 },
+	challenges: { title: 'Challenges', order: 5 },
+	printables: { title: 'Printables', order: 6 },
 };
 
 const LANES = new Set<Lane>(['markdown', 'svx']);
@@ -126,11 +135,16 @@ function toEntry(m: ManifestEntry): ContentEntry {
 		section: m.section as SectionId,
 		slug: m.slug,
 		title: m.title,
-		summary: SUMMARIES[key] ?? '',
+		// Algorithms carry an auto-derived summary (the docstring's first line) on
+		// the manifest itself — there are ~70 of them, too many to hand-curate.
+		// Every other lane's summary is hand-curated editorial copy above.
+		summary: m.section === 'algorithms' ? (m.summary ?? '') : (SUMMARIES[key] ?? ''),
 		sourcePath: m.sourcePath,
 		lane: m.lane as Lane,
 		order: m.order,
 		out: m.out,
+		topic: m.topic,
+		topicTitle: m.topicTitle,
 	};
 }
 
@@ -185,6 +199,55 @@ export function guideMarkdownSlugs(): string[] {
 	return entriesInSection('guide')
 		.filter((e) => e.lane === 'markdown')
 		.map((e) => e.slug);
+}
+
+// ── Algorithms-lane helpers ──────────────────────────────────────────────────────
+// One entry per packet src/algo/<topic>/<problem>.py implementation
+// (scripts/sync-algorithms.mjs), grouped by topic for the /algorithms index and
+// per-topic index pages, and looked up by (topic, slug) for the problem page.
+
+export interface AlgorithmTopic {
+	/** Topic directory slug, e.g. `dp`. */
+	topic: string;
+	/** Topic display title, e.g. `Dynamic Programming`. */
+	title: string;
+	/** This topic's problems, in display order. */
+	entries: ContentEntry[];
+}
+
+/** All algorithm topics, alphabetically, each with its problems in display order. */
+export function algorithmTopics(): AlgorithmTopic[] {
+	const bySlug = new Map<string, AlgorithmTopic>();
+	for (const entry of entriesInSection('algorithms')) {
+		const topic = entry.topic ?? '';
+		let group = bySlug.get(topic);
+		if (!group) {
+			group = { topic, title: entry.topicTitle ?? topic, entries: [] };
+			bySlug.set(topic, group);
+		}
+		group.entries.push(entry);
+	}
+	return [...bySlug.values()].sort((a, b) => a.topic.localeCompare(b.topic));
+}
+
+/** One algorithm topic (problems in display order), or undefined if unknown. */
+export function getAlgorithmTopic(topic: string): AlgorithmTopic | undefined {
+	return algorithmTopics().find((t) => t.topic === topic);
+}
+
+/** Every algorithm topic's slug, alphabetically — for the `/algorithms/[topic]` prerender entries. */
+export function algorithmTopicSlugs(): string[] {
+	return algorithmTopics().map((t) => t.topic);
+}
+
+/** Every (topic, slug) pair — for the `/algorithms/[topic]/[slug]` prerender entries. */
+export function algorithmParams(): { topic: string; slug: string }[] {
+	return entriesInSection('algorithms').map((e) => ({ topic: e.topic ?? '', slug: e.slug }));
+}
+
+/** One algorithm problem entry, scoped to its topic (so a mismatched URL 404s). */
+export function getAlgorithm(topic: string, slug: string): ContentEntry | undefined {
+	return entriesInSection('algorithms').find((e) => e.topic === topic && e.slug === slug);
 }
 
 function normalizeJoin(dirSegments: string[], relative: string): string {
