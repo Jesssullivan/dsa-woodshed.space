@@ -15,8 +15,13 @@ default:
 setup:
 	pnpm install --frozen-lockfile
 
+# Sync content from the DSA study packet into src/content/ (BUILD INPUT).
+# Source root defaults to ../dsa-study-packet; override with WOODSHED_PACKET_PATH.
+sync-content:
+	pnpm run sync-content
+
 # Type-check + svelte-check.
-check:
+check: sync-content
 	pnpm run check
 
 # Lint (prettier --check + eslint).
@@ -28,7 +33,7 @@ format:
 	pnpm run format
 
 # Unit tests (vitest).
-test:
+test: sync-content
 	pnpm run test:unit
 
 # End-to-end tests (playwright).
@@ -36,7 +41,8 @@ e2e:
 	pnpm run test:e2e
 
 # Production static build (adapter-static -> build/). Custom-domain base="".
-build:
+# Syncs content first: the packet is the SSOT and src/content is gitignored.
+build: sync-content
 	pnpm run build
 
 # Preview the built site locally.
@@ -44,5 +50,5 @@ preview:
 	pnpm run preview
 
 # Dev server.
-dev:
+dev: sync-content
 	pnpm run dev

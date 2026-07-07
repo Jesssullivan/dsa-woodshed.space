@@ -7,6 +7,14 @@ node_modules/
 build/
 dist/
 
+# Synced content (BUILD INPUT). The prose/reference SSOT is the DSA study packet;
+# scripts/sync-content.mjs regenerates these from a packet checkout. The manifest
+# is committed (it feeds the on-site content registry and pins the source commit);
+# the rendered bodies are not, mirroring the packet's generated-artifacts rule.
+# Regenerate with `pnpm run sync-content` (or `just build`).
+src/content/**
+!src/content/.manifest.json
+
 # Web-perf artifacts: generated image variants, bundle treemap, and the
 # generated image manifest. Regenerate via `pnpm run optimize:images`.
 static/optimized/

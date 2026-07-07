@@ -237,7 +237,17 @@ function renderBlocks(lines: string[], options: MarkdownOptions): string {
 			}
 			i++; // skip closing fence
 			const cls = lang ? ` class="language-${escapeAttr(lang)}"` : '';
-			out.push(`<pre><code${cls}>${escapeHtml(buf.join('\n'))}\n</code></pre>`);
+			const code = `<pre><code${cls}>${escapeHtml(buf.join('\n'))}\n</code></pre>`;
+			if (lang === 'mermaid') {
+				// No client-side mermaid renderer on this surface (a zero-dependency
+				// constraint). Show the diagram SOURCE as a labelled code block so the
+				// information is not lost and the reader knows to view the original.
+				out.push(
+					`<figure class="diagram-fallback"><figcaption class="diagram-note">Diagram — rendered as source; see the source page for the visual.</figcaption>${code}</figure>`,
+				);
+			} else {
+				out.push(code);
+			}
 			continue;
 		}
 

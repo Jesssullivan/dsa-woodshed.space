@@ -1,14 +1,17 @@
 // M3.3 sitemap.xml endpoint. Prerendered at build time by adapter-static so the
 // XML lives at build/sitemap.xml. Add additional routes here as M5 lands them.
-import { sheetSlugs } from '$lib/docs/registry';
+import { guideMarkdownSlugs, sheetSlugs } from '$lib/docs/registry';
 import type { RequestHandler } from './$types';
 
 const SITE = 'https://dsa-woodshed.space';
+// Enumerate exactly the routed pages. Reference + guide are driven by the content
+// registry so new synced entries appear here without a hand edit.
 const PAGES: string[] = [
 	'/',
-	'/guide/interview-practice-evidence',
 	'/reference',
 	...sheetSlugs().map((s) => `/reference/${s}`),
+	'/guide/interview-practice-evidence',
+	...guideMarkdownSlugs().map((s) => `/guide/${s}`),
 ];
 
 export const prerender = true;

@@ -326,6 +326,20 @@ pre.shiki span {
 	margin-right: 0.4em;
 }
 
+/* Mermaid fallback: the raw renderer has no client-side diagram engine, so a
+   ```mermaid block renders as its labelled source (see $lib/docs/markdown.ts). */
+.prose figure.diagram-fallback {
+	margin: 1.25em 0;
+}
+.prose figure.diagram-fallback pre {
+	margin-top: 0.4em;
+}
+.prose .diagram-note {
+	font-size: 0.8125rem;
+	font-style: italic;
+	color: var(--color-surface-500);
+}
+
 /* ===== Saturn-nav AppBar =====
    Glass variant evolved from .glass-nav. Two saturn motifs:
    1. A 1.5px primary-tinted bottom edge (the planet's ring line).

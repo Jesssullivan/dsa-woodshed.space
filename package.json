@@ -10,6 +10,7 @@
 		"node": ">=22 <25"
 	},
 	"scripts": {
+		"sync-content": "node scripts/sync-content.mjs",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",

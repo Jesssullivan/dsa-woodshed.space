@@ -42,6 +42,16 @@ describe('renderMarkdown', () => {
 		expect(html).toContain('cd &lt;new-repo&gt;');
 	});
 
+	it('renders a mermaid block as labelled source (no client diagram engine)', () => {
+		const src = ['```mermaid', 'graph TD', 'A["start"] --> B["end"]', '```'].join('\n');
+		const html = renderMarkdown(src);
+		expect(html).toContain('<figure class="diagram-fallback">');
+		expect(html).toContain('<figcaption class="diagram-note">Diagram');
+		// The diagram source is preserved as an escaped mermaid code block.
+		expect(html).toContain('<pre><code class="language-mermaid">');
+		expect(html).toContain('A[&quot;start&quot;] --&gt; B[&quot;end&quot;]');
+	});
+
 	it('renders nested unordered lists by indentation', () => {
 		const src = ['- parent', '  - child', '- sibling'].join('\n');
 		const html = renderMarkdown(src);
