@@ -1,12 +1,9 @@
 <script lang="ts">
 	import Markdown from '$lib/components/Markdown.svelte';
 	import SourceLink from '$lib/components/SourceLink.svelte';
-	import { makeLinkResolver } from '$lib/docs/registry';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
-
-	const resolveLink = $derived(makeLinkResolver(data.sourcePath));
 </script>
 
 <svelte:head>
@@ -18,6 +15,8 @@
 	<nav class="text-surface-500 mb-6 text-sm">
 		<a class="hover:text-primary-500 underline-offset-2 hover:underline" href="/reference">Reference sheets</a>
 	</nav>
-	<Markdown source={data.raw} {resolveLink} />
+	<!-- Pre-rendered, Shiki-highlighted HTML from +page.server.ts (build time):
+	     ships highlighted markup with zero client-side Shiki. -->
+	<Markdown html={data.html} />
 	<SourceLink sourcePath={data.sourcePath} />
 </main>

@@ -27,6 +27,18 @@
 // tag set is produced, so angle-placeholders and brace tokens render literally
 // and the output is safe for {@html}. Link hrefs are scheme-checked (http/https/
 // mailto/anchor/relative only) so no javascript:/data: URL can ride through.
+//
+// SYNTAX HIGHLIGHTING: fenced code is highlighted with Shiki's dual-theme output
+// (see the `pre.shiki` cascade in src/app.css). `renderMarkdown` is async so the
+// Shiki highlighter (whose grammar/theme JSON loads lazily) can be awaited ONCE
+// per call; the highlighter's own `codeToHtml` is synchronous, so the block
+// renderer below stays synchronous — it just receives a ready `highlight`
+// closure. Highlighting runs at LOAD/BUILD time (the reference pages are
+// prerendered), so the static output ships highlighted HTML and NO Shiki grammar
+// or theme JSON reaches the client. Shiki is imported dynamically so it lands in
+// its own (vendor-shiki) chunk and is never part of the eager client graph.
+
+import type { Highlighter } from 'shiki';
 
 export interface MarkdownOptions {
 	/**
@@ -35,6 +47,78 @@ export interface MarkdownOptions {
 	 * canonical GitHub blob). Anchors, absolute URLs, and mailto are left as-is.
 	 */
 	resolveLink?: (href: string) => string;
+}
+
+/** Highlight one fenced-code run; returns null when the language is unsupported. */
+type HighlightFn = (code: string, lang: string) => string | null;
+
+/**
+ * Internal render context: the public {@link MarkdownOptions} plus the resolved
+ * (synchronous) Shiki highlight closure, threaded through the block renderer so
+ * fenced code — including code nested in lists or blockquotes — is highlighted.
+ */
+interface RenderContext extends MarkdownOptions {
+	highlight?: HighlightFn;
+}
+
+// Fenced languages we ship grammars for. Anything else falls back to a plain,
+// escaped <pre><code> (renderMarkdown never throws on an unknown fence language).
+const SHIKI_LANGS = ['python', 'bash', 'json', 'yaml'] as const;
+// Dual-theme keys MUST be `light` / `dark`: with `defaultColor: false` Shiki
+// emits per-token `--shiki-light` / `--shiki-dark` (+ `-bg`) CSS variables named
+// after these keys, which is exactly what the `pre.shiki` cascade in app.css
+// reads. github-light / github-dark is a legible, high-contrast AA pair.
+const SHIKI_THEMES = { light: 'github-light', dark: 'github-dark' } as const;
+// Normalize common fence aliases to a loaded grammar id.
+const SHIKI_LANG_BY_ALIAS: Record<string, (typeof SHIKI_LANGS)[number]> = {
+	python: 'python',
+	py: 'python',
+	bash: 'bash',
+	sh: 'bash',
+	shell: 'bash',
+	zsh: 'bash',
+	json: 'json',
+	yaml: 'yaml',
+	yml: 'yaml',
+};
+
+// Cached highlighter singleton. Shiki is imported DYNAMICALLY so it — and all of
+// its `@shikijs/*` grammar/theme/engine subpackages — lands in a lazy
+// `vendor-shiki` chunk (see the manualChunks split in vite.config.ts) rather than
+// the eager client runtime chunk. It loads only if this code actually runs; on
+// prerendered pages it runs at BUILD, so nothing ships to the client. Only the
+// four requested grammars + two themes are ever instantiated.
+let highlighterPromise: Promise<Highlighter> | null = null;
+function getHighlighter(): Promise<Highlighter> {
+	if (!highlighterPromise) {
+		highlighterPromise = import('shiki').then(({ createHighlighter }) =>
+			createHighlighter({ themes: [SHIKI_THEMES.light, SHIKI_THEMES.dark], langs: [...SHIKI_LANGS] }),
+		);
+	}
+	return highlighterPromise;
+}
+
+/**
+ * Resolve the synchronous per-block highlight closure. If Shiki cannot load (or a
+ * block trips it), the closure returns null and the caller emits a plain escaped
+ * <pre><code> — highlighting is best-effort and never blocks a render.
+ */
+async function resolveHighlight(): Promise<HighlightFn | undefined> {
+	let highlighter: Highlighter;
+	try {
+		highlighter = await getHighlighter();
+	} catch {
+		return undefined;
+	}
+	return (code, rawLang) => {
+		const lang = SHIKI_LANG_BY_ALIAS[(rawLang ?? '').trim().toLowerCase()];
+		if (!lang) return null;
+		try {
+			return highlighter.codeToHtml(code, { lang, themes: SHIKI_THEMES, defaultColor: false });
+		} catch {
+			return null;
+		}
+	};
 }
 
 const ESCAPE_MAP: Record<string, string> = {
@@ -169,7 +253,7 @@ interface ListItem {
 	content: string[];
 }
 
-function renderListItemContent(lines: string[], options: MarkdownOptions): string {
+function renderListItemContent(lines: string[], options: RenderContext): string {
 	// Task-list checkbox on the first line.
 	const first = lines[0] ?? '';
 	const task = first.match(/^\[([ xX])\]\s+(.*)$/);
@@ -189,7 +273,7 @@ function renderListItemContent(lines: string[], options: MarkdownOptions): strin
 }
 
 /** Build a possibly-nested list from a run of list lines. */
-function renderList(items: ListItem[], options: MarkdownOptions): string {
+function renderList(items: ListItem[], options: RenderContext): string {
 	let html = '';
 	let i = 0;
 	while (i < items.length) {
@@ -211,7 +295,7 @@ function renderList(items: ListItem[], options: MarkdownOptions): string {
 }
 
 /** Top-level block renderer. */
-function renderBlocks(lines: string[], options: MarkdownOptions): string {
+function renderBlocks(lines: string[], options: RenderContext): string {
 	const out: string[] = [];
 	let i = 0;
 
@@ -236,8 +320,17 @@ function renderBlocks(lines: string[], options: MarkdownOptions): string {
 				i++;
 			}
 			i++; // skip closing fence
+			const code = buf.join('\n');
+			// Highlight known languages via Shiki (pre.shiki dual-theme output);
+			// fall back to a plain, escaped <pre><code> for unknown/absent langs so
+			// an unfamiliar fence never throws and braces/angle-brackets stay literal.
+			const highlighted = options.highlight?.(code, lang);
+			if (highlighted) {
+				out.push(highlighted);
+				continue;
+			}
 			const cls = lang ? ` class="language-${escapeAttr(lang)}"` : '';
-			out.push(`<pre><code${cls}>${escapeHtml(buf.join('\n'))}\n</code></pre>`);
+			out.push(`<pre><code${cls}>${escapeHtml(code)}\n</code></pre>`);
 			continue;
 		}
 
@@ -337,10 +430,18 @@ function renderBlocks(lines: string[], options: MarkdownOptions): string {
 	return out.join('\n');
 }
 
-/** Render a markdown source string to safe HTML for the .prose container. */
-export function renderMarkdown(src: string, options: MarkdownOptions = {}): string {
+/**
+ * Render a markdown source string to safe HTML for the .prose container.
+ *
+ * Async because fenced code is highlighted with Shiki, whose grammar/theme JSON
+ * loads lazily. Prefer calling this at LOAD/BUILD time (see the prerendered
+ * reference [slug] +page.ts) so highlighted HTML is baked into the static output
+ * and no Shiki payload ships to the client.
+ */
+export async function renderMarkdown(src: string, options: MarkdownOptions = {}): Promise<string> {
 	// Normalize newlines; strip a leading YAML frontmatter block if present.
 	let text = src.replace(/\r\n?/g, '\n');
 	text = text.replace(/^---\n[\s\S]*?\n---\n/, '');
-	return renderBlocks(text.split('\n'), options);
+	const highlight = await resolveHighlight();
+	return renderBlocks(text.split('\n'), { ...options, highlight });
 }

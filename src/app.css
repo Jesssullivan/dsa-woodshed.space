@@ -149,6 +149,7 @@ samp,
    element, at any breakpoint. Long lines wrap on word boundaries; URLs
    and other unbreakable tokens use overflow-wrap: anywhere. */
 pre.shiki {
+	margin: 1.25em 0;
 	padding: 0.875rem 1rem;
 	border-radius: 0.5rem;
 	white-space: pre-wrap;
@@ -251,10 +252,13 @@ pre.shiki span {
 }
 
 /* ===== Long-form doc prose (reference sheets rendered by $lib/docs/markdown.ts).
-   The renderer emits headings, fenced <pre><code>, GFM tables, and disabled
-   task-list checkboxes; the base .prose block above styled only marketing copy,
-   so these rules cover the documentation shapes. No Shiki here — code blocks are
-   plain, monospace, and wrap (no inner scrollbars). ===== */
+   The renderer emits headings, fenced code, GFM tables, and disabled task-list
+   checkboxes; the base .prose block above styled only marketing copy, so these
+   rules cover the documentation shapes. Fenced code in a known language is
+   highlighted by Shiki and owned by the `pre.shiki` dual-theme cascade above;
+   the `.prose pre:not(.shiki)` rules below style only the plain, escaped
+   fallback blocks (unknown/absent fence language). Both wrap rather than scroll
+   (no inner scrollbars). ===== */
 .prose h1,
 .prose h2,
 .prose h3,
@@ -278,7 +282,7 @@ pre.shiki span {
 	font-size: 1.05rem;
 }
 
-.prose pre {
+.prose pre:not(.shiki) {
 	margin: 1.25em 0;
 	padding: 0.875rem 1rem;
 	border-radius: 0.5rem;
@@ -290,7 +294,7 @@ pre.shiki span {
 	font-size: 0.8125rem;
 	font-family: 'FiraCode Nerd Font Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
-.prose pre code {
+.prose pre:not(.shiki) code {
 	background: none;
 	padding: 0;
 	font-size: inherit;

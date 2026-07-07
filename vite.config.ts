@@ -121,8 +121,20 @@ export default defineConfig({
 					if (!id.includes('node_modules')) return undefined;
 					// effect is large and pulled into the client runtime.
 					if (id.includes('/effect/')) return 'vendor-effect';
-					// shiki ships big grammar/theme JSON when used client-side.
-					if (id.includes('/shiki/')) return 'vendor-shiki';
+					// Shiki ships big grammar/theme JSON. Isolate the WHOLE stack —
+					// `shiki` itself plus the scoped `@shikijs/*` subpackages (core,
+					// engines, grammars, themes, textmate) and the oniguruma regex
+					// packages — into one lazy chunk. Matching only `/shiki/` misses
+					// `@shikijs/*` + `oniguruma*`, which then merge into the shared
+					// runtime chunk and load eagerly on every page.
+					if (
+						id.includes('/shiki/') ||
+						id.includes('/@shikijs/') ||
+						id.includes('/oniguruma-') ||
+						id.includes('/vscode-textmate/')
+					) {
+						return 'vendor-shiki';
+					}
 					return undefined;
 				},
 			},
