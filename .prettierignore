@@ -1,0 +1,8 @@
+build
+.svelte-kit
+node_modules
+static
+*.md
+# Authored content mirrored from the study packet repo — not our style domain.
+src/content
+pnpm-lock.yaml

@@ -1,0 +1,21 @@
+{
+	"schema_version": 1,
+	"repo": {
+		"name": "dsa-woodshed.space",
+		"domain": "dsa-woodshed.space",
+		"description": "The DSA Woodshed — a static SvelteKit reading surface for the DSA study packet."
+	},
+	"taxonomy": {
+		"primary_role": "static-site",
+		"layers": ["static-site"]
+	},
+	"content": {
+		"authority_repo": "Jesssullivan/dsa-study-packet",
+		"note": "Prose and reference sheets are authored in the study-packet repo and rendered here. Edit/view links resolve there (see src/lib/repo.ts)."
+	},
+	"boundaries": {
+		"owns_runtime_backend": false,
+		"owns_auth": false,
+		"owns_payments": false
+	}
+}
