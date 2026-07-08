@@ -6,4 +6,7 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = () => ({
 	title: 'Page not found',
 	summary: 'That page does not exist on The DSA Woodshed. Head back to the home page or browse the reference sheets.',
+	// Pages serves this prerendered file for every unknown URL — without the
+	// robots gate it is an indexable soft-404.
+	noindex: true,
 });

@@ -90,6 +90,39 @@ describe('renderMarkdown', () => {
 		expect(html).toContain('plain &lt;text&gt; here');
 	});
 
+	it('strips mkdocs-material icon shortcodes and attr_list suffixes from prose', async () => {
+		const src =
+			':material-rocket-launch:{ .lg .middle } **Start drilling**\n\n[:octicons-arrow-right-24: Algorithms](x.md)\n\n[Download](y.md){ .md-button .md-button--primary }';
+		const html = await renderMarkdown(src);
+		expect(html).not.toContain(':material-');
+		expect(html).not.toContain(':octicons-');
+		expect(html).not.toContain('{ .');
+		expect(html).toContain('<strong>Start drilling</strong>');
+		expect(html).toContain('>Algorithms</a>');
+	});
+
+	it('keeps icon-shortcode-shaped text inside code spans verbatim', async () => {
+		const html = await renderMarkdown('use `:material-download:` literally');
+		expect(html).toContain('<code>:material-download:</code>');
+	});
+
+	it('unwraps mkdocs-material grid-cards wrappers instead of escaping them', async () => {
+		const src = '<div class="grid cards" markdown>\n\n- **Card one**\n- **Card two**\n\n</div>';
+		const html = await renderMarkdown(src);
+		expect(html).not.toContain('&lt;div');
+		expect(html).not.toContain('grid cards');
+		expect(html).toContain('<li><strong>Card one</strong></li>');
+	});
+
+	it('dedupes repeated heading ids with -N suffixes, matching extractHeadings', async () => {
+		const src = '# Title\n\n## Complexity\n\n## Examples\n\n## Complexity';
+		const html = await renderMarkdown(src);
+		expect(html).toContain('id="complexity"');
+		expect(html).toContain('id="complexity-1"');
+		const slugs = extractHeadings(src).map((h) => h.slug);
+		expect(slugs).toEqual(['title', 'complexity', 'examples', 'complexity-1']);
+	});
+
 	it('renders nested unordered lists by indentation', async () => {
 		const src = ['- parent', '  - child', '- sibling'].join('\n');
 		const html = await renderMarkdown(src);

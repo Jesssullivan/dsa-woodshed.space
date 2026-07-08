@@ -311,6 +311,17 @@ const entryByPacketPath = (() => {
 	return map;
 })();
 
+// Special-case packet paths with no synced entry but a better target than a
+// GitHub blob: the routed section indexes (their mkdocs stubs are generated —
+// docs/algorithms/index.md is gitignored, so its blob URL is a hard 404) and
+// the generated booklet PDF (never in git; the packet's Releases page carries
+// it from the first CalVer release onward).
+const SPECIAL_PACKET_ROUTES = new Map<string, string>([
+	['docs/algorithms/index.md', '/algorithms'],
+	['docs/reference/index.md', '/reference'],
+	['docs/assets/booklet.pdf', `${REPO_URL}/releases/latest`],
+]);
+
 /**
  * Build a link resolver for one entry: resolves its relative markdown links
  * against the packet tree, then routes them on-site (entryHref, hash preserved)
@@ -328,6 +339,8 @@ export function makeLinkResolver(sourcePath: string): (href: string) => string {
 		const resolved = normalizeJoin(dirSegments, pathPart);
 		const entry = entryByPacketPath.get(resolved);
 		if (entry) return `${entryHref(entry)}${hash}`;
+		const special = SPECIAL_PACKET_ROUTES.get(resolved);
+		if (special) return `${special}${hash}`;
 		return `${REPO_URL}/blob/${REPO_DEFAULT_BRANCH}/${resolved}${hash}`;
 	};
 }

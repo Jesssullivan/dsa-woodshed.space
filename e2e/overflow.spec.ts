@@ -14,7 +14,17 @@ const breakpoints = [
 // Content routes gained the IA nav shell (persistent sidebar at `lg`, a
 // per-page TOC rail at `xl`) — check them at the same breakpoints so a future
 // layout change here gets the same overflow guard the home page has.
-const routes = ['/', '/reference', '/reference/algorithm-templates', '/guide/interview-practice-evidence'];
+const routes = [
+	'/',
+	'/reference',
+	'/reference/algorithm-templates',
+	'/guide/interview-practice-evidence',
+	// pymdownx-heavy raw-lane pages: stacked content tabs, admonitions, and
+	// indented tables are the widest constructs the renderer emits.
+	'/guide/getting-started',
+	'/guide/learning-paths',
+	'/guide/when-to-use-what',
+];
 
 for (const bp of breakpoints) {
 	for (const route of routes) {

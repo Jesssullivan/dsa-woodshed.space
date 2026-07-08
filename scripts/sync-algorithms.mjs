@@ -241,7 +241,11 @@ export function syncAlgorithms({ packetPath, contentDir, mkdirSync, writeFileSyn
 				order: i + 1,
 				out,
 				sourcePath: relPath,
-				inputs: [relPath],
+				// docs/algorithms/** is mkdocs gen-files output, gitignored in the
+				// packet — a blob URL for it is always a 404. Registering the alias
+				// keeps cross-references (learning-paths links every drill this way)
+				// on the live on-site route instead.
+				inputs: [relPath, `docs/algorithms/${topic}/${problem}.md`],
 				sha256: sha256(body),
 			});
 		});

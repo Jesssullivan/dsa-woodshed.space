@@ -98,3 +98,12 @@ describe('display copy', () => {
 		}
 	});
 });
+
+describe('makeLinkResolver special-case packet paths', () => {
+	it('routes generated section indexes on-site and the booklet to Releases', () => {
+		const resolve = makeLinkResolver('docs/guide/getting-started.md');
+		expect(resolve('../algorithms/index.md')).toBe('/algorithms');
+		expect(resolve('../reference/index.md')).toBe('/reference');
+		expect(resolve('../assets/booklet.pdf')).toMatch(/\/releases\/latest$/);
+	});
+});
