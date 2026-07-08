@@ -40,15 +40,24 @@
 		description: SITE_DESCRIPTION,
 		inLanguage: 'en',
 	};
+
+	// Per-page SEO: routes expose `title` / `summary` from their load functions
+	// (see App.PageData); this ONE layout-level <SEOHead> derives its head values
+	// from them, so every prerendered page carries exactly one title/description
+	// — and matching og:/twitter: pairs — with the site generics only as the
+	// fallback (home page, error surface).
+	const headTitle = $derived(page.data.title ? `${page.data.title} — ${SITE_NAME}` : SITE_TITLE);
+	const headDescription = $derived(page.data.summary || SITE_DESCRIPTION);
 </script>
 
-<!-- House-canon SEO via the extracted <SEOHead> (TIN-2225). Per-page <title>
-     blocks (e.g. +page.svelte) still override this layout-level default. -->
+<!-- House-canon SEO via the extracted <SEOHead> (TIN-2225). The single head
+     block for every route — pages contribute via load data, never their own
+     <svelte:head> meta, so built pages cannot stack duplicate descriptions. -->
 <SEOHead
-	title={SITE_TITLE}
-	description={SITE_DESCRIPTION}
+	title={headTitle}
+	description={headDescription}
 	image={OG_IMAGE}
-	imageAlt={SITE_TITLE}
+	imageAlt={headTitle}
 	siteName={SITE_NAME}
 	origin={SITE_URL}
 	{jsonLd}

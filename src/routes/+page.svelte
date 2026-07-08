@@ -25,11 +25,6 @@
 	const sheets = sheetsInOrder();
 </script>
 
-<svelte:head>
-	<title>The DSA Woodshed — a reading surface for the DSA study packet</title>
-	<meta name="description" content={brand.blurb} />
-</svelte:head>
-
 <main class="mx-auto max-w-5xl px-6 py-16 md:py-24" data-pagefind-body>
 	<header class="max-w-3xl space-y-4">
 		<p class="text-surface-500 text-xs tracking-widest uppercase">{brand.tier}</p>

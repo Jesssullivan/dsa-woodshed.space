@@ -5,11 +5,6 @@
 	const sheets = sheetsInOrder();
 </script>
 
-<svelte:head>
-	<title>Reference sheets — The DSA Woodshed</title>
-	<meta name="description" content="Copy-ready algorithm reference sheets from the DSA study packet." />
-</svelte:head>
-
 <!-- data-pagefind-body: unlike the /algorithms hubs, this index carries the
      hand-curated per-sheet summaries (registry SUMMARIES) that render nowhere
      else, so it must be indexed for that editorial copy to be searchable.

@@ -12,11 +12,6 @@
 	const adjacent = $derived(neighbors('reference', data.slug));
 </script>
 
-<svelte:head>
-	<title>{data.title} — The DSA Woodshed</title>
-	<meta name="description" content={data.summary} />
-</svelte:head>
-
 <main class="mx-auto max-w-5xl py-16">
 	<Breadcrumbs
 		items={[

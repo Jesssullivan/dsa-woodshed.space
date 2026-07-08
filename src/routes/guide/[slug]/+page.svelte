@@ -12,11 +12,6 @@
 	const adjacent = $derived(neighbors('guide', data.slug));
 </script>
 
-<svelte:head>
-	<title>{data.title} — The DSA Woodshed</title>
-	{#if data.summary}<meta name="description" content={data.summary} />{/if}
-</svelte:head>
-
 <main class="mx-auto max-w-5xl py-16">
 	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Guide' }, { label: data.title }]} />
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">

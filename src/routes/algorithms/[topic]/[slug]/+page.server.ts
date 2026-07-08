@@ -20,10 +20,16 @@ export const load: PageServerLoad = async ({ params }) => {
 	if (raw === undefined) throw error(404, `No synced body for algorithm: ${params.topic}/${params.slug}`);
 	const html = await renderMarkdown(raw, { resolveLink: makeLinkResolver(entry.sourcePath) });
 	return {
-		topic: entry.topic,
-		topicTitle: entry.topicTitle,
+		// getAlgorithm matched on params.topic, so these are the params' values;
+		// the fallback mirrors the registry's own `topicTitle ?? topic` idiom
+		// and keeps both strings (the breadcrumb trail needs real labels).
+		topic: params.topic,
+		topicTitle: entry.topicTitle ?? params.topic,
 		title: entry.title,
-		summary: entry.summary,
+		// The auto-derived docstring summary can be empty; fall back to a
+		// page-specific line so the layout <SEOHead> never emits the site
+		// generic on a problem page.
+		summary: entry.summary || `${entry.title} — from the DSA study packet.`,
 		sourcePath: entry.sourcePath,
 		html,
 	};

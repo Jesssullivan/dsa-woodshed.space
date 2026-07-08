@@ -1,19 +1,19 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 </script>
 
-<svelte:head>
-	<title>{data.title} — Algorithms — The DSA Woodshed</title>
-	<meta name="description" content="{data.title} implementations from the DSA study packet." />
-</svelte:head>
-
 <!-- No data-pagefind-body — deliberate; see /algorithms/+page.svelte. -->
 <main class="mx-auto max-w-3xl px-6 py-16">
-	<nav class="text-surface-500 mb-6 text-sm">
-		<a class="hover:text-primary-500 underline-offset-2 hover:underline" href="/algorithms">Algorithms</a>
-	</nav>
+	<Breadcrumbs
+		items={[
+			{ label: 'The DSA Woodshed', href: '/' },
+			{ label: 'Algorithms', href: '/algorithms' },
+			{ label: data.title },
+		]}
+	/>
 	<h1 class="text-3xl font-bold">{data.title}</h1>
 	<ul class="mt-8 space-y-6">
 		{#each data.entries as entry (entry.slug)}

@@ -5,14 +5,6 @@
 	const total = topics.reduce((sum, t) => sum + t.entries.length, 0);
 </script>
 
-<svelte:head>
-	<title>Algorithms — The DSA Woodshed</title>
-	<meta
-		name="description"
-		content="Every implementation in the DSA study packet, one page per problem, grouped by topic."
-	/>
-</svelte:head>
-
 <!-- No data-pagefind-body — deliberate: this hub (and each topic index) is
      just links whose titles are fully indexed on the leaf problem pages;
      indexing it would rank the hub above the actual content for every topic
