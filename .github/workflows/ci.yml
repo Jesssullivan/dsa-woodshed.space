@@ -22,10 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check out the study packet
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Jesssullivan/dsa-study-packet
           path: dsa-study-packet

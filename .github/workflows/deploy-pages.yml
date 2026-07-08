@@ -43,13 +43,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Content source: the public study packet. The site renders content
       # synced from it; without this checkout + the sync step below, the
       # $content imports cannot resolve and the build is guaranteed red.
       - name: Check out the study packet
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Jesssullivan/dsa-study-packet
           path: dsa-study-packet
