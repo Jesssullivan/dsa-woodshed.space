@@ -17,11 +17,15 @@ name: Deploy to GitHub Pages (DRAFT)
 #
 # CONTENT SYNC: src/content is generated — a fresh checkout carries only the
 # committed .manifest.json, and `pnpm run build` does NOT sync, so the build
-# job below checks out the public packet repo and runs `pnpm run sync-content`
+# job below checks out the packet repo and runs `pnpm run sync-content`
 # (the WOODSHED_PACKET_PATH contract in scripts/sync-content.mjs) before
-# building. The packet is public, so the default GITHUB_TOKEN suffices.
+# building. While the packet is PRIVATE the checkout authenticates with the
+# read-only deploy key in the PACKET_DEPLOY_KEY secret; once the packet goes
+# public at launch the ssh-key line can be dropped (GITHUB_TOKEN suffices).
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -49,6 +53,7 @@ jobs:
         with:
           repository: Jesssullivan/dsa-study-packet
           path: dsa-study-packet
+          ssh-key: ${{ secrets.PACKET_DEPLOY_KEY }}
 
       - uses: pnpm/action-setup@v4
         with:
