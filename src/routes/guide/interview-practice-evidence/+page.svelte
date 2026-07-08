@@ -7,7 +7,6 @@
 	import TableOfContents from '$lib/components/TableOfContents.svelte';
 	import Content, { metadata } from '$content/guide/interview-practice-evidence.svx';
 	import { slugifyHeadings } from '$lib/actions/slugify-headings';
-	import { extractHeadings } from '$lib/docs/markdown';
 	import { entryHref, neighbors } from '$lib/docs/registry';
 	import type { PageData } from './$types';
 
@@ -16,7 +15,6 @@
 	// The canonical source lives in the content repo (Jesssullivan/dsa-study-packet).
 	const sourcePath = 'docs/guide/interview-practice-evidence.md';
 	const title = (metadata.title as string) ?? 'Interview practice evidence';
-	const headings = $derived(extractHeadings(data.raw));
 	const adjacent = $derived(neighbors('guide', 'interview-practice-evidence'));
 </script>
 
@@ -42,7 +40,7 @@
 			/>
 		</article>
 		<aside class="hidden xl:sticky xl:top-20 xl:block" aria-label="Page sections">
-			<TableOfContents {headings} />
+			<TableOfContents headings={data.headings} />
 		</aside>
 	</div>
 </main>

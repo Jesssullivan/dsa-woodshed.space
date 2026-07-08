@@ -152,8 +152,8 @@
 										onclick={closeAndReset}
 									>
 										<p class="text-sm font-semibold">{result.meta.title ?? result.url}</p>
-										<!-- eslint-disable-next-line svelte/no-at-html-tags -- Pagefind's own excerpt HTML (only <mark> tags), from our own indexed build output. -->
 										<p class="text-surface-600-400 mt-0.5 line-clamp-2 text-xs leading-relaxed">
+											<!-- eslint-disable-next-line svelte/no-at-html-tags -- Pagefind's own excerpt HTML (only <mark> tags), from our own indexed build output. -->
 											{@html result.excerpt}
 										</p>
 									</a>

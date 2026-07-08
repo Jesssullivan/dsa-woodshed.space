@@ -4,14 +4,11 @@
 	import PrevNext from '$lib/components/PrevNext.svelte';
 	import SourceLink from '$lib/components/SourceLink.svelte';
 	import TableOfContents from '$lib/components/TableOfContents.svelte';
-	import { extractHeadings } from '$lib/docs/markdown';
-	import { entryHref, makeLinkResolver, neighbors } from '$lib/docs/registry';
+	import { entryHref, neighbors } from '$lib/docs/registry';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
 
-	const resolveLink = $derived(makeLinkResolver(data.sourcePath));
-	const headings = $derived(extractHeadings(data.raw));
 	const adjacent = $derived(neighbors('reference', data.slug));
 </script>
 
@@ -30,7 +27,9 @@
 	/>
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">
 		<article class="min-w-0" data-pagefind-body>
-			<Markdown source={data.raw} {resolveLink} />
+			<!-- Pre-rendered, Shiki-highlighted HTML from +page.server.ts (build time):
+			     ships highlighted markup with zero client-side Shiki. -->
+			<Markdown html={data.html} />
 			<SourceLink sourcePath={data.sourcePath} />
 			<PrevNext
 				prev={adjacent.prev && { title: adjacent.prev.title, href: entryHref(adjacent.prev) }}
@@ -38,7 +37,7 @@
 			/>
 		</article>
 		<aside class="hidden xl:sticky xl:top-20 xl:block" aria-label="Page sections">
-			<TableOfContents {headings} />
+			<TableOfContents headings={data.headings} />
 		</aside>
 	</div>
 </main>

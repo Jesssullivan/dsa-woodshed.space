@@ -1,22 +1,26 @@
 <script lang="ts">
 	// PROVENANCE: adapted from greatfallstoolbus.org/src/lib/components/Markdown.svelte.
-	// Renders reference-sheet markdown through the dependency-free house renderer
-	// ($lib/docs/markdown.ts) into the `.prose` block in src/app.css. The renderer
-	// HTML-escapes every text run and emits only a fixed tag set, so `{@html}` here
-	// is safe (no raw doc HTML is trusted), and braces / angle-brackets in the
-	// fenced Python render as literal text.
-	import { renderMarkdown, type MarkdownOptions } from '$lib/docs/markdown';
+	// Presentational sink for reference-sheet markdown: it renders HTML that was
+	// already produced (and Shiki-highlighted) by the house renderer
+	// ($lib/docs/markdown.ts) at BUILD time in the reference [slug] +page.server.ts.
+	//
+	// It deliberately does NOT import the renderer: renderMarkdown pulls in Shiki
+	// (grammar/theme/wasm), and importing it from a client component would drag
+	// that ~10 MB bundle into the browser. Keeping this component a pure `{@html}`
+	// wrapper is what lets the prerendered pages ship highlighted HTML with ZERO
+	// client-side Shiki. Do the highlighting in a server load, pass the HTML here.
+	//
+	// The renderer HTML-escapes every text run and emits only a fixed tag set
+	// (Shiki's token spans included), so `{@html}` here is safe — no raw doc HTML
+	// is trusted, and braces / angle-brackets in fenced code render as literal
+	// text.
 
 	interface Props {
-		/** Raw markdown source (a tracked reference sheet). */
-		source: string;
-		/** Resolve relative links to canonical URLs (see makeLinkResolver). */
-		resolveLink?: MarkdownOptions['resolveLink'];
+		/** Pre-rendered, Shiki-highlighted HTML for the `.prose` container. */
+		html: string;
 	}
 
-	let { source, resolveLink }: Props = $props();
-
-	const html = $derived(renderMarkdown(source, { resolveLink }));
+	let { html }: Props = $props();
 </script>
 
 <div class="prose max-w-none">
