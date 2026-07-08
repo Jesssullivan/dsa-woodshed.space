@@ -6,7 +6,6 @@
 	import SourceLink from '$lib/components/SourceLink.svelte';
 	import TableOfContents from '$lib/components/TableOfContents.svelte';
 	import Content, { metadata } from '$content/guide/interview-practice-evidence.svx';
-	import { slugifyHeadings } from '$lib/actions/slugify-headings';
 	import { entryHref, neighbors } from '$lib/docs/registry';
 	import type { PageData } from './$types';
 
@@ -18,19 +17,14 @@
 	const adjacent = $derived(neighbors('guide', 'interview-practice-evidence'));
 </script>
 
-<svelte:head>
-	<title>{title} — The DSA Woodshed</title>
-	<meta
-		name="description"
-		content="Why a good practice block is built from cold retrieval, think-aloud reps, observation stress, and tape review."
-	/>
-</svelte:head>
-
 <main class="mx-auto max-w-5xl py-16">
 	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Guide' }, { label: title }]} />
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">
 		<article class="min-w-0" data-pagefind-body>
-			<div class="prose max-w-none" use:slugifyHeadings>
+			<!-- Heading ids are stamped at build time by the mdsvex rehype
+			     heading-id plugin in svelte.config.js, so the TOC anchors below
+			     resolve in the static HTML with zero client JS. -->
+			<div class="prose max-w-none">
 				<Content />
 			</div>
 			<SourceLink {sourcePath} />

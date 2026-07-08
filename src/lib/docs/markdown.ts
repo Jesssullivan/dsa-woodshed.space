@@ -40,6 +40,12 @@
 
 import type { Highlighter } from 'shiki';
 
+// Shared with svelte.config.js's mdsvex rehype heading-id plugin (see the
+// header comment in ./slugify.js); re-exported so existing importers keep
+// reaching it through this module.
+import { slugify } from './slugify.js';
+export { slugify };
+
 export interface MarkdownOptions {
 	/**
 	 * Resolve a relative (non-http, non-anchor, non-mailto) link href, e.g. a
@@ -135,16 +141,6 @@ function escapeHtml(input: string): string {
 
 function escapeAttr(input: string): string {
 	return input.replace(/[&<>"]/g, (ch) => ESCAPE_MAP[ch]);
-}
-
-/** GitHub-style heading slug: lowercase, drop punctuation, collapse spaces to dashes. */
-export function slugify(text: string): string {
-	return text
-		.toLowerCase()
-		.replace(/`/g, '')
-		.replace(/[^\w\s-]/g, '')
-		.trim()
-		.replace(/\s+/g, '-');
 }
 
 const SAFE_SCHEME = /^(https?:|mailto:)/i;
