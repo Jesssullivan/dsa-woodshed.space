@@ -258,6 +258,9 @@ const SVX_HAZARDS = [
 	[/<script/i, '<script tag'],
 	[/\bon[a-z]+\s*=/i, 'on<event>= handler attribute'],
 	[/javascript:/i, 'javascript: URL'],
+	// Svelte evaluates {expression} at compile time — braces are code here, and
+	// the lane contract above already excludes brace-bearing prose.
+	[/[{}]/, 'Svelte interpolation brace'],
 ];
 
 function assertSvxSafe(text, input) {
