@@ -5,14 +5,6 @@
 	const total = topics.reduce((sum, t) => sum + t.entries.length, 0);
 </script>
 
-<svelte:head>
-	<title>Algorithms — The DSA Woodshed</title>
-	<meta
-		name="description"
-		content="Every implementation in the DSA study packet, one page per problem, grouped by topic."
-	/>
-</svelte:head>
-
 <main class="mx-auto max-w-3xl px-6 py-16">
 	<h1 class="text-3xl font-bold">Algorithms</h1>
 	<p class="text-surface-700 dark:text-surface-300 mt-3 leading-relaxed">

@@ -5,11 +5,6 @@
 	const sheets = sheetsInOrder();
 </script>
 
-<svelte:head>
-	<title>Reference sheets — The DSA Woodshed</title>
-	<meta name="description" content="Copy-ready algorithm reference sheets from the DSA study packet." />
-</svelte:head>
-
 <main class="mx-auto max-w-3xl py-16">
 	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Reference sheets' }]} />
 	<h1 class="text-3xl font-bold">Reference sheets</h1>

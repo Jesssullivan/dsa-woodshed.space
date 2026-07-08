@@ -11,6 +11,8 @@ export const load: PageLoad = async ({ params }) => {
 	return {
 		topic: group.topic,
 		title: group.title,
+		// Meta description for the layout <SEOHead> (see App.PageData).
+		summary: `${group.title} implementations from the DSA study packet.`,
 		entries: group.entries,
 	};
 };
