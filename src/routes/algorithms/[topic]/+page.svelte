@@ -9,6 +9,7 @@
 	<meta name="description" content="{data.title} implementations from the DSA study packet." />
 </svelte:head>
 
+<!-- No data-pagefind-body — deliberate; see /algorithms/+page.svelte. -->
 <main class="mx-auto max-w-3xl px-6 py-16">
 	<nav class="text-surface-500 mb-6 text-sm">
 		<a class="hover:text-primary-500 underline-offset-2 hover:underline" href="/algorithms">Algorithms</a>
