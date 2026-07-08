@@ -14,6 +14,12 @@ name: Deploy to GitHub Pages (DRAFT)
 #   1. Add `push: { branches: [main] }` to the `on:` block below.
 #   2. Enable Pages (Settings -> Pages -> Source: GitHub Actions).
 #   3. Confirm the CNAME (dsa-woodshed.space) matches the DNS target.
+#
+# CONTENT SYNC: src/content is generated — a fresh checkout carries only the
+# committed .manifest.json, and `pnpm run build` does NOT sync, so the build
+# job below checks out the public packet repo and runs `pnpm run sync-content`
+# (the WOODSHED_PACKET_PATH contract in scripts/sync-content.mjs) before
+# building. The packet is public, so the default GITHUB_TOKEN suffices.
 
 on:
   workflow_dispatch:
@@ -35,6 +41,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Content source: the public study packet. The site renders content
+      # synced from it; without this checkout + the sync step below, the
+      # $content imports cannot resolve and the build is guaranteed red.
+      - name: Check out the study packet
+        uses: actions/checkout@v4
+        with:
+          repository: Jesssullivan/dsa-study-packet
+          path: dsa-study-packet
+
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
@@ -46,6 +61,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Sync content from the study packet
+        run: pnpm run sync-content
+        env:
+          WOODSHED_PACKET_PATH: ${{ github.workspace }}/dsa-study-packet
 
       - name: Build static site (custom domain, base="")
         run: pnpm run build
