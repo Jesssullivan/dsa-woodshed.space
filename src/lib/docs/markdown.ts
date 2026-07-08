@@ -59,6 +59,14 @@ type HighlightFn = (code: string, lang: string) => string | null;
  */
 interface RenderContext extends MarkdownOptions {
 	highlight?: HighlightFn;
+	/**
+	 * Set once the first h1 of the document has been emitted; every later h1
+	 * demotes to h2 (the print-oriented sheets repeat `# Title (Page N of M)`
+	 * per printed page, but a web page gets exactly one h1). Mutable per-render
+	 * state: renderMarkdown builds a fresh context per call and the same object
+	 * threads through every recursive renderBlocks call.
+	 */
+	seenH1?: boolean;
 }
 
 // Fenced languages we ship grammars for. Anything else falls back to a plain,
@@ -168,12 +176,55 @@ interface InlineStores {
 const CODE_SENTINEL = (i: number) => ` C${i} `;
 const LINK_SENTINEL = (i: number) => ` L${i} `;
 
+// CommonMark 6.1 code spans: a run of N backticks opens a span closed by the
+// NEXT run of exactly N backticks; shorter/longer runs in between stay literal
+// (so ``a `b` c`` is ONE span — the docstring-style ``dp[mask][i]`` idiom the
+// synced sheets use). A span whose content starts AND ends with a space, and is
+// not only spaces, has one space stripped from each end (`` `x` `` → `x`).
+// A run with no matching closer stays literal text.
+function protectCodeSpans(text: string, stores: InlineStores): string {
+	let out = '';
+	let i = 0;
+	while (i < text.length) {
+		if (text[i] !== '`') {
+			out += text[i];
+			i++;
+			continue;
+		}
+		let open = i + 1;
+		while (open < text.length && text[open] === '`') open++;
+		const runLen = open - i;
+		// Find the next backtick run of EXACTLY the opener's length.
+		let close = -1;
+		for (let j = open; j < text.length; j++) {
+			if (text[j] !== '`') continue;
+			let end = j + 1;
+			while (end < text.length && text[end] === '`') end++;
+			if (end - j === runLen) {
+				close = j;
+				break;
+			}
+			j = end - 1;
+		}
+		if (close === -1) {
+			out += text.slice(i, open);
+			i = open;
+			continue;
+		}
+		let code = text.slice(open, close);
+		if (/^ .* $/.test(code) && code.trim() !== '') code = code.slice(1, -1);
+		out += CODE_SENTINEL(stores.code.push(escapeHtml(code)) - 1);
+		i = close + runLen;
+	}
+	return out;
+}
+
 // Protect-and-format one text run against a SHARED store, leaving code and link
 // sentinels unresolved so a link label's own code span resolves against the same
 // store at the single top-level restore (never a fresh, empty one).
 function formatInto(text: string, options: MarkdownOptions, stores: InlineStores): string {
 	// 1. Protect inline code first (content escaped, never re-parsed).
-	let out = text.replace(/`([^`]+)`/g, (_m, code: string) => CODE_SENTINEL(stores.code.push(escapeHtml(code)) - 1));
+	let out = protectCodeSpans(text, stores);
 
 	// 2. Protect links, building the anchor now (label recursively formatted with
 	//    the SAME store so a bolded or code-span label works).
@@ -211,6 +262,36 @@ const HEADING_RE = /^(#{1,6})\s+(.*?)\s*#*\s*$/;
 const HR_RE = /^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/;
 const LIST_RE = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
 const BLOCKQUOTE_RE = /^\s*>\s?(.*)$/;
+// mkdocs pymdownx constructs the packet guides rely on: '!!! type "Title"'
+// admonitions, '???'/'???+' collapsible details, '=== "Title"' content tabs.
+// Each has a 4-space-indented body that is dedented and re-rendered through
+// renderBlocks, so nested fences/tables get the full treatment (Shiki included).
+const ADMONITION_RE = /^(!!!|\?\?\?\+?)\s+(\w+)(?:\s+"([^"]*)")?\s*$/;
+const CONTENT_TAB_RE = /^===\s+"([^"]+)"\s*$/;
+
+/**
+ * Consume the indented body of a pymdownx block starting at `start`: blank
+ * lines pass through, and every non-blank line dedents by one level (4 spaces
+ * or a tab — deeper indentation keeps its remainder, so nested fences land at
+ * column 0 and nested lists keep their relative depth). The body ends at the
+ * first non-blank line indented less than one level.
+ */
+function collectIndentedBody(lines: string[], start: number): { body: string[]; next: number } {
+	const body: string[] = [];
+	let i = start;
+	while (i < lines.length) {
+		const l = lines[i];
+		if (/^\s*$/.test(l)) {
+			body.push('');
+		} else if (/^(?: {4}|\t)/.test(l)) {
+			body.push(l.replace(/^(?: {4}|\t)/, ''));
+		} else {
+			break;
+		}
+		i++;
+	}
+	return { body, next: i };
+}
 
 /** A table needs a header row with a pipe and a dash-separator row underneath. */
 function isTableSeparator(line: string): boolean {
@@ -344,10 +425,53 @@ function renderBlocks(lines: string[], options: RenderContext): string {
 			continue;
 		}
 
-		// Heading.
+		// pymdownx admonition ('!!! type "Title"') or collapsible details
+		// ('??? type "Title"', '???+' starts open). Untitled admonitions fall
+		// back to the capitalized type, matching pymdownx.
+		const adm = line.match(ADMONITION_RE);
+		if (adm) {
+			const kind = adm[1];
+			const type = adm[2].toLowerCase();
+			const title = adm[3] || type.charAt(0).toUpperCase() + type.slice(1);
+			const { body, next } = collectIndentedBody(lines, i + 1);
+			i = next;
+			const inner = renderBlocks(body, options);
+			if (kind === '!!!') {
+				out.push(
+					`<aside class="admonition ${type}"><p class="admonition-title">${renderInline(title, options)}</p>${inner}</aside>`,
+				);
+			} else {
+				out.push(
+					`<details class="admonition ${type}"${kind === '???+' ? ' open' : ''}><summary>${renderInline(title, options)}</summary>${inner}</details>`,
+				);
+			}
+			continue;
+		}
+
+		// pymdownx content tab ('=== "Title"'). This surface ships zero client
+		// JS for docs, so consecutive sibling tabs render STACKED — each a
+		// labelled section with every alternative visible — not as a tab strip.
+		const tab = line.match(CONTENT_TAB_RE);
+		if (tab) {
+			const { body, next } = collectIndentedBody(lines, i + 1);
+			i = next;
+			out.push(
+				`<section class="content-tab"><p class="content-tab-title">${renderInline(tab[1], options)}</p>${renderBlocks(body, options)}</section>`,
+			);
+			continue;
+		}
+
+		// Heading. Only the document's FIRST h1 keeps its level; repeats demote
+		// to h2 (see RenderContext.seenH1). The id stays slugified from the raw
+		// text either way, so anchors like #…-page-2-of-4 keep resolving, and
+		// extractHeadings applies the same rule so TOC depths match.
 		const heading = line.match(HEADING_RE);
 		if (heading) {
-			const level = heading[1].length;
+			let level = heading[1].length;
+			if (level === 1) {
+				if (options.seenH1) level = 2;
+				else options.seenH1 = true;
+			}
 			const text = heading[2];
 			out.push(`<h${level} id="${slugify(text)}">${renderInline(text, options)}</h${level}>`);
 			i++;
@@ -425,6 +549,8 @@ function renderBlocks(lines: string[], options: RenderContext): string {
 				HR_RE.test(l) ||
 				BLOCKQUOTE_RE.test(l) ||
 				LIST_RE.test(l) ||
+				ADMONITION_RE.test(l) ||
+				CONTENT_TAB_RE.test(l) ||
 				(l.includes('|') && i + 1 < lines.length && isTableSeparator(lines[i + 1]))
 			) {
 				break;
@@ -445,8 +571,8 @@ function renderBlocks(lines: string[], options: RenderContext): string {
  *
  * Async because fenced code is highlighted with Shiki, whose grammar/theme JSON
  * loads lazily. Prefer calling this at LOAD/BUILD time (see the prerendered
- * reference [slug] +page.ts) so highlighted HTML is baked into the static output
- * and no Shiki payload ships to the client.
+ * reference [slug] +page.server.ts) so highlighted HTML is baked into the static
+ * output and no Shiki payload ships to the client.
  */
 export async function renderMarkdown(src: string, options: MarkdownOptions = {}): Promise<string> {
 	// Normalize newlines; strip a leading YAML frontmatter block if present.
@@ -471,13 +597,15 @@ export interface Heading {
  * renderBlocks uses for heading `id`s (both call `slugify` on the raw heading
  * text), so a TOC link built from this list always resolves to a real anchor.
  * Headings inside fenced code blocks (e.g. a `#` shell comment) are skipped,
- * matching renderBlocks' own fence handling.
+ * matching renderBlocks' own fence handling — as is its demotion of every h1
+ * after the first to depth 2, so TOC depths mirror the rendered levels.
  */
 export function extractHeadings(src: string): Heading[] {
 	let text = src.replace(/\r\n?/g, '\n');
 	text = text.replace(/^---\n[\s\S]*?\n---\n/, '');
 	const headings: Heading[] = [];
 	let fenceMarker: string | null = null;
+	let seenH1 = false;
 	for (const line of text.split('\n')) {
 		if (fenceMarker) {
 			if (line.startsWith(fenceMarker)) fenceMarker = null;
@@ -490,8 +618,13 @@ export function extractHeadings(src: string): Heading[] {
 		}
 		const heading = line.match(HEADING_RE);
 		if (heading) {
+			let depth = heading[1].length;
+			if (depth === 1) {
+				if (seenH1) depth = 2;
+				else seenH1 = true;
+			}
 			headings.push({
-				depth: heading[1].length,
+				depth,
 				text: heading[2].replace(/[`*_]/g, '').trim(),
 				slug: slugify(heading[2]),
 			});

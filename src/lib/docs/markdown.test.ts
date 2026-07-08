@@ -134,6 +134,124 @@ describe('renderMarkdown', () => {
 	it('strips a leading YAML frontmatter block', async () => {
 		expect(await renderMarkdown('---\ntitle: x\n---\n# Body')).toBe('<h1 id="body">Body</h1>');
 	});
+
+	// CommonMark 6.1 code spans: the synced sheets carry docstring-style
+	// ``dp[mask][i]`` runs in prose (dp/traveling_salesman_dp, dp/edit_distance,
+	// graphs/network_delay_time), which a single-backtick-only pass garbles.
+	it('treats a double-backtick run as ONE code span, leaving no literal backticks', async () => {
+		const html = await renderMarkdown(
+			'``dp[mask][i]`` = minimum cost to visit the cities in `mask`, ending at city i.',
+		);
+		expect(html).toContain('<code>dp[mask][i]</code>');
+		expect(html).toContain('<code>mask</code>');
+		expect(html).not.toContain('`');
+		expect(html).not.toContain('<code> = minimum');
+	});
+
+	it('keeps shorter backtick runs literal inside a longer-run span', async () => {
+		const html = await renderMarkdown('``a `b` c`` ends and ``times[i] = (u, v, w)`` opens.');
+		expect(html).toContain('<code>a `b` c</code>');
+		expect(html).toContain('<code>times[i] = (u, v, w)</code>');
+	});
+
+	it('strips one space from a span that starts AND ends with a space', async () => {
+		expect(await renderMarkdown('`` `x` ``')).toContain('<code>`x`</code>');
+		// A single-space span has nothing on both sides to strip; it survives as-is.
+		expect(await renderMarkdown('a `` `` b')).toContain('<code> </code>');
+	});
+
+	it('leaves an unmatched backtick run literal', async () => {
+		expect(await renderMarkdown('a ``b` c')).toContain('a ``b` c');
+	});
+
+	// Print-oriented reference sheets repeat '# Title (Page N of M)' per printed
+	// page; the web surface keeps only the first h1 and demotes the rest to h2
+	// with the SAME slug id so existing anchors keep resolving.
+	it('demotes every h1 after the first to h2, keeping ids stable', async () => {
+		const src = ['# Sheet (Page 1 of 2)', 'a', '# Sheet (Page 2 of 2)', 'b'].join('\n');
+		const html = await renderMarkdown(src);
+		expect(html).toContain('<h1 id="sheet-page-1-of-2">');
+		expect(html).toContain('<h2 id="sheet-page-2-of-2">');
+		expect(html.match(/<h1[\s>]/g)).toHaveLength(1);
+	});
+
+	// pymdownx admonitions / details / content tabs (the mkdocs constructs the
+	// packet guides use), lowered to static semantic HTML with the 4-space body
+	// dedented and re-rendered so nested blocks get the full treatment.
+	it('renders a titled admonition as an aside with a title paragraph', async () => {
+		const src = ['!!! tip "The one-sentence loop"', '    Browse a pattern, then drill it.'].join('\n');
+		const html = await renderMarkdown(src);
+		expect(html).toContain('<aside class="admonition tip">');
+		expect(html).toContain('<p class="admonition-title">The one-sentence loop</p>');
+		expect(html).toContain('<p>Browse a pattern, then drill it.</p>');
+	});
+
+	it('titles an untitled admonition with the capitalized type', async () => {
+		const html = await renderMarkdown('!!! note\n    body');
+		expect(html).toContain('<aside class="admonition note">');
+		expect(html).toContain('<p class="admonition-title">Note</p>');
+	});
+
+	it('Shiki-highlights a fence nested inside an admonition body', async () => {
+		const src = [
+			'!!! note "Verify the install"',
+			'    ```bash',
+			'    just test',
+			'    ```',
+			'    A green `just test` means the environment is good to go.',
+		].join('\n');
+		const html = await renderMarkdown(src);
+		expect(html).toContain('<aside class="admonition note">');
+		expect(html).toContain('<pre class="shiki');
+		expect(html).toContain('just test');
+		expect(html).not.toContain('<p>```');
+	});
+
+	it('renders ??? as closed details and ???+ as open details', async () => {
+		const closed = await renderMarkdown(
+			'??? note "Drill commands (run in order)"\n    ```bash\n    just challenge arrays two_sum\n    ```',
+		);
+		expect(closed).toContain('<details class="admonition note"><summary>Drill commands (run in order)</summary>');
+		expect(closed).toContain('<pre class="shiki');
+		const open = await renderMarkdown('???+ tip "Expanded"\n    body');
+		expect(open).toContain('<details class="admonition tip" open><summary>Expanded</summary>');
+	});
+
+	it('renders consecutive === tabs as stacked sibling sections', async () => {
+		const src = [
+			'=== "direnv (recommended)"',
+			'',
+			'    ```bash',
+			'    direnv allow',
+			'    ```',
+			'',
+			'=== "uv only (no Nix)"',
+			'',
+			'    Run `uv sync --all-extras` yourself.',
+		].join('\n');
+		const html = await renderMarkdown(src);
+		expect(html.match(/<section class="content-tab">/g)).toHaveLength(2);
+		expect(html).toContain('<p class="content-tab-title">direnv (recommended)</p>');
+		expect(html).toContain('<p class="content-tab-title">uv only (no Nix)</p>');
+		expect(html).toContain('<pre class="shiki');
+		// Shiki tokenizes 'direnv allow' into separate spans; compare tag-stripped text.
+		expect(html.replace(/<[^>]+>/g, '')).toContain('direnv allow');
+		expect(html).not.toContain('<p>===');
+	});
+
+	it('renders an indented table inside a content tab as a real table', async () => {
+		const src = [
+			'=== "Arrays & Hashing"',
+			'',
+			'    | When You See... | Use This |',
+			'    |---|---|',
+			'    | "Top K / most frequent" | Bucket sort or heap |',
+		].join('\n');
+		const html = await renderMarkdown(src);
+		expect(html).toContain('<section class="content-tab">');
+		expect(html).toContain('<th>When You See...</th>');
+		expect(html).toContain('<td>&quot;Top K / most frequent&quot;</td>');
+	});
 });
 
 describe('slugify', () => {
@@ -165,6 +283,14 @@ describe('extractHeadings', () => {
 	it('strips inline code/bold/italic markers from the plain-text label', () => {
 		expect(extractHeadings('## The **daily** block')).toEqual([
 			{ depth: 2, text: 'The daily block', slug: 'the-daily-block' },
+		]);
+	});
+
+	it('demotes repeated h1s to depth 2, matching renderMarkdown output', () => {
+		const src = ['# Sheet (Page 1 of 2)', 'a', '# Sheet (Page 2 of 2)'].join('\n');
+		expect(extractHeadings(src)).toEqual([
+			{ depth: 1, text: 'Sheet (Page 1 of 2)', slug: 'sheet-page-1-of-2' },
+			{ depth: 2, text: 'Sheet (Page 2 of 2)', slug: 'sheet-page-2-of-2' },
 		]);
 	});
 });
