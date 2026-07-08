@@ -26,6 +26,9 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { join } from 'node:path';
+// The SAME implementation SearchDialog navigates with — imported, not
+// mirrored, so this gate cannot drift from the dialog's behavior.
+import { routeUrl } from '../src/lib/search/route-url.js';
 
 const BUILD_DIR = 'build';
 const PAGEFIND_DIR = join(BUILD_DIR, 'pagefind');
@@ -43,12 +46,6 @@ const LANES = ['/reference/', '/guide/', '/algorithms/'];
 function fail(message) {
 	console.error(`verify-search-index: ${message}`);
 	process.exitCode = 1;
-}
-
-// Mirrors SearchDialog.svelte's routeUrl(): the clean route the client
-// router will actually navigate to when a result is clicked.
-function stripHtmlSuffix(url) {
-	return url.replace(/\.html(?=$|[?#])/, '');
 }
 
 // A clean route is navigable iff the static host can serve it on a hard
@@ -97,7 +94,7 @@ if (!termFound) {
 }
 
 for (const lane of LANES) {
-	if (!urls.some((url) => stripHtmlSuffix(url).startsWith(lane))) {
+	if (!urls.some((url) => routeUrl(url).startsWith(lane))) {
 		fail(
 			`no indexed page under ${lane} — did data-pagefind-body drift off that ` +
 				'lane’s content wrapper? (see route comments)',
@@ -105,7 +102,7 @@ for (const lane of LANES) {
 	}
 }
 
-const deadUrls = urls.filter((url) => !routeIsPrerendered(stripHtmlSuffix(url)));
+const deadUrls = urls.filter((url) => !routeIsPrerendered(routeUrl(url)));
 if (deadUrls.length > 0) {
 	fail(
 		`${deadUrls.length} fragment URL(s) do not map to a prerendered route after ` +

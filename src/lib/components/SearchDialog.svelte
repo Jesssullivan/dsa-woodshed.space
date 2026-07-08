@@ -12,6 +12,7 @@
 	import { Search, X, Loader2 } from '@lucide/svelte';
 	import { Dialog } from '@skeletonlabs/skeleton-svelte';
 	import { base } from '$app/paths';
+	import { routeUrl } from '$lib/search/route-url.js';
 
 	// Minimal slice of Pagefind's browser Search API — see
 	// https://pagefind.app/docs/api/. Pagefind ships Node-side indexing types
@@ -97,17 +98,6 @@
 		open = false;
 		query = '';
 		results = [];
-	}
-
-	// Pagefind indexes the flat prerendered files, so result URLs carry a
-	// `.html` suffix (/algorithms/arrays/two_sum.html). The SvelteKit client
-	// router intercepts same-origin clicks and only the clean route was
-	// prerendered (…/two_sum/__data.json exists; …/two_sum.html__data.json does
-	// not), so navigating the raw URL lands on the 404 shell. Strip the suffix
-	// — preserving any ?query/#hash tail — so SPA navigation hits the real
-	// route; '/' (home) has no suffix and passes through untouched.
-	function routeUrl(url: string): string {
-		return url.replace(/\.html(?=$|[?#])/, '');
 	}
 </script>
 

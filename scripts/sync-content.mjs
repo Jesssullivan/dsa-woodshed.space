@@ -300,8 +300,13 @@ function packetJoin(dir, relPath) {
  * Both the mkdocs stub (`input`) and the real sheet (`sourcePath`) address the
  * same page, so either form of cross-reference lands on the synced route. */
 function planRoutes() {
+	// Keep in sync with ROUTED_SECTIONS in src/lib/docs/registry.ts: an unrouted
+	// section's on-site href would 404 (and, under handleHttpError:'fail', break
+	// the build), so those links stay on the GitHub blob fallback below.
+	const ROUTED_SECTIONS = new Set(['guide', 'algorithms', 'reference']);
 	const routes = new Map();
 	for (const item of PLAN) {
+		if (!ROUTED_SECTIONS.has(item.section)) continue;
 		const route = `/${item.section}/${item.slug}`;
 		routes.set(item.input, route);
 		routes.set(item.sourcePath, route);

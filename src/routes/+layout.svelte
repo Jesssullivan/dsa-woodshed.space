@@ -60,6 +60,7 @@
 	imageAlt={headTitle}
 	siteName={SITE_NAME}
 	origin={SITE_URL}
+	noindex={page.data.noindex ?? false}
 	{jsonLd}
 />
 

@@ -81,6 +81,10 @@ const config = {
 			// custom-domain pattern in greatfallstoolbus.org/svelte.config.js:49-70.
 			// A project-path GitHub Pages preview can still set BASE_PATH="/<repo>".
 			base: process.env.BASE_PATH ?? '',
+			// GitHub Pages serves the prerendered 404.html for ANY missing URL, at
+			// any path depth — depth-relative ./_app asset URLs only resolve for
+			// top-level misses, leaving deeper 404s unstyled and unhydrated.
+			relative: false,
 		},
 		prerender: {
 			// 'fail', deliberately (the kit default, explicit for the record):

@@ -66,6 +66,13 @@ type HighlightFn = (code: string, lang: string) => string | null;
 interface RenderContext extends MarkdownOptions {
 	highlight?: HighlightFn;
 	/**
+	 * Heading ids already emitted this render: repeats get a -1/-2 suffix so
+	 * anchors stay unique. Same policy as the svx lane's rehype plugin in
+	 * svelte.config.js and extractHeadings below — all three must agree or a
+	 * TOC link can silently scroll to the wrong heading.
+	 */
+	seenIds?: Set<string>;
+	/**
 	 * Set once the first h1 of the document has been emitted; every later h1
 	 * demotes to h2 (the print-oriented sheets repeat `# Title (Page N of M)`
 	 * per printed page, but a web page gets exactly one h1). Mutable per-render
@@ -232,10 +239,18 @@ function formatInto(text: string, options: MarkdownOptions, stores: InlineStores
 		return LINK_SENTINEL(stores.links.push(`<a href="${escapeAttr(url)}"${rel}>${labelHtml}</a>`) - 1);
 	});
 
-	// 3. Escape whatever prose is left (sentinels survive: they hold no metachars).
+	// 3. mkdocs-material debris this renderer has no use for: icon shortcodes
+	//    (:material-*:, :octicons-*:, ...) and attr_list suffixes ({ .md-button },
+	//    { .lg .middle }) are styling hints for material's own pipeline — strip
+	//    them so they never surface as literal prose. Runs after link/code
+	//    protection so a shortcode inside a code span stays verbatim.
+	out = out.replace(/:(?:material|octicons|fontawesome|simple)-[a-z0-9-]+:\s?/g, '');
+	out = out.replace(/\{ \.[a-zA-Z][^}\n]*\}/g, '');
+
+	// 4. Escape whatever prose is left (sentinels survive: they hold no metachars).
 	out = escapeHtml(out);
 
-	// 4. Emphasis on the escaped prose. Bold before italic.
+	// 5. Emphasis on the escaped prose. Bold before italic.
 	out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 	out = out.replace(/(^|[^\w*])\*([^*\n]+)\*/g, '$1<em>$2</em>');
 	out = out.replace(/(^|[^\w_])_([^_\n]+)_/g, '$1<em>$2</em>');
@@ -469,7 +484,12 @@ function renderBlocks(lines: string[], options: RenderContext): string {
 				else options.seenH1 = true;
 			}
 			const text = heading[2];
-			out.push(`<h${level} id="${slugify(text)}">${renderInline(text, options)}</h${level}>`);
+			const seenIds = (options.seenIds ??= new Set());
+			const base = slugify(text);
+			let id = base;
+			for (let n = 1; seenIds.has(id); n++) id = `${base}-${n}`;
+			seenIds.add(id);
+			out.push(`<h${level} id="${id}">${renderInline(text, options)}</h${level}>`);
 			i++;
 			continue;
 		}
@@ -574,6 +594,10 @@ export async function renderMarkdown(src: string, options: MarkdownOptions = {})
 	// Normalize newlines; strip a leading YAML frontmatter block if present.
 	let text = src.replace(/\r\n?/g, '\n');
 	text = text.replace(/^---\n[\s\S]*?\n---\n/, '');
+	// mkdocs-material "grid cards" wrapper: a raw-HTML div this renderer would
+	// otherwise escape into literal paragraph text. Dropping just the wrapper
+	// lines leaves the list inside to render as a normal <ul>.
+	text = text.replace(/^<div class="grid cards" markdown>\s*$/gm, '').replace(/^<\/div>\s*$/gm, '');
 	const highlight = await resolveHighlight();
 	return renderBlocks(text.split('\n'), { ...options, highlight });
 }
@@ -602,6 +626,10 @@ export function extractHeadings(src: string): Heading[] {
 	const headings: Heading[] = [];
 	let fenceMarker: string | null = null;
 	let seenH1 = false;
+	// Same repeat-id policy as renderBlocks and the svx rehype plugin
+	// (svelte.config.js): base, base-1, base-2 — a TOC built from this list must
+	// land on the id the renderer actually stamped.
+	const seenIds = new Set<string>();
 	for (const line of text.split('\n')) {
 		if (fenceMarker) {
 			if (line.startsWith(fenceMarker)) fenceMarker = null;
@@ -619,10 +647,14 @@ export function extractHeadings(src: string): Heading[] {
 				if (seenH1) depth = 2;
 				else seenH1 = true;
 			}
+			const base = slugify(heading[2]);
+			let slug = base;
+			for (let n = 1; seenIds.has(slug); n++) slug = `${base}-${n}`;
+			seenIds.add(slug);
 			headings.push({
 				depth,
 				text: heading[2].replace(/[`*_]/g, '').trim(),
-				slug: slugify(heading[2]),
+				slug,
 			});
 		}
 	}

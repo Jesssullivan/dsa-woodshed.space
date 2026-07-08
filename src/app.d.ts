@@ -9,6 +9,8 @@ declare global {
 			title?: string;
 			/** Per-page meta description; falls back to the site description. */
 			summary?: string;
+			/** Ask crawlers not to index this page (the 404 surface). */
+			noindex?: boolean;
 		}
 		// interface PageState {}
 		// interface Platform {}
