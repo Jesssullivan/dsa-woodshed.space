@@ -98,6 +98,17 @@
 		query = '';
 		results = [];
 	}
+
+	// Pagefind indexes the flat prerendered files, so result URLs carry a
+	// `.html` suffix (/algorithms/arrays/two_sum.html). The SvelteKit client
+	// router intercepts same-origin clicks and only the clean route was
+	// prerendered (…/two_sum/__data.json exists; …/two_sum.html__data.json does
+	// not), so navigating the raw URL lands on the 404 shell. Strip the suffix
+	// — preserving any ?query/#hash tail — so SPA navigation hits the real
+	// route; '/' (home) has no suffix and passes through untouched.
+	function routeUrl(url: string): string {
+		return url.replace(/\.html(?=$|[?#])/, '');
+	}
 </script>
 
 <Dialog {open} onOpenChange={handleOpenChange} closeOnInteractOutside closeOnEscape preventScroll>
@@ -107,6 +118,15 @@
 	<Dialog.Backdrop class="fixed inset-0 z-40 bg-black/40" />
 	<Dialog.Positioner class="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[10vh]">
 		<Dialog.Content class="bg-surface-50-950 border-surface-300-700 w-full max-w-lg rounded-lg border shadow-lg">
+			<!-- Zag's dialog SSRs optimistic aria-labelledby/-describedby pointing at
+			     the title/description ids, and only names the dialog when a title
+			     element actually renders — so both must exist (visually hidden) or
+			     the prerendered HTML carries dangling refs and the open dialog is a
+			     nameless modal. Same Dialog.Title idiom as BindableDrawer. -->
+			<Dialog.Title class="sr-only">Search the site</Dialog.Title>
+			<Dialog.Description class="sr-only">
+				Search the reference sheets, guide, and algorithm pages. Results update as you type.
+			</Dialog.Description>
 			<div class="border-surface-200-800 flex items-center gap-2 border-b px-4 py-3">
 				<Search class="text-surface-500 h-4 w-4 shrink-0" aria-hidden="true" />
 				<input
@@ -147,11 +167,11 @@
 							{#each results as result (result.url)}
 								<li>
 									<a
-										href={result.url}
+										href={routeUrl(result.url)}
 										class="hover:bg-surface-200-800 block rounded-sm px-3 py-2"
 										onclick={closeAndReset}
 									>
-										<p class="text-sm font-semibold">{result.meta.title ?? result.url}</p>
+										<p class="text-sm font-semibold">{result.meta.title ?? routeUrl(result.url)}</p>
 										<p class="text-surface-600-400 mt-0.5 line-clamp-2 text-xs leading-relaxed">
 											<!-- eslint-disable-next-line svelte/no-at-html-tags -- Pagefind's own excerpt HTML (only <mark> tags), from our own indexed build output. -->
 											{@html result.excerpt}

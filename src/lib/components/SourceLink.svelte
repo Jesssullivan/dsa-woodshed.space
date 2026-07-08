@@ -25,7 +25,15 @@
 </script>
 
 {#if sourcePath}
-	<div class="text-surface-500 dark:text-surface-400 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+	<!-- data-pagefind-ignore: reference/guide render this inside their
+	     data-pagefind-body article, and this boilerplate ("edit", "git",
+	     "source" — all real DSA query stems) would otherwise pollute every
+	     excerpt and cross-match those pages. Harmless on the algorithms
+	     route, where SourceLink already sits outside the body wrapper. -->
+	<div
+		data-pagefind-ignore
+		class="text-surface-500 dark:text-surface-400 mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs"
+	>
 		<span>This page lives in git. Anyone can propose an edit.</span>
 		<span class="flex items-center gap-x-3">
 			<a

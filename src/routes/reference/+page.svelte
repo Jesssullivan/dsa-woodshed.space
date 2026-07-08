@@ -10,7 +10,11 @@
 	<meta name="description" content="Copy-ready algorithm reference sheets from the DSA study packet." />
 </svelte:head>
 
-<main class="mx-auto max-w-3xl py-16">
+<!-- data-pagefind-body: unlike the /algorithms hubs, this index carries the
+     hand-curated per-sheet summaries (registry SUMMARIES) that render nowhere
+     else, so it must be indexed for that editorial copy to be searchable.
+     The breadcrumb <nav> inside is auto-excluded by Pagefind. -->
+<main class="mx-auto max-w-3xl py-16" data-pagefind-body>
 	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Reference sheets' }]} />
 	<h1 class="text-3xl font-bold">Reference sheets</h1>
 	<p class="text-surface-700 dark:text-surface-300 mt-3 leading-relaxed">

@@ -13,6 +13,10 @@
 	/>
 </svelte:head>
 
+<!-- No data-pagefind-body — deliberate: this hub (and each topic index) is
+     just links whose titles are fully indexed on the leaf problem pages;
+     indexing it would rank the hub above the actual content for every topic
+     query. Contrast /reference, whose index carries editorial summaries. -->
 <main class="mx-auto max-w-3xl px-6 py-16">
 	<h1 class="text-3xl font-bold">Algorithms</h1>
 	<p class="text-surface-700 dark:text-surface-300 mt-3 leading-relaxed">
