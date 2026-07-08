@@ -16,6 +16,10 @@
 // GUARANTEES
 //   - Deterministic: no timestamps, entries sorted, byte-stable output.
 //   - Idempotent: running twice produces an identical tree and manifest.
+//   - HEAD-pinned: every byte read from the packet — planned inputs and snippet
+//     includes alike — comes from `git show HEAD:`, never the working tree, so a
+//     stripped practice file or uncommitted WIP prose in the packet checkout can
+//     never ship attributed to a commit that does not contain it.
 //   - Recorded: src/content/.manifest.json pins the packet commit and lists
 //     every entry (its source inputs, resolved output, lane, and a content hash)
 //     so the on-site registry can read titles/lanes/order without hand-typing
@@ -25,8 +29,8 @@
 
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { syncAlgorithms } from './sync-algorithms.mjs';
 
@@ -52,7 +56,8 @@ const MAX_SNIPPET_DEPTH = 10;
 //                      code-heavy sheets and for prose with braces / angle-tags /
 //                      mermaid that mdsvex would misparse.
 //   lane: 'svx'      → compiled AS a Svelte component by mdsvex. Only hazard-free
-//                      prose (no braces, angle-tags, or mermaid) goes here.
+//                      prose (no braces, angle-tags, or mermaid) goes here;
+//                      assertSvxSafe below rejects script vectors at sync time.
 //
 // Reference entries read the mkdocs STUB under docs/reference/, whose body is a
 // `--8<--` snippet include of the real sheet under reference-sheets/. The sync
@@ -160,12 +165,33 @@ const PLAN = [
 	},
 ];
 
+// ── Git-only packet reads (never the working tree) ─────────────────────────────
+// A packet checkout can carry working-tree-local state that must never ship: a
+// file stripped to a practice scaffold, or WIP prose that has not yet passed the
+// packet's commit-time public-boundary lint. The manifest pins `git rev-parse
+// HEAD` as provenance, so every byte published must come from that same commit —
+// read via `git show HEAD:`, exactly like the algorithms lane
+// (scripts/sync-algorithms.mjs).
+function existsAtHead(rel) {
+	try {
+		execFileSync('git', ['-C', PACKET_PATH, 'cat-file', '-e', `HEAD:${rel}`], { stdio: 'ignore' });
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+function readAtHead(rel) {
+	return execFileSync('git', ['-C', PACKET_PATH, 'show', `HEAD:${rel}`], { encoding: 'utf8' });
+}
+
 // ── Snippet resolution ─────────────────────────────────────────────────────────
 // The packet's docs/reference/*.md stubs pull in the real sheet with pymdownx
 // snippets. mkdocs.yml sets `base_path: ["."]`, so a snippet path is resolved
-// against the packet ROOT. Only the quoted single-file form is present in the
-// repo (verified with grep); we support exactly that, recurse into nested
-// includes, cap the depth, and detect cycles.
+// against the packet ROOT. We support exactly the quoted single-file form,
+// recurse into nested includes, cap the depth, and detect cycles. Any OTHER
+// `--8<--` shape (block form, unquoted path, trailing content) would ship as
+// literal marker text on a public page, so it fails the sync instead.
 const SNIPPET_RE = /^(\s*)--8<--\s+"([^"]+)"\s*$/;
 
 /**
@@ -176,26 +202,39 @@ const SNIPPET_RE = /^(\s*)--8<--\s+"([^"]+)"\s*$/;
  * @returns {string}
  */
 function resolveSnippets(content, inputs, depth, stack) {
+	const file = stack[stack.length - 1];
 	return content
 		.split('\n')
-		.map((line) => {
+		.map((line, i) => {
+			if (!line.includes('--8<--')) return line;
 			const m = line.match(SNIPPET_RE);
-			if (!m) return line;
-			const [, indent, rel] = m;
+			if (!m) {
+				throw new Error(
+					`unrecognized snippet directive at ${file}:${i + 1}: ${JSON.stringify(line.trim())} — ` +
+						'only the quoted single-file form (--8<-- "path") is supported',
+				);
+			}
+			const [, indent, raw] = m;
 			if (depth >= MAX_SNIPPET_DEPTH) {
 				throw new Error(
-					`snippet include depth cap (${MAX_SNIPPET_DEPTH}) exceeded at "${rel}" (chain: ${stack.join(' -> ')})`,
+					`snippet include depth cap (${MAX_SNIPPET_DEPTH}) exceeded at "${raw}" (chain: ${stack.join(' -> ')})`,
 				);
+			}
+			// Containment: the directive is packet-authored (untrusted); a path that
+			// escapes the packet root after normalization (`../`, absolute) must never
+			// be read on the build host, let alone published.
+			const rel = relative(resolve(PACKET_PATH), resolve(PACKET_PATH, raw));
+			if (!rel || rel.startsWith('..') || isAbsolute(rel)) {
+				throw new Error(`snippet include escapes the packet root at ${file}:${i + 1}: "${raw}"`);
 			}
 			if (stack.includes(rel)) {
 				throw new Error(`snippet include cycle: ${[...stack, rel].join(' -> ')}`);
 			}
-			const abs = resolve(PACKET_PATH, rel);
-			if (!existsSync(abs)) {
-				throw new Error(`snippet include not found: "${rel}" (resolved to ${abs})`);
+			if (!existsAtHead(rel)) {
+				throw new Error(`snippet include not found at packet HEAD: "${raw}" (at ${file}:${i + 1})`);
 			}
 			if (!inputs.includes(rel)) inputs.push(rel);
-			const included = readFileSync(abs, 'utf8').replace(/\n$/, '');
+			const included = readAtHead(rel).replace(/\n$/, '');
 			const resolved = resolveSnippets(included, inputs, depth + 1, [...stack, rel]);
 			// Preserve the include line's indentation on every included line so an
 			// indented `--8<--` (e.g. inside a code block) stays inside it.
@@ -207,6 +246,79 @@ function resolveSnippets(content, inputs, depth, stack) {
 				: resolved;
 		})
 		.join('\n');
+}
+
+// ── svx-lane safety tripwire ───────────────────────────────────────────────────
+// The svx lane compiles packet-authored markdown AS a Svelte component (mdsvex),
+// so raw HTML rides straight into the client bundle — the escaping raw lane
+// never sees it. Packet content is untrusted input (public repo, PRs); reject
+// the script vectors outright rather than trying to sanitize. Anything that
+// trips this belongs on the markdown lane.
+const SVX_HAZARDS = [
+	[/<script/i, '<script tag'],
+	[/\bon[a-z]+\s*=/i, 'on<event>= handler attribute'],
+	[/javascript:/i, 'javascript: URL'],
+];
+
+function assertSvxSafe(text, input) {
+	for (const [re, what] of SVX_HAZARDS) {
+		const m = text.match(re);
+		if (m) {
+			throw new Error(
+				`svx-lane input ${input} contains a ${what} (${JSON.stringify(m[0])}) — ` +
+					'svx compiles to a Svelte component; move the entry to the markdown lane or remove the hazard',
+			);
+		}
+	}
+}
+
+// ── svx-lane link rewriting ────────────────────────────────────────────────────
+// The markdown lane resolves packet-relative .md links at render time
+// ($lib/docs/registry.ts makeLinkResolver); the svx lane has no render-time hook
+// (mdsvex compiles the file as-is), so rewrite at sync time instead. A relative
+// .md link that resolves to another synced entry becomes that entry's on-site
+// route; anything else becomes the canonical GitHub blob URL — the same shape
+// the render-time resolver produces. Idempotent: rewritten hrefs are absolute
+// (`/…` or `https://…`) and no longer match the relative-.md pattern.
+const MD_LINK_RE = /\]\(([^)\s]+\.md(?:#[^)]*)?)\)/g;
+
+/** Posix-normalize `relPath` against packet dir `dir` (mirrors registry.ts normalizeJoin). */
+function packetJoin(dir, relPath) {
+	const segments = dir === '.' ? [] : dir.split('/');
+	for (const part of relPath.split('/')) {
+		if (part === '' || part === '.') continue;
+		if (part === '..') segments.pop();
+		else segments.push(part);
+	}
+	return segments.join('/');
+}
+
+/** Packet-relative source path → on-site route, for every planned prose entry.
+ * Both the mkdocs stub (`input`) and the real sheet (`sourcePath`) address the
+ * same page, so either form of cross-reference lands on the synced route. */
+function planRoutes() {
+	const routes = new Map();
+	for (const item of PLAN) {
+		const route = `/${item.section}/${item.slug}`;
+		routes.set(item.input, route);
+		routes.set(item.sourcePath, route);
+	}
+	return routes;
+}
+
+function rewriteSvxLinks(text, entryInput) {
+	const routes = planRoutes();
+	const dir = dirname(entryInput);
+	return text.replace(MD_LINK_RE, (whole, target) => {
+		// Absolute URLs (scheme:) and site-rooted paths are already resolved.
+		if (/^[a-z][a-z0-9+.-]*:/i.test(target) || target.startsWith('/')) return whole;
+		const hashIndex = target.indexOf('#');
+		const path = hashIndex === -1 ? target : target.slice(0, hashIndex);
+		const hash = hashIndex === -1 ? '' : target.slice(hashIndex);
+		const resolved = packetJoin(dir, path);
+		const route = routes.get(resolved);
+		return route ? `](${route}${hash})` : `](https://github.com/${SOURCE_REPO}/blob/main/${resolved}${hash})`;
+	});
 }
 
 // ── Metadata extraction ────────────────────────────────────────────────────────
@@ -264,14 +376,17 @@ function main() {
 
 	const entries = [];
 	for (const item of PLAN) {
-		const inputAbs = resolve(PACKET_PATH, item.input);
-		if (!existsSync(inputAbs)) {
-			throw new Error(`sync-content: planned input missing: ${item.input}`);
+		if (!existsAtHead(item.input)) {
+			throw new Error(`sync-content: planned input missing at packet HEAD: ${item.input}`);
 		}
 		const inputs = [item.input];
-		const raw = readFileSync(inputAbs, 'utf8');
+		const raw = readAtHead(item.input);
 		// Resolve snippet includes, then normalize to exactly one trailing newline.
-		const resolved = resolveSnippets(raw, inputs, 0, [item.input]).replace(/\n*$/, '\n');
+		let resolved = resolveSnippets(raw, inputs, 0, [item.input]).replace(/\n*$/, '\n');
+		if (item.lane === 'svx') {
+			assertSvxSafe(resolved, item.input);
+			resolved = rewriteSvxLinks(resolved, item.input);
+		}
 
 		writeFileDeep(join(CONTENT_DIR, item.out), resolved);
 
@@ -290,9 +405,9 @@ function main() {
 
 	// Algorithms lane: one markdown doc per packet src/algo/<topic>/<problem>.py
 	// implementation. A dedicated module (scripts/sync-algorithms.mjs) owns the
-	// docstring parsing and per-problem doc rendering; every file it reads comes
-	// from `git show HEAD:...`, never the working tree (see that file's header),
-	// so a stripped practice file in the packet checkout never leaks into the site.
+	// docstring parsing and per-problem doc rendering; like the prose lane above,
+	// every file it reads comes from `git show HEAD:...`, never the working tree
+	// (see that file's header and the HEAD-pinned guarantee in this one).
 	entries.push(
 		...syncAlgorithms({ packetPath: PACKET_PATH, contentDir: CONTENT_DIR, mkdirSync, writeFileSync, sha256 }),
 	);
