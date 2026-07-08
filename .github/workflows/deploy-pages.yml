@@ -55,7 +55,7 @@ jobs:
           path: dsa-study-packet
           ssh-key: ${{ secrets.PACKET_DEPLOY_KEY }}
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.13.1
 
