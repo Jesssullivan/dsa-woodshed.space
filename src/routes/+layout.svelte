@@ -8,6 +8,7 @@
 	import { AppBar } from '@skeletonlabs/skeleton-svelte';
 	import { REPO_URL } from '$lib/repo';
 	import '../app.css';
+	import SearchDialog from '$lib/components/SearchDialog.svelte';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
 
 	let { children } = $props();
@@ -19,6 +20,7 @@
 		{ href: '/', label: 'Home' },
 		{ href: '/guide/interview-practice-evidence', label: 'Guide' },
 		{ href: '/reference', label: 'Reference' },
+		{ href: '/algorithms', label: 'Algorithms' },
 	];
 
 	const SITE_NAME = 'The DSA Woodshed';
@@ -59,7 +61,7 @@
 		>Skip to content</a
 	>
 
-	<AppBar class="saturn-nav sticky top-0 z-40">
+	<AppBar class="saturn-nav sticky top-0 z-40" data-pagefind-ignore>
 		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto] px-4 py-2">
 			<AppBar.Lead>
 				<a
@@ -81,11 +83,13 @@
 							aria-current={page.url.pathname === href ? 'page' : undefined}>{label}</a
 						>
 					{/each}
-					<!-- Placeholder: no Algorithms surface exists yet, so this is inert text
-					     (not a link) rather than a route that would 404. -->
-					<span class="text-surface-400 cursor-default" title="Coming soon">Algorithms</span>
+					<SearchDialog />
 					<ThemeSwitcher />
 				</nav>
+
+				<div class="lg:hidden">
+					<SearchDialog />
+				</div>
 
 				<!-- Mobile drawer: reuses the house BindableDrawer + the same <SiteNav>
 				     the desktop persistent sidebar renders, so mobile gets the full
@@ -108,9 +112,6 @@
 								class="hover:bg-surface-200-800 block rounded-sm px-2 py-1.5">{label}</a
 							>
 						{/each}
-						<span class="text-surface-400 block cursor-default rounded-sm px-2 py-1.5" title="Coming soon"
-							>Algorithms</span
-						>
 					</nav>
 					<SiteNav onNavigate={() => (mobileOpen = false)} />
 					<div class="border-surface-200-800 mt-6 flex justify-center border-t pt-4">
@@ -125,7 +126,11 @@
 		{@render children?.()}
 	</div>
 
-	<footer id="contact" class="border-surface-200-800 bg-surface-100-900/80 mt-16 border-t backdrop-blur-sm">
+	<footer
+		id="contact"
+		class="border-surface-200-800 bg-surface-100-900/80 mt-16 border-t backdrop-blur-sm"
+		data-pagefind-ignore
+	>
 		<div class="container mx-auto flex flex-col gap-4 px-6 py-8 text-sm md:flex-row md:items-center md:justify-between">
 			<p class="text-surface-700-300">
 				A reading surface for the DSA study packet. Content is tracked in git; every page links to its source.

@@ -22,6 +22,8 @@
 			>{data.topicTitle}</a
 		>
 	</nav>
-	<Markdown source={data.raw} {resolveLink} />
+	<div data-pagefind-body>
+		<Markdown source={data.raw} {resolveLink} />
+	</div>
 	<SourceLink sourcePath={data.sourcePath} />
 </main>

@@ -31,7 +31,7 @@
 <main class="mx-auto max-w-5xl py-16">
 	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Guide' }, { label: title }]} />
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">
-		<article class="min-w-0">
+		<article class="min-w-0" data-pagefind-body>
 			<div class="prose max-w-none" use:slugifyHeadings>
 				<Content />
 			</div>

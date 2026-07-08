@@ -29,7 +29,7 @@
 		]}
 	/>
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">
-		<article class="min-w-0">
+		<article class="min-w-0" data-pagefind-body>
 			<Markdown source={data.raw} {resolveLink} />
 			<SourceLink sourcePath={data.sourcePath} />
 			<PrevNext
