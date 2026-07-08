@@ -8,6 +8,9 @@ export default defineConfig({
 	resolve: {
 		alias: {
 			$lib: path.resolve(__dirname, 'src/lib'),
+			// Mirror svelte.config.js's $content alias so tests can import the
+			// registry, which reads the committed src/content/.manifest.json.
+			$content: path.resolve(__dirname, 'src/content'),
 		},
 	},
 	test: {

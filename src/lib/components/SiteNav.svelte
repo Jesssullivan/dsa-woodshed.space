@@ -4,7 +4,7 @@
 	// (see ContentShell.svelte) AND inside the mobile drawer (+layout.svelte) —
 	// one source of truth so the two surfaces cannot drift.
 	import { page } from '$app/state';
-	import { entryHref, sections } from '$lib/docs/registry';
+	import { algorithmTopics, entryHref, ROUTED_SECTIONS, sections } from '$lib/docs/registry';
 
 	interface Props {
 		/** Called after a link is activated — the mobile drawer uses this to close itself. */
@@ -12,11 +12,24 @@
 	}
 	let { onNavigate }: Props = $props();
 
-	// Only sections with a live page route today. `sections()` also carries
-	// practice/challenges/printables (registered content with no route yet — a
-	// follow-up content stream); omit them here rather than ship dead links.
-	const ROUTED_SECTIONS = new Set(['guide', 'reference']);
-	const navSections = $derived(sections().filter((s) => ROUTED_SECTIONS.has(s.id)));
+	// Every routed section (guide, algorithms, reference — the registry's
+	// ROUTED_SECTIONS is the SSOT). `sections()` also carries practice/
+	// challenges/printables (registered content with no route yet — a follow-up
+	// content stream); omit those rather than ship dead links. The algorithms
+	// lane lists its 17 topic-index pages, not all ~70 problems, so the sidebar
+	// stays scannable; problems are one click away on the topic index.
+	const navSections = $derived(
+		sections()
+			.filter((s) => ROUTED_SECTIONS.has(s.id))
+			.map((s) => ({
+				id: s.id,
+				title: s.title,
+				links:
+					s.id === 'algorithms'
+						? algorithmTopics().map((t) => ({ href: `/algorithms/${t.topic}`, label: t.title }))
+						: s.entries.map((e) => ({ href: entryHref(e), label: e.title })),
+			})),
+	);
 </script>
 
 <nav aria-label="Sections" class="space-y-6 text-sm">
@@ -24,8 +37,7 @@
 		<div>
 			<p class="text-surface-500 mb-2 text-xs font-semibold tracking-widest uppercase">{section.title}</p>
 			<ul class="space-y-0.5">
-				{#each section.entries as entry (entry.slug)}
-					{@const href = entryHref(entry)}
+				{#each section.links as { href, label } (href)}
 					{@const current = page.url.pathname === href}
 					<li>
 						<a
@@ -36,7 +48,7 @@
 								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
 								: 'text-surface-700-300 hover:bg-surface-200-800'}"
 						>
-							{entry.title}
+							{label}
 						</a>
 					</li>
 				{/each}

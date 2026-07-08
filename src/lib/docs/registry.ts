@@ -77,8 +77,10 @@ export const sourceCommit = manifest.sourceCommit;
 // Curated on-site summaries, keyed `${section}/${slug}`. Editorial copy — the one
 // piece of display metadata the packet does not carry.
 const SUMMARIES: Record<string, string> = {
+	// Summaries are consumed as plain text ({entry.summary} card grids, meta
+	// descriptions), so no markdown syntax here — backticks would render literally.
 	'reference/python-stdlib':
-		'`collections`, `itertools`, `functools`, `bisect`, and `heapq` — the built-ins to reach for first, with the calls that matter.',
+		'collections, itertools, functools, bisect, and heapq — the built-ins to reach for first, with the calls that matter.',
 	'reference/data-structures': 'Operations and Big-O for every Python built-in type, plus trees, graphs, and heaps.',
 	'reference/algorithm-templates':
 		'Copy-ready templates for binary search, two pointers, sliding window, BFS/DFS, backtracking, and DP.',
@@ -179,14 +181,33 @@ export function getEntry(section: SectionId, slug: string): ContentEntry | undef
 	return contentEntries.find((e) => e.section === section && e.slug === slug);
 }
 
-/** The entry's URL — uniform `/{section}/{slug}` shape used by every routed section. */
+// Sections with a live page route today. practice/challenges/printables carry
+// registered content with no route yet (a follow-up content stream); consumers
+// that emit hrefs (SiteNav, the link resolver below) filter on this so no
+// surface ships a dead link into an unrouted section.
+export const ROUTED_SECTIONS: ReadonlySet<SectionId> = new Set(['guide', 'algorithms', 'reference']);
+
+/**
+ * The entry's URL — `/{section}/{slug}` for the flat sections, with the topic
+ * segment inserted for the topic-scoped algorithms lane
+ * (`/algorithms/{topic}/{slug}`), matching the live route shapes.
+ */
 export function entryHref(entry: ContentEntry): string {
-	return `/${entry.section}/${entry.slug}`;
+	return entry.topic ? `/${entry.section}/${entry.topic}/${entry.slug}` : `/${entry.section}/${entry.slug}`;
 }
 
-/** Adjacent entries (in display order) within the same section, for prev/next footer nav. */
-export function neighbors(section: SectionId, slug: string): { prev?: ContentEntry; next?: ContentEntry } {
-	const list = entriesInSection(section);
+/**
+ * Adjacent entries (in display order) for prev/next footer nav. Flat sections
+ * walk the whole section; algorithms entries (slug unique only within a topic)
+ * walk their topic's problems in the order the topic index lists them — pass
+ * `topic` for that lane.
+ */
+export function neighbors(
+	section: SectionId,
+	slug: string,
+	topic?: string,
+): { prev?: ContentEntry; next?: ContentEntry } {
+	const list = section === 'algorithms' ? (getAlgorithmTopic(topic ?? '')?.entries ?? []) : entriesInSection(section);
 	const i = list.findIndex((e) => e.slug === slug);
 	if (i === -1) return {};
 	return { prev: list[i - 1], next: list[i + 1] };
@@ -273,11 +294,30 @@ function normalizeJoin(dirSegments: string[], relative: string): string {
 	return segments.join('/');
 }
 
+// Packet-relative path → registry entry, covering every synced entry's
+// sourcePath AND its input aliases (e.g. docs/reference/01-python-stdlib.md and
+// reference-sheets/01-python-stdlib.md both name the python-stdlib sheet), so
+// the resolver below can keep cross-references between synced docs on-site.
+// Restricted to ROUTED_SECTIONS: an unrouted entry's href would 404, so those
+// links stay on the GitHub blob fallback until their section lands a route.
+const entryByPacketPath = (() => {
+	const byOut = new Map(contentEntries.map((e) => [e.out, e]));
+	const map = new Map<string, ContentEntry>();
+	for (const m of manifest.entries) {
+		const entry = byOut.get(m.out);
+		if (!entry || !ROUTED_SECTIONS.has(entry.section)) continue;
+		for (const path of new Set([m.sourcePath, ...m.inputs])) map.set(path, entry);
+	}
+	return map;
+})();
+
 /**
- * Build a link resolver for one entry: turns its relative markdown links into
- * canonical GitHub blob URLs in the CONTENT repo (anchors and absolute URLs are
- * handled upstream in markdown.ts and never reach here). Repo URL and branch come
- * from $lib/repo.ts, so no org/repo string is hardcoded here.
+ * Build a link resolver for one entry: resolves its relative markdown links
+ * against the packet tree, then routes them on-site (entryHref, hash preserved)
+ * when the target is a synced entry, else to the canonical GitHub blob URL in
+ * the CONTENT repo (anchors and absolute URLs are handled upstream in
+ * markdown.ts and never reach here). Repo URL and branch come from $lib/repo.ts,
+ * so no org/repo string is hardcoded here.
  */
 export function makeLinkResolver(sourcePath: string): (href: string) => string {
 	const dirSegments = sourcePath.split('/').slice(0, -1);
@@ -286,6 +326,8 @@ export function makeLinkResolver(sourcePath: string): (href: string) => string {
 		const pathPart = hashIndex === -1 ? href : href.slice(0, hashIndex);
 		const hash = hashIndex === -1 ? '' : href.slice(hashIndex);
 		const resolved = normalizeJoin(dirSegments, pathPart);
+		const entry = entryByPacketPath.get(resolved);
+		if (entry) return `${entryHref(entry)}${hash}`;
 		return `${REPO_URL}/blob/${REPO_DEFAULT_BRANCH}/${resolved}${hash}`;
 	};
 }
