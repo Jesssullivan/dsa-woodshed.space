@@ -58,6 +58,8 @@ export default ts.config(
 	},
 	{
 		ignores: [
+			// CI checks out the packet repo inside the workspace (content sync).
+			'dsa-study-packet/',
 			'build/',
 			'**/build/**',
 			'.svelte-kit/',

@@ -1,0 +1,57 @@
+# PR / main gate: the same suite the repo runs locally (svelte-check, prettier
+# + eslint, vitest, full build with the pagefind postbuild verifier, playwright
+# overflow e2e). Content comes from the packet repo exactly as deploy-pages.yml
+# gets it — read-only deploy key while the packet is private.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gates:
+    name: check / lint / unit / build / e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check out the study packet
+        uses: actions/checkout@v4
+        with:
+          repository: Jesssullivan/dsa-study-packet
+          path: dsa-study-packet
+          ssh-key: ${{ secrets.PACKET_DEPLOY_KEY }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Sync content from the packet
+        run: pnpm run sync-content
+        env:
+          WOODSHED_PACKET_PATH: ${{ github.workspace }}/dsa-study-packet
+
+      - run: pnpm run check
+      - run: pnpm run lint
+      - run: pnpm run test:unit
+      - run: pnpm run build
+
+      - name: Install playwright chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:e2e
