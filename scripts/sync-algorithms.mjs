@@ -79,10 +79,13 @@ const SECTION_HEADER_RE = /^(Problem|Approach|When to use|Complexity):\s*$/;
  * gen_algo_pages.py's `_parse_docstring`: title is the docstring's first line
  * (trailing period dropped); Problem / Approach / When to use / Complexity are
  * header-delimited blocks, dedented by one 4-space indent level; Complexity is
- * further split into `time` / `space` from its `Time:` / `Space:` lines.
+ * further split into `time` / `space` from its `Time:` / `Space:` lines. The
+ * raw Complexity body is kept too — some docstrings label per-operation costs
+ * (`Kruskal: O(E log E)`) instead of Time/Space, and the section must not be
+ * dropped for those.
  */
 function parseDocstring(source) {
-	const result = { title: '', problem: '', approach: '', whenToUse: '', time: '', space: '' };
+	const result = { title: '', problem: '', approach: '', whenToUse: '', time: '', space: '', complexityRaw: '' };
 
 	let m = source.match(/^"""([\s\S]*?)"""/);
 	if (!m) m = source.match(/^'''([\s\S]*?)'''/);
@@ -112,7 +115,9 @@ function parseDocstring(source) {
 	result.approach = sections['Approach'] ?? '';
 	result.whenToUse = sections['When to use'] ?? '';
 
-	for (const line of (sections['Complexity'] ?? '').split('\n')) {
+	result.complexityRaw = sections['Complexity'] ?? '';
+
+	for (const line of result.complexityRaw.split('\n')) {
 		const t = line.trim();
 		if (/^time:/i.test(t)) result.time = t.replace(/^time:/i, '').trim();
 		else if (/^space:/i.test(t)) result.space = t.replace(/^space:/i, '').trim();
@@ -139,6 +144,21 @@ function renderProblemDoc(title, info, source) {
 			`| **Space** | \`${info.space || '—'}\` |`,
 			'',
 		);
+	} else if (info.complexityRaw.trim()) {
+		// Non-conforming Complexity block (per-operation labels, e.g.
+		// `Kruskal: O(E log E)`): render each `Label: value` line as its own row
+		// rather than dropping the section.
+		const rows = info.complexityRaw
+			.split('\n')
+			.map((l) => l.trim())
+			.filter(Boolean)
+			.map((l) => {
+				const at = l.indexOf(':');
+				const label = at === -1 ? '—' : l.slice(0, at).trim();
+				const value = (at === -1 ? l : l.slice(at + 1)).trim().replace(/\s+/g, ' ');
+				return `| **${label}** | \`${value}\` |`;
+			});
+		lines.push('## Complexity', '', '| | |', '|---|---|', ...rows, '');
 	}
 
 	lines.push('## Source', '', '```python', source.replace(/\n+$/, ''), '```', '');
