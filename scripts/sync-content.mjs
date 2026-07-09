@@ -134,6 +134,15 @@ const PLAN = [
 		sourcePath: 'docs/guide/source-of-truth.md',
 		out: 'guide/source-of-truth.md',
 	},
+	{
+		section: 'guide',
+		slug: 'local-practice',
+		lane: 'markdown',
+		order: 6,
+		input: 'docs/guide/local-practice.md',
+		sourcePath: 'docs/guide/local-practice.md',
+		out: 'guide/local-practice.md',
+	},
 
 	// Single-page prose sections (prose, not macro-dependent — migrated raw).
 	{
