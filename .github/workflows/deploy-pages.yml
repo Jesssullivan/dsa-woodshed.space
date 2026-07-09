@@ -43,23 +43,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Content source: the public study packet. The site renders content
       # synced from it; without this checkout + the sync step below, the
       # $content imports cannot resolve and the build is guaranteed red.
       - name: Check out the study packet
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: Jesssullivan/dsa-study-packet
           path: dsa-study-packet
           ssh-key: ${{ secrets.PACKET_DEPLOY_KEY }}
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.13.1
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: pnpm
@@ -77,9 +77,15 @@ jobs:
         env:
           NODE_ENV: production
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: build
+          # v4 started excluding dotfiles from the artifact by default; the
+          # build ships static/.nojekyll (copied verbatim by adapter-static)
+          # so GitHub Pages skips Jekyll processing, which otherwise ignores
+          # the underscore-prefixed _app/ directory SvelteKit ships assets
+          # under. Without this the deployed site 404s on every asset.
+          include-hidden-files: true
 
   deploy:
     name: Deploy to GitHub Pages
@@ -90,5 +96,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5
         id: deployment
