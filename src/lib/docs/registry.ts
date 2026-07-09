@@ -102,6 +102,7 @@ const SUMMARIES: Record<string, string> = {
 	'guide/when-to-use-what': 'A decision tree mapping a new problem to the pattern that solves it.',
 	'guide/learning-paths': 'Ordered routes through the packet for different timelines and goals.',
 	'guide/source-of-truth': 'How the packet, booklet, and sheets are generated and kept reproducible.',
+	'guide/local-practice': 'Run the same interviewer in local VS Code or a bare clone — Dev Containers or uv + just.',
 	'printables/printables': 'The booklet and reference sheets meant to leave the screen and land on paper.',
 	'practice/index': 'Code-reading and decomposition exercises for practical, analyze-this-code rounds.',
 	'challenges/index': 'The core drill set: strip each solution to its signature and re-implement from scratch.',

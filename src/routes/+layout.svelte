@@ -6,7 +6,7 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import SiteNav from '$lib/components/SiteNav.svelte';
 	import { AppBar } from '@skeletonlabs/skeleton-svelte';
-	import { REPO_URL } from '$lib/repo';
+	import { REPO_SLUG, REPO_URL } from '$lib/repo';
 	import '../app.css';
 	import SearchDialog from '$lib/components/SearchDialog.svelte';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
@@ -25,11 +25,12 @@
 
 	const SITE_NAME = 'The DSA Woodshed';
 	const SITE_URL = 'https://dsa-woodshed.space';
-	const SITE_TITLE = 'The DSA Woodshed — a reading surface for the DSA study packet';
+	const SITE_TITLE = 'The DSA Woodshed — practice interviews with a resident agent interviewer';
 	const SITE_DESCRIPTION =
-		'A calm reading surface for the DSA study packet: interview-practice evidence and copy-ready algorithm reference sheets, tracked in git.';
+		'A practice room for technical interviews: one click opens a live session where a kind, exacting agent interviewer runs the rep — plus the printable booklet and reference library it draws on.';
 	const SECURITY_URL = `${REPO_URL}/security/advisories/new`;
 	const OG_IMAGE = `${SITE_URL}/og-image.png`;
+	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}`;
 
 	const jsonLd = {
 		'@context': 'https://schema.org',
@@ -93,6 +94,13 @@
 							aria-current={page.url.pathname === href ? 'page' : undefined}>{label}</a
 						>
 					{/each}
+					<a
+						href={CODESPACES_URL}
+						target="_blank"
+						rel="noopener"
+						class="bg-primary-500 hover:bg-primary-600 rounded-md px-3 py-1.5 text-sm font-semibold text-white transition-colors"
+						aria-label="Start a practice session in GitHub Codespaces">Start</a
+					>
 					<SearchDialog />
 					<ThemeSwitcher />
 				</nav>
@@ -122,6 +130,14 @@
 								class="hover:bg-surface-200-800 block rounded-sm px-2 py-1.5">{label}</a
 							>
 						{/each}
+						<a
+							href={CODESPACES_URL}
+							target="_blank"
+							rel="noopener"
+							onclick={() => (mobileOpen = false)}
+							class="bg-primary-500 hover:bg-primary-600 mt-1 block w-fit rounded-md px-3 py-1.5 font-semibold text-white transition-colors"
+							aria-label="Start a practice session in GitHub Codespaces">Start</a
+						>
 					</nav>
 					<SiteNav onNavigate={() => (mobileOpen = false)} />
 					<div class="border-surface-200-800 mt-6 flex justify-center border-t pt-4">
@@ -143,7 +159,7 @@
 	>
 		<div class="container mx-auto flex flex-col gap-4 px-6 py-8 text-sm md:flex-row md:items-center md:justify-between">
 			<p class="text-surface-700-300">
-				A reading surface for the DSA study packet. Content is tracked in git; every page links to its source.
+				A practice room with a resident interviewer. Content is tracked in git; every page links to its source.
 			</p>
 			<nav class="flex flex-wrap gap-4" aria-label="Footer">
 				<a href={REPO_URL} target="_blank" rel="noopener" class="hover:text-primary-500 transition-colors"

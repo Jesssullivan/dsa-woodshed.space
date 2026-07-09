@@ -1,7 +1,8 @@
 # The DSA Woodshed
 
-A static, prerendered [SvelteKit](https://svelte.dev/docs/kit) reading surface for the
-**DSA study packet** ([Jesssullivan/dsa-study-packet](https://github.com/Jesssullivan/dsa-study-packet)),
+A static, prerendered [SvelteKit](https://svelte.dev/docs/kit) practice-room front door — a
+one-click GitHub Codespaces session with a resident agent interviewer — that also renders the
+**DSA study packet** library ([Jesssullivan/dsa-study-packet](https://github.com/Jesssullivan/dsa-study-packet)),
 served at [dsa-woodshed.space](https://dsa-woodshed.space).
 
 Prose and reference sheets are authored and version-controlled in the study-packet
