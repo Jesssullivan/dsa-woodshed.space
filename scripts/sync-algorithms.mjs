@@ -128,6 +128,13 @@ function parseDocstring(source) {
 
 // ── Markdown emission ────────────────────────────────────────────────────────────
 
+// A raw `|` inside table-cell content splits the row at render time — the
+// house markdown renderer's splitTableRow honors `\|` escapes, so cell text
+// (docstring notation like `|word_list|`) must escape pipes on the way in.
+function tableCell(text) {
+	return text.replace(/\|/g, '\\|');
+}
+
 function renderProblemDoc(title, info, source) {
 	const lines = [`# ${title}`, ''];
 
@@ -140,8 +147,8 @@ function renderProblemDoc(title, info, source) {
 			'',
 			'| | |',
 			'|---|---|',
-			`| **Time** | \`${info.time || '—'}\` |`,
-			`| **Space** | \`${info.space || '—'}\` |`,
+			`| **Time** | \`${tableCell(info.time || '—')}\` |`,
+			`| **Space** | \`${tableCell(info.space || '—')}\` |`,
 			'',
 		);
 	} else if (info.complexityRaw.trim()) {
@@ -156,7 +163,7 @@ function renderProblemDoc(title, info, source) {
 				const at = l.indexOf(':');
 				const label = at === -1 ? '—' : l.slice(0, at).trim();
 				const value = (at === -1 ? l : l.slice(at + 1)).trim().replace(/\s+/g, ' ');
-				return `| **${label}** | \`${value}\` |`;
+				return `| **${tableCell(label)}** | \`${tableCell(value)}\` |`;
 			});
 		lines.push('## Complexity', '', '| | |', '|---|---|', ...rows, '');
 	}
