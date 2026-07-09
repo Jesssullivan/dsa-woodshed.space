@@ -1,7 +1,7 @@
 # PR / main gate: the same suite the repo runs locally (svelte-check, prettier
 # + eslint, vitest, full build with the pagefind postbuild verifier, playwright
 # overflow e2e). Content comes from the packet repo exactly as deploy-pages.yml
-# gets it — read-only deploy key while the packet is private.
+# gets it — the packet is public, no checkout credential needed.
 name: ci
 
 on:
@@ -29,7 +29,6 @@ jobs:
         with:
           repository: Jesssullivan/dsa-study-packet
           path: dsa-study-packet
-          ssh-key: ${{ secrets.PACKET_DEPLOY_KEY }}
 
       - uses: pnpm/action-setup@v6
         with:
