@@ -87,7 +87,7 @@
 			<AppBar.Lead>
 				<a
 					href="/"
-					class="hover:text-primary-500 font-mono text-lg font-bold tracking-tight whitespace-nowrap transition-colors inline-flex items-center gap-2"
+					class="hover:text-primary-500 inline-flex min-h-11 items-center gap-2 font-mono text-lg font-bold tracking-tight whitespace-nowrap transition-colors"
 					aria-label={SITE_NAME + ' home'}
 				>
 					<SaturnMark class="text-primary-500 h-[1.05em] w-[1.05em]" />{SITE_NAME}</a
@@ -100,7 +100,7 @@
 						{@const current = currentNavState(href, sections)}
 						<a
 							{href}
-							class="rounded-sm px-2 py-2 transition-colors {current
+							class="inline-flex min-h-11 items-center rounded-sm px-2 py-2 transition-colors {current
 								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
 								: 'hover:text-primary-500'}"
 							aria-label={label}
@@ -111,7 +111,7 @@
 						href={CODESPACES_URL}
 						target="_blank"
 						rel="noopener"
-						class="bg-primary-500 hover:bg-primary-600 rounded-md px-3 py-1.5 text-sm font-semibold text-white transition-colors"
+						class="bg-primary-500 hover:bg-primary-600 inline-flex min-h-11 items-center rounded-md px-3 py-1.5 text-sm font-semibold text-white transition-colors"
 						aria-label="Start a practice session in GitHub Codespaces">Start</a
 					>
 					<SearchDialog />
@@ -127,7 +127,7 @@
 				     library tree inside every drawer. -->
 				<button
 					type="button"
-					class="hover:bg-surface-200-800 rounded-sm p-2 lg:hidden"
+					class="hover:bg-surface-200-800 inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm p-2 lg:hidden"
 					aria-label="Open navigation"
 					onclick={() => (mobileOpen = true)}
 				>
@@ -141,7 +141,7 @@
 								{href}
 								aria-current={current}
 								onclick={() => (mobileOpen = false)}
-								class="block rounded-sm px-2 py-1.5 {current
+								class="flex min-h-11 items-center rounded-sm px-2 py-1.5 {current
 									? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
 									: 'hover:bg-surface-200-800'}">{label}</a
 							>
@@ -151,7 +151,7 @@
 							target="_blank"
 							rel="noopener"
 							onclick={() => (mobileOpen = false)}
-							class="bg-primary-500 hover:bg-primary-600 mt-1 block w-fit rounded-md px-3 py-1.5 font-semibold text-white transition-colors"
+							class="bg-primary-500 hover:bg-primary-600 mt-1 inline-flex min-h-11 w-fit items-center rounded-md px-3 py-1.5 font-semibold text-white transition-colors"
 							aria-label="Start a practice session in GitHub Codespaces">Start</a
 						>
 					</nav>

@@ -102,7 +102,10 @@
 </script>
 
 <Dialog {open} onOpenChange={handleOpenChange} closeOnInteractOutside closeOnEscape preventScroll>
-	<Dialog.Trigger class="hover:bg-surface-200-800 rounded-sm p-2 transition-colors" aria-label="Search the Woodshed">
+	<Dialog.Trigger
+		class="hover:bg-surface-200-800 inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm p-2 transition-colors"
+		aria-label="Search the Woodshed"
+	>
 		<Search class="h-5 w-5" />
 	</Dialog.Trigger>
 	<Dialog.Backdrop class="fixed inset-0 z-40 bg-black/40" />
@@ -117,18 +120,18 @@
 			<Dialog.Description class="sr-only">
 				Search the Woodshed library and practice material. Results update as you type.
 			</Dialog.Description>
-			<div class="border-surface-200-800 flex items-center gap-2 border-b px-4 py-3">
+			<div class="border-surface-200-800 flex items-center gap-2 border-b px-4 py-1">
 				<Search class="text-surface-500 h-4 w-4 shrink-0" aria-hidden="true" />
 				<input
 					type="search"
-					class="w-full bg-transparent text-sm outline-none"
+					class="min-h-11 w-full bg-transparent text-base outline-none"
 					placeholder="Search the Woodshed"
 					aria-label="Search query"
 					autocomplete="off"
 					bind:value={query}
 				/>
 				<Dialog.CloseTrigger
-					class="hover:bg-surface-200-800 shrink-0 rounded-sm p-1"
+					class="hover:bg-surface-200-800 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-sm p-1"
 					aria-label="Close search"
 					onclick={closeAndReset}
 				>

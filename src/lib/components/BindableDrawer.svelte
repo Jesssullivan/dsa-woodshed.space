@@ -43,7 +43,10 @@
 		<Dialog.Content class="bg-surface-50-950 flex w-full flex-col">
 			<header class="border-surface-200-800 flex items-center justify-between border-b px-4 py-3">
 				<Dialog.Title class="font-mono text-sm font-semibold">{title}</Dialog.Title>
-				<Dialog.CloseTrigger class="hover:bg-surface-200-800 rounded-sm p-2" aria-label="Close dialog">
+				<Dialog.CloseTrigger
+					class="hover:bg-surface-200-800 inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm p-2"
+					aria-label="Close dialog"
+				>
 					<X class="h-5 w-5" aria-hidden="true" />
 				</Dialog.CloseTrigger>
 			</header>

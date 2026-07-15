@@ -32,7 +32,7 @@
 	closeOnEscape
 >
 	<Popover.Trigger
-		class="bg-surface-100-900 text-primary-500 border-surface-300-700 hover:bg-surface-200-800 rounded-sm border p-2 text-base leading-none transition-colors"
+		class="bg-surface-100-900 text-primary-500 border-surface-300-700 hover:bg-surface-200-800 inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm border p-2 text-base leading-none transition-colors"
 		aria-label="Theme mode"
 	>
 		<span aria-hidden="true"><TriggerIcon class="h-4 w-4" /></span>
@@ -49,7 +49,7 @@
 						onclick={() => selectMode(mode.id)}
 						aria-label={`Set color mode to ${mode.label}`}
 						aria-pressed={active}
-						class="hover:bg-surface-200-800 flex w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-sm transition-colors {active
+						class="hover:bg-surface-200-800 flex min-h-11 w-full items-center justify-between gap-2 px-3 py-1.5 text-left text-sm transition-colors {active
 							? 'text-primary-500 font-semibold'
 							: ''}"
 					>
