@@ -9,8 +9,11 @@
 	interface Props {
 		/** Called after a link is activated. The mobile drawer uses this to close itself. */
 		onNavigate?: () => void;
+		/** Limit the mobile drawer to links in the route's current content section. */
+		currentSectionOnly?: boolean;
 	}
-	let { onNavigate }: Props = $props();
+	let { onNavigate, currentSectionOnly = false }: Props = $props();
+	const currentSection = $derived(page.url.pathname.split('/')[1]);
 
 	// Every routed section from the registry. The algorithms
 	// lane lists its 17 topic-index pages, not all ~70 problems, so the sidebar
@@ -18,6 +21,7 @@
 	const navSections = $derived(
 		sections()
 			.filter((s) => ROUTED_SECTIONS.has(s.id))
+			.filter((s) => !currentSectionOnly || s.id === currentSection)
 			.map((s) => ({
 				id: s.id,
 				title: s.title,

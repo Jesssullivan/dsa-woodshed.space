@@ -27,6 +27,11 @@
 	];
 	const isCurrentSection = (sections: string[]) =>
 		sections.some((section) => page.url.pathname === section || page.url.pathname.startsWith(`${section}/`));
+	const currentNavState = (href: string, sections: string[]): 'page' | 'location' | undefined => {
+		if (page.url.pathname === href) return 'page';
+		return isCurrentSection(sections) ? 'location' : undefined;
+	};
+	const showMobileSectionNav = $derived(isCurrentSection(['/guide', '/reference', '/algorithms']));
 
 	const SITE_NAME = 'The DSA Woodshed';
 	const SITE_URL = 'https://dsa-woodshed.space';
@@ -96,7 +101,7 @@
 							{href}
 							class="hover:text-primary-500 transition-colors"
 							aria-label={label}
-							aria-current={isCurrentSection(sections) ? 'page' : undefined}>{label}</a
+							aria-current={currentNavState(href, sections)}>{label}</a
 						>
 					{/each}
 					<a
@@ -114,9 +119,9 @@
 					<SearchDialog />
 				</div>
 
-				<!-- Mobile drawer: reuses the house BindableDrawer + the same <SiteNav>
-				     the desktop persistent sidebar renders, so mobile gets the full
-				     section/entry IA instead of just the three top-level links. -->
+				<!-- Mobile keeps the primary IA short. On content routes, SiteNav adds
+				     only the current section's entries instead of repeating the entire
+				     library tree inside every drawer. -->
 				<button
 					type="button"
 					class="hover:bg-surface-200-800 rounded-sm p-2 lg:hidden"
@@ -130,7 +135,7 @@
 						{#each navLinks as { href, label, sections } (href)}
 							<a
 								{href}
-								aria-current={isCurrentSection(sections) ? 'page' : undefined}
+								aria-current={currentNavState(href, sections)}
 								onclick={() => (mobileOpen = false)}
 								class="hover:bg-surface-200-800 block rounded-sm px-2 py-1.5">{label}</a
 							>
@@ -144,7 +149,11 @@
 							aria-label="Start a practice session in GitHub Codespaces">Start</a
 						>
 					</nav>
-					<SiteNav onNavigate={() => (mobileOpen = false)} />
+					{#if showMobileSectionNav}
+						<div class="border-surface-200-800 border-t pt-5">
+							<SiteNav currentSectionOnly onNavigate={() => (mobileOpen = false)} />
+						</div>
+					{/if}
 					<div class="border-surface-200-800 mt-6 flex justify-center border-t pt-4">
 						<ThemeSwitcher />
 					</div>

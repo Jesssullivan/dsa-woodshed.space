@@ -43,11 +43,6 @@
 
 	const library = [
 		{
-			title: 'Practice Drills',
-			href: '/challenges',
-			body: 'The core pattern set and a direct route into an editor rep.',
-		},
-		{
 			title: 'Algorithm Library',
 			href: '/algorithms',
 			body: 'Complete implementations and complexity notes to review after a rep.',
@@ -103,7 +98,7 @@
 				Read the method
 			</a>
 		</div>
-		<p class="text-surface-500 mt-3 text-sm">No repository API key or external agent is required.</p>
+		<p class="text-surface-500 mt-3 text-sm">No separate agent CLI or repository API key is required.</p>
 	</header>
 
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="choose-mode">
@@ -111,7 +106,8 @@
 			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">Your first choice</p>
 			<h2 id="choose-mode" class="mt-2 text-2xl font-bold">Pick the labels that help you think</h2>
 			<p class="text-surface-700-300 mt-3 leading-relaxed">
-				Open Copilot Chat and enter one command. They run the same practice loop with different comment headings.
+				Open Copilot Chat and enter one command. All four commands run the same practice loop with different comment
+				headings.
 			</p>
 		</div>
 		<div class="mt-8 grid gap-4 sm:grid-cols-2">

@@ -341,15 +341,21 @@ const entryByPacketPath = (() => {
 })();
 
 // Special-case packet paths with no synced entry but a better target than a
-// GitHub blob: the routed section indexes (their mkdocs stubs are generated;
-// docs/algorithms/index.md is gitignored, so its blob URL is a hard 404) and
-// the generated booklet PDF (never in git; the packet's Releases page carries
-// it from the first CalVer release onward).
+// GitHub blob. The routed section indexes have generated mkdocs stubs, and
+// docs/algorithms/index.md is gitignored, so its blob URL is a hard 404.
 const SPECIAL_PACKET_ROUTES = new Map<string, string>([
 	['docs/algorithms/index.md', '/algorithms'],
 	['docs/reference/index.md', '/reference'],
-	['docs/assets/booklet.pdf', `${REPO_URL}/releases/latest`],
 ]);
+
+// Printable PDFs are generated release assets, not tracked packet files.
+// Sheet links have appeared both directly under docs/assets/ and under its
+// sheets/ directory, so accept either packet-relative shape and keep the
+// filename stable at the release boundary.
+function printableReleaseUrl(path: string): string | undefined {
+	const match = /^docs\/assets\/(?:sheets\/)?([^/]+\.pdf)$/.exec(path);
+	return match ? `${REPO_URL}/releases/latest/download/${match[1]}` : undefined;
+}
 
 /**
  * Build a link resolver for one entry: resolves its relative markdown links
@@ -368,6 +374,8 @@ export function makeLinkResolver(sourcePath: string): (href: string) => string {
 		const resolved = normalizeJoin(dirSegments, pathPart);
 		const entry = entryByPacketPath.get(resolved);
 		if (entry) return `${entryHref(entry)}${hash}`;
+		const printable = printableReleaseUrl(resolved);
+		if (printable) return `${printable}${hash}`;
 		const special = SPECIAL_PACKET_ROUTES.get(resolved);
 		if (special) return `${special}${hash}`;
 		return `${REPO_URL}/blob/${REPO_DEFAULT_BRANCH}/${resolved}${hash}`;

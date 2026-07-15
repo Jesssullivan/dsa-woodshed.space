@@ -105,10 +105,32 @@ describe('display copy', () => {
 });
 
 describe('makeLinkResolver special-case packet paths', () => {
-	it('routes generated section indexes on-site and the booklet to Releases', () => {
+	it('routes generated section indexes on-site', () => {
 		const resolve = makeLinkResolver('docs/guide/getting-started.md');
 		expect(resolve('../algorithms/index.md')).toBe('/algorithms');
 		expect(resolve('../reference/index.md')).toBe('/reference');
-		expect(resolve('../assets/booklet.pdf')).toMatch(/\/releases\/latest$/);
+	});
+
+	it('routes every printable PDF to its exact latest-release asset', () => {
+		const resolve = makeLinkResolver('docs/printables.md');
+		const filenames = [
+			'booklet.pdf',
+			'01-python-stdlib.pdf',
+			'02-data-structures.pdf',
+			'03-algorithm-templates.pdf',
+			'04-big-o-complexity.pdf',
+			'05-common-patterns.pdf',
+			'06-system-design.pdf',
+			'07-interview-day-guide.pdf',
+			'08-cross-reference-guide.pdf',
+			'09-python-314-and-modern-patterns.pdf',
+			'10-whiteboard-performance-protocol.pdf',
+			'11-14-day-whiteboard-ramp.pdf',
+		];
+
+		for (const filename of filenames) {
+			const packetPath = filename === 'booklet.pdf' ? `assets/${filename}` : `assets/sheets/${filename}`;
+			expect(resolve(packetPath)).toBe(`${REPO_URL}/releases/latest/download/${filename}`);
+		}
 	});
 });

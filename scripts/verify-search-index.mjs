@@ -7,15 +7,14 @@
 // this pipeline silently breaks:
 //   1. `pagefind --site build` didn't run / errored quietly -> no pagefind.js.
 //   2. `data-pagefind-body` attributes drifted off a content wrapper (e.g.
-//      during the ia-nav layout merge — see SearchDialog.svelte / route
-//      comments) -> pagefind.js exists, but a whole content lane vanishes
-//      from the index. A single shared canary term can't see this (terms like
-//      "two pointer" occur in every lane), so each lane is asserted
-//      separately by fragment URL prefix.
+//      during an IA change; see SearchDialog.svelte / route comments) ->
+//      pagefind.js exists, but a required landing page vanishes from the
+//      index. A single shared canary term cannot see this, so both the current
+//      public entry routes and the detailed content lanes are asserted.
 //   3. Result URLs stop being navigable: Pagefind emits flat-file URLs
 //      (/reference/big-o-complexity.html) and SearchDialog strips `.html` to
-//      reach the clean prerendered route, so every fragment URL — after the
-//      same strip — must map to a real file in build/, or clicks land on the
+//      reach the clean prerendered route, so every fragment URL after the
+//      same strip must map to a real file in build/, or clicks land on the
 //      404 shell.
 //
 // Fragment files (build/pagefind/fragment/*.pf_fragment) are gzip-compressed
@@ -26,7 +25,7 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { join } from 'node:path';
-// The SAME implementation SearchDialog navigates with — imported, not
+// The SAME implementation SearchDialog navigates with. It is imported, not
 // mirrored, so this gate cannot drift from the dialog's behavior.
 import { routeUrl } from '../src/lib/search/route-url.js';
 
@@ -35,13 +34,17 @@ const PAGEFIND_DIR = join(BUILD_DIR, 'pagefind');
 const PAGEFIND_JS = join(PAGEFIND_DIR, 'pagefind.js');
 const FRAGMENT_DIR = join(PAGEFIND_DIR, 'fragment');
 
-// Present in the "two-pointer" reference sheet, which is always synced —
+// Present in the "two-pointer" reference sheet, which is always synced:
 // a stable canary for "the index has real reference-sheet content in it".
 const KNOWN_TERM = 'two pointer';
 
-// One prefix per data-pagefind-body lane (leaf routes; the /reference index
-// page and home are indexed too, but the leaf lanes are what drift).
-const LANES = ['/reference/', '/guide/', '/algorithms/'];
+// Detailed content lanes protect the searchable library beyond its indexes.
+const LEAF_LANES = ['/reference/', '/guide/', '/algorithms/'];
+
+// The four public IA destinations that search must always expose. These are
+// exact routes, not broad section prefixes, so the landing pages themselves
+// cannot disappear while a child page keeps the check green.
+const REQUIRED_ROUTES = ['/library', '/challenges', '/practice', '/printables'];
 
 function fail(message) {
 	console.error(`verify-search-index: ${message}`);
@@ -58,18 +61,18 @@ function routeIsPrerendered(route) {
 }
 
 if (!existsSync(PAGEFIND_JS)) {
-	fail(`missing ${PAGEFIND_JS} — did the postbuild "pagefind --site ${BUILD_DIR}" step run?`);
+	fail(`missing ${PAGEFIND_JS}. Did the postbuild "pagefind --site ${BUILD_DIR}" step run?`);
 	process.exit(1);
 }
 
 if (!existsSync(FRAGMENT_DIR)) {
-	fail(`missing ${FRAGMENT_DIR} — pagefind produced no fragments (empty index?)`);
+	fail(`missing ${FRAGMENT_DIR}. Pagefind produced no fragments (empty index?)`);
 	process.exit(1);
 }
 
 const fragmentFiles = readdirSync(FRAGMENT_DIR).filter((f) => f.endsWith('.pf_fragment'));
 if (fragmentFiles.length === 0) {
-	fail(`${FRAGMENT_DIR} contains no .pf_fragment files — index is empty`);
+	fail(`${FRAGMENT_DIR} contains no .pf_fragment files. The index is empty.`);
 	process.exit(1);
 }
 
@@ -80,7 +83,7 @@ for (const file of fragmentFiles) {
 	if (raw.toLowerCase().includes(KNOWN_TERM)) termFound = true;
 	const fragment = JSON.parse(raw.slice(raw.indexOf('{')));
 	if (typeof fragment.url !== 'string' || fragment.url === '') {
-		fail(`fragment ${file} has no url — pagefind output format changed?`);
+		fail(`fragment ${file} has no url. Did Pagefind's output format change?`);
 	} else {
 		urls.push(fragment.url);
 	}
@@ -88,17 +91,21 @@ for (const file of fragmentFiles) {
 
 if (!termFound) {
 	fail(
-		`indexed ${fragmentFiles.length} fragment(s) but none contain "${KNOWN_TERM}" — ` +
+		`indexed ${fragmentFiles.length} fragment(s) but none contain "${KNOWN_TERM}". ` +
 			'check data-pagefind-body placement on the content wrapper (see route comments).',
 	);
 }
 
-for (const lane of LANES) {
-	if (!urls.some((url) => routeUrl(url).startsWith(lane))) {
-		fail(
-			`no indexed page under ${lane} — did data-pagefind-body drift off that ` +
-				'lane’s content wrapper? (see route comments)',
-		);
+const indexedRoutes = new Set(urls.map(routeUrl));
+for (const lane of LEAF_LANES) {
+	if (![...indexedRoutes].some((route) => route.startsWith(lane))) {
+		fail(`no indexed page under ${lane}. Did data-pagefind-body drift off that lane's content wrapper?`);
+	}
+}
+
+for (const route of REQUIRED_ROUTES) {
+	if (!indexedRoutes.has(route)) {
+		fail(`no indexed page at ${route}. Did data-pagefind-body drift off that route's content wrapper?`);
 	}
 }
 
@@ -114,6 +121,7 @@ if (deadUrls.length > 0) {
 if (process.exitCode) process.exit(process.exitCode);
 
 console.log(
-	`verify-search-index: OK — ${PAGEFIND_JS} exists, ${fragmentFiles.length} fragment(s) indexed, ` +
-		`"${KNOWN_TERM}" found, all lanes (${LANES.join(' ')}) present, all result URLs navigable.`,
+	`verify-search-index: OK: ${PAGEFIND_JS} exists, ${fragmentFiles.length} fragment(s) indexed, ` +
+		`"${KNOWN_TERM}" found, leaf lanes (${LEAF_LANES.join(' ')}) and required routes ` +
+		`(${REQUIRED_ROUTES.join(' ')}) present, all result URLs navigable.`,
 );
