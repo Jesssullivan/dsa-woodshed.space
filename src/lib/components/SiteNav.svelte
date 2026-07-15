@@ -1,21 +1,18 @@
 <script lang="ts">
 	// Shared IA nav content: the section/entry tree from the content registry,
 	// current-page highlighted. Rendered in the persistent desktop sidebar
-	// (see ContentShell.svelte) AND inside the mobile drawer (+layout.svelte) —
+	// (see ContentShell.svelte) AND inside the mobile drawer (+layout.svelte).
 	// one source of truth so the two surfaces cannot drift.
 	import { page } from '$app/state';
 	import { algorithmTopics, entryHref, ROUTED_SECTIONS, sections } from '$lib/docs/registry';
 
 	interface Props {
-		/** Called after a link is activated — the mobile drawer uses this to close itself. */
+		/** Called after a link is activated. The mobile drawer uses this to close itself. */
 		onNavigate?: () => void;
 	}
 	let { onNavigate }: Props = $props();
 
-	// Every routed section (guide, algorithms, reference — the registry's
-	// ROUTED_SECTIONS is the SSOT). `sections()` also carries practice/
-	// challenges/printables (registered content with no route yet — a follow-up
-	// content stream); omit those rather than ship dead links. The algorithms
+	// Every routed section from the registry. The algorithms
 	// lane lists its 17 topic-index pages, not all ~70 problems, so the sidebar
 	// stays scannable; problems are one click away on the topic index.
 	const navSections = $derived(

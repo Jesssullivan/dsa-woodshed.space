@@ -1,253 +1,185 @@
 <script lang="ts">
-	import { REPO_SLUG, REPO_URL } from '$lib/repo';
+	import { REPO_SLUG } from '$lib/repo';
 
-	const brand = {
-		eyebrow: 'Practice interviews with a resident agent interviewer',
-		domain: 'The DSA Woodshed',
-		tagline: 'Woodshedding for the whiteboard',
-	};
+	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}?quickstart=1`;
 
-	// Every outbound URL here targets the CONTENT repo (Jesssullivan/dsa-study-packet)
-	// — the Codespace, the booklet release, and the self-hosting thread all live
-	// there — so they derive from $lib/repo.ts instead of hand-inlining the org/repo
-	// string three more times.
-	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}`;
-	const BOOKLET_URL = `${REPO_URL}/releases/latest/download/booklet.pdf`;
-	const SELF_HOSTING_ISSUE_URL = `${REPO_URL}/issues/49`;
-
-	const ctas = [
+	const modes = [
 		{
-			label: 'Start a practice session',
-			href: CODESPACES_URL,
-			caption: 'Opens GitHub Codespaces — the free tier works; the interviewer greets you in the terminal.',
-			variant: 'primary' as const,
-			external: true,
+			command: '/reacto',
+			labels: 'Repeat, Examples, Approach, Code, Test, Optimize',
 		},
 		{
-			label: 'Print the booklet',
-			href: BOOKLET_URL,
-			caption: 'The bound PDF: every reference sheet, made for paper.',
-			variant: 'outline' as const,
-			external: true,
+			command: '/clarp',
+			labels: 'Clarify, Lay out, Attack, Run, Polish',
 		},
 		{
-			label: 'Why this works',
-			href: '/guide/interview-practice-evidence',
-			caption: 'The evidence behind the practice loop.',
-			variant: 'link' as const,
-			external: false,
+			command: '/umpire',
+			labels: 'Understand, Match, Plan, Implement, Review, Evaluate',
+		},
+		{
+			command: '/comments',
+			labels: 'Restate, Example, Invariant, Approach, Tests, Complexity',
 		},
 	];
 
-	const regulationCards = [
+	const steps = [
 		{
-			title: 'A racing heart is preparation',
-			body: "That surge is your body delivering oxygen for thinking — it's preparation, not danger. Naming it that way, out loud, measurably improves performance under pressure.",
+			title: 'Choose a comment format',
+			body: 'Enter one slash command. With no arguments, it draws the next due problem.',
 		},
 		{
-			title: 'Four sighs, thirty seconds',
-			body: 'The arrival reset: a double inhale through the nose, then a long exhale, four times. The fastest known lever on a stressed nervous system — offered once per session, and "no" is always accepted without comment.',
+			title: 'Show the thinking',
+			body: 'Fill the reasoning comments, save, and remove the THINKING GATE yourself.',
 		},
 		{
-			title: 'Narrated stuck beats silent stuck',
-			body: 'In a timed rep, a stuck moment you narrate passes — "I\'m blanking for a second" is a passing answer. Going silent is the only failure, and your interviewer will prompt you back before it counts.',
-		},
-	];
-
-	const transcript = [
-		{
-			speaker: 'interviewer',
-			text: 'Where do you want to work today — talk a problem through with no clock, write your reasoning as comments in the editor, or a timed board-style rep?',
-		},
-		{ speaker: 'you', text: "No clock. It's my first time here." },
-		{
-			speaker: 'interviewer',
-			text: 'Good call. Two Sum, no code required — just tell me what the problem is asking in your own words.',
+			title: 'Build and test',
+			body: 'Implement in your private workspace and add focused cases in your test file.',
 		},
 		{
-			speaker: 'you',
-			text: "Find two numbers in an array that add to a target… I think I'd check every pair? That's O(n²) and it feels wrong—",
+			title: 'Keep one correction',
+			body: 'Use /continue for the next instruction, run the focused tests, and finish with one fix.',
 		},
-		{
-			speaker: 'interviewer',
-			text: "It's not wrong, it's a baseline. Say it like that: \"brute force is n squared, and here's what I'd trade to beat it.\"",
-		},
-		{ speaker: 'you', text: 'Okay — a hash map. One pass, check for the complement as I go.' },
-		{
-			speaker: 'interviewer',
-			text: "That's the whole move. Walk me through [3, 1, 4] with target 5, and we're done for today — one clean rep is the win.",
-		},
-	];
-
-	const firstTenMinutes = [
-		'Click Start. The container builds in about two minutes — no account setup beyond GitHub, no secrets required.',
-		'Say the line: "Start my first practice rep." The interviewer is already in your terminal (or one command away — the welcome banner shows exactly which).',
-		'Answer one placement question. No menu, no clock unless you ask for one. First sessions always start conversational.',
-		"Talk, don't grind. Stop clean: one thing that worked, one fix, done. Tomorrow's draw is already queued.",
 	];
 
 	const library = [
 		{
-			title: 'Guide',
-			href: '/guide/interview-practice-evidence',
-			body: 'The evidence, getting started, learning paths, and practicing locally.',
+			title: 'Practice Drills',
+			href: '/challenges',
+			body: 'The core pattern set and a direct route into an editor rep.',
 		},
 		{
-			title: 'Reference sheets',
-			href: '/reference',
-			body: 'Eleven copy-ready sheets, from Big-O to the 14-day ramp.',
-		},
-		{
-			title: 'Algorithms',
+			title: 'Algorithm Library',
 			href: '/algorithms',
-			body: 'Seventy worked implementations with complexity walkthroughs.',
+			body: 'Complete implementations and complexity notes to review after a rep.',
+		},
+		{
+			title: 'Reference Sheets',
+			href: '/reference',
+			body: 'Compact lookups for Python, patterns, data structures, and interview method.',
+		},
+		{
+			title: 'Advanced Exercises',
+			href: '/practice',
+			body: 'Code-reading and decomposition practice for practical engineering rounds.',
+		},
+		{
+			title: 'Printables',
+			href: '/printables',
+			body: 'The booklet and individual sheets for offline review.',
 		},
 	];
-
-	const ctaClasses = {
-		primary:
-			'bg-primary-500 hover:bg-primary-600 inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors',
-		outline:
-			'border-surface-200-800 hover:border-primary-500 hover:text-primary-600 inline-flex items-center justify-center rounded-lg border px-5 py-2.5 text-sm font-semibold transition-colors',
-		link: 'text-primary-600 hover:text-primary-700 inline-flex items-center py-2.5 text-sm font-semibold underline-offset-2 hover:underline',
-	} as const;
 </script>
 
 <main class="mx-auto max-w-5xl px-6 py-16 md:py-24" data-pagefind-body>
-	<header class="max-w-3xl space-y-4">
-		<p class="text-surface-500 text-xs tracking-widest uppercase">{brand.eyebrow}</p>
-		<h1 class="text-4xl leading-tight font-bold md:text-5xl">{brand.domain}</h1>
-		<p class="text-primary-600 text-xl">{brand.tagline}</p>
-		<div class="text-surface-700 dark:text-surface-300 space-y-4 text-lg leading-relaxed">
-			<p>
-				A musician doesn't get better by playing more songs — they take the one bar that keeps falling apart into the
-				woodshed, slow it down, and repeat it until it's clean. This is that room for technical interviews: a resident
-				interviewer — kind, exacting, real-world-accurate — helps you isolate the one weak passage and drill it at the
-				tempo your nerves can hold.
-			</p>
-			<p>
-				It trains one thing: confident, non-panicked reasoning out loud under observation. Your interviewer checks that
-				you showed your work — never that you were a genius.
-			</p>
-		</div>
+	<header class="max-w-4xl">
+		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">Editor-first interview practice</p>
+		<h1 class="mt-3 max-w-3xl text-4xl leading-tight font-bold md:text-6xl">
+			Think in comments. Build in code. Prove it with tests.
+		</h1>
+		<p class="text-surface-700-300 mt-6 max-w-2xl text-lg leading-relaxed">
+			The DSA Woodshed turns each technical interview problem into a focused editor rep. A resident interviewer keeps
+			the session moving, but the reasoning, implementation, and tests stay yours.
+		</p>
 
-		<div class="flex flex-col flex-wrap gap-6 pt-2 sm:flex-row sm:items-start">
-			{#each ctas as cta (cta.label)}
-				<div class="max-w-[22rem]">
-					<a
-						href={cta.href}
-						class={ctaClasses[cta.variant]}
-						target={cta.external ? '_blank' : undefined}
-						rel={cta.external ? 'noopener' : undefined}>{cta.label}</a
-					>
-					<p class="text-surface-500 mt-2 text-xs leading-relaxed">{cta.caption}</p>
-				</div>
-			{/each}
+		<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+			<a
+				href={CODESPACES_URL}
+				target="_blank"
+				rel="noopener"
+				class="bg-primary-500 hover:bg-primary-600 inline-flex w-fit items-center justify-center rounded-lg px-5 py-3 text-sm font-semibold text-white transition-colors"
+			>
+				Start in Codespaces
+			</a>
+			<a
+				href="/challenges"
+				class="border-surface-200-800 hover:border-primary-500 hover:text-primary-600 inline-flex w-fit items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold transition-colors"
+			>
+				Browse Practice Drills
+			</a>
+			<a
+				href="/guide/getting-started"
+				class="text-primary-600 hover:text-primary-700 inline-flex w-fit px-2 py-3 text-sm font-semibold underline-offset-2 hover:underline"
+			>
+				Read the method
+			</a>
 		</div>
+		<p class="text-surface-500 mt-3 text-sm">No repository API key or external agent is required.</p>
 	</header>
 
-	<section id="how-not-to-panic" class="mt-16 border-t border-surface-200-800 pt-12" aria-label="How not to panic">
-		<h2 class="text-2xl font-bold">How not to panic</h2>
-		<p class="text-surface-700-300 mt-3 max-w-2xl text-base leading-relaxed">
-			The first thing your interviewer offers is not a problem — it's regulation. None of it is ever scored, streaked,
-			or logged.
-		</p>
-		<div class="mt-8 grid gap-4 md:grid-cols-3">
-			{#each regulationCards as card (card.title)}
+	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="choose-mode">
+		<div class="max-w-2xl">
+			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">Your first choice</p>
+			<h2 id="choose-mode" class="mt-2 text-2xl font-bold">Pick the labels that help you think</h2>
+			<p class="text-surface-700-300 mt-3 leading-relaxed">
+				Open Copilot Chat and enter one command. They run the same practice loop with different comment headings.
+			</p>
+		</div>
+		<div class="mt-8 grid gap-4 sm:grid-cols-2">
+			{#each modes as mode (mode.command)}
 				<div class="border-surface-200-800 bg-surface-50-950/75 rounded-lg border p-5">
-					<h3 class="text-base font-semibold">{card.title}</h3>
-					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">{card.body}</p>
+					<p class="text-primary-600 font-mono text-lg font-semibold">{mode.command}</p>
+					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">{mode.labels}</p>
 				</div>
 			{/each}
 		</div>
-		<p class="text-surface-500 mt-6 text-sm leading-relaxed">
-			No streaks. No badges. No solve counts. Nobody reads your worry-dump. Taking a hint is engagement, not failure.
+		<p class="text-surface-500 mt-4 text-sm">
+			Add a problem when you want one directly, for example <code>/reacto arrays two_sum</code>.
 		</p>
 	</section>
 
-	<section
-		id="first-session"
-		class="mt-16 border-t border-surface-200-800 pt-12"
-		aria-label="What a first session sounds like"
-	>
-		<h2 class="text-2xl font-bold">What a first session sounds like</h2>
-		<div class="border-surface-200-800 bg-surface-100-900 mt-6 rounded-lg border p-5 md:p-6">
-			<p class="text-surface-500 mb-4 text-xs tracking-wide uppercase">Illustrative — the interviewer adapts to you.</p>
-			<div class="space-y-3 font-mono text-sm leading-relaxed md:text-[0.9rem]">
-				{#each transcript as line, i (i)}
-					<p>
-						<span
-							class={line.speaker === 'interviewer'
-								? 'text-primary-600 dark:text-primary-400 font-semibold'
-								: 'text-secondary-600 dark:text-secondary-400 font-semibold'}>{line.speaker}:</span
-						>
-						<span class="text-surface-800-200">{line.text}</span>
-					</p>
-				{/each}
-			</div>
+	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="rep-loop">
+		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">One clean loop</p>
+		<h2 id="rep-loop" class="mt-2 text-2xl font-bold">How a rep works</h2>
+		<ol class="mt-8 grid gap-4 md:grid-cols-2">
+			{#each steps as step, index (step.title)}
+				<li class="border-surface-200-800 rounded-lg border p-5">
+					<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">Step {index + 1}</p>
+					<h3 class="mt-2 text-lg font-semibold">{step.title}</h3>
+					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">{step.body}</p>
+				</li>
+			{/each}
+		</ol>
+		<div class="bg-surface-100-900 mt-6 rounded-lg p-5 text-sm leading-relaxed">
+			<p class="font-semibold">The agent conducts; you do the work.</p>
+			<p class="text-surface-700-300 mt-2">
+				It can open the current files, report the next state, run the focused tests, and ask interview questions. It
+				does not write your solution, tests, or gate. Your workspace stays gitignored.
+			</p>
 		</div>
 	</section>
 
-	<section
-		id="first-ten-minutes"
-		class="mt-16 border-t border-surface-200-800 pt-12"
-		aria-label="Your first ten minutes"
-	>
-		<h2 class="text-2xl font-bold">Your first ten minutes</h2>
-		<ol class="text-surface-700-300 mt-6 max-w-2xl list-decimal space-y-3 pl-5 text-base leading-relaxed">
-			{#each firstTenMinutes as step, i (i)}
-				<li>{step}</li>
-			{/each}
-		</ol>
-		<p class="text-surface-500 mt-6 text-sm leading-relaxed">
-			Paper at your side helps — <a href={BOOKLET_URL} class="hover:text-primary-600 underline underline-offset-2"
-				>print the booklet</a
-			> before you start.
-		</p>
-	</section>
-
-	<section id="library" class="mt-16 border-t border-surface-200-800 pt-12" aria-label="The library">
-		<h2 class="text-2xl font-bold">The library</h2>
-		<p class="text-surface-700-300 mt-3 max-w-2xl text-base leading-relaxed">
-			Everything the interviewer draws on is readable and searchable here — and every page links back to its source in
-			git.
-		</p>
-		<div class="mt-8 grid gap-3 md:grid-cols-3">
-			{#each library as item (item.title)}
+	<section id="library" class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="library-heading">
+		<div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+			<div>
+				<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">Review with a purpose</p>
+				<h2 id="library-heading" class="mt-2 text-2xl font-bold">Library</h2>
+			</div>
+			<a href="/library" class="text-primary-600 text-sm font-semibold underline-offset-2 hover:underline"
+				>See the full library</a
+			>
+		</div>
+		<div class="mt-8 grid gap-4 md:grid-cols-2">
+			{#each library as item (item.href)}
 				<a
-					class="border-surface-200-800 bg-surface-50-950/75 hover:border-primary-500 block rounded-lg border p-5 transition-colors"
 					href={item.href}
-					aria-label={item.title}
+					class="border-surface-200-800 bg-surface-50-950/75 hover:border-primary-500 block rounded-lg border p-5 transition-colors"
 				>
-					<h3 class="text-base font-semibold">{item.title}</h3>
+					<h3 class="font-semibold">{item.title}</h3>
 					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">{item.body}</p>
 				</a>
 			{/each}
 		</div>
 	</section>
 
-	<section id="portability" class="mt-16 border-t border-surface-200-800 pt-12" aria-label="Anywhere a terminal lives">
-		<h2 class="text-2xl font-bold">Anywhere a terminal lives</h2>
-		<p class="text-surface-700-300 mt-3 max-w-2xl text-base leading-relaxed">
-			The interviewer is a CLI in a real shell, never an IDE-extension lock-in — which means the same session runs in
-			GitHub Codespaces today, in local VS Code or a bare clone right now, and in self-hosted environments as they land.
-			That includes models you host yourself: terminal agents take endpoint overrides out of the box.
+	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="other-surfaces">
+		<h2 id="other-surfaces" class="text-2xl font-bold">Match the surface to the skill</h2>
+		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
+			Editor reps are the default. Ask for an untimed conversation when you need to slow down and form a plan. Choose a
+			timed board-style rep when narration under a clock is the skill you intend to train.
 		</p>
-		<div class="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-			<a href="/guide/local-practice" class="hover:text-primary-600 font-medium underline-offset-2 hover:underline"
-				>Practice locally</a
-			>
-			<a
-				href={SELF_HOSTING_ISSUE_URL}
-				class="hover:text-primary-600 font-medium underline-offset-2 hover:underline"
-				target="_blank"
-				rel="noopener">The self-hosting thread</a
-			>
-		</div>
+		<p class="text-surface-500 mt-4 text-sm">
+			Prefer local VS Code or no agent at all? The same workflow runs through the documented
+			<a href="/guide/local-practice" class="hover:text-primary-600 underline underline-offset-2">just recipes</a>.
+		</p>
 	</section>
-
-	<footer class="text-surface-500 mt-16 border-t border-surface-200-800 pt-8 text-sm">
-		The interviewer's persona, the sheets, and this site are generated from one public source tree — propose an edit
-		from any page.
-	</footer>
 </main>

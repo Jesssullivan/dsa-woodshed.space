@@ -2,8 +2,8 @@
 //
 // WHAT THIS IS
 //   The DSA Woodshed is a *reading surface*. Its prose and reference sheets are
-//   authored and version-controlled in a SEPARATE repo — the DSA study packet
-//   (Jesssullivan/dsa-study-packet) — which is the single source of truth. This
+//   authored and version-controlled in a SEPARATE repo: the DSA study packet
+//   (Jesssullivan/dsa-study-packet), which is the single source of truth. This
 //   script pulls the needed files out of a packet checkout, resolves the mkdocs
 //   snippet includes the packet uses, and writes plain markdown / mdsvex files
 //   into src/content/ that the SvelteKit build renders.
@@ -16,8 +16,8 @@
 // GUARANTEES
 //   - Deterministic: no timestamps, entries sorted, byte-stable output.
 //   - Idempotent: running twice produces an identical tree and manifest.
-//   - HEAD-pinned: every byte read from the packet — planned inputs and snippet
-//     includes alike — comes from `git show HEAD:`, never the working tree, so a
+//   - HEAD-pinned: every byte read from the packet, planned inputs and snippet
+//     includes alike, comes from `git show HEAD:`, never the working tree, so a
 //     stripped practice file or uncommitted WIP prose in the packet checkout can
 //     never ship attributed to a commit that does not contain it.
 //   - Recorded: src/content/.manifest.json pins the packet commit and lists
@@ -25,7 +25,7 @@
 //     so the on-site registry can read titles/lanes/order without hand-typing
 //     and drift is auditable.
 //
-// PLAIN NODE. No dependencies, no bundler — runs under `node scripts/sync-content.mjs`.
+// PLAIN NODE. No dependencies or bundler. Runs under `node scripts/sync-content.mjs`.
 
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
@@ -49,7 +49,7 @@ const MAX_SNIPPET_DEPTH = 10;
 // ── Content plan (the SSOT of WHAT to sync) ────────────────────────────────────
 // Each entry: which packet file to read (`input`), where it lands under
 // src/content (`out`), which render lane the site uses, the packet-relative path
-// the "edit this page" affordance points at (`sourcePath` — the file a human
+// the "edit this page" affordance points at (`sourcePath`, the file a human
 // actually edits), and its section + display order.
 //
 //   lane: 'markdown' → rendered by $lib/docs/markdown.ts (raw lane). Safe for the
@@ -88,7 +88,7 @@ const PLAN = [
 		out: `reference/${slug}.md`,
 	})),
 
-	// Guide — hazard-free prose on the mdsvex lane, everything else raw.
+	// Guide: hazard-free prose on the mdsvex lane, everything else raw.
 	{
 		section: 'guide',
 		slug: 'interview-practice-evidence',
@@ -144,7 +144,7 @@ const PLAN = [
 		out: 'guide/local-practice.md',
 	},
 
-	// Single-page prose sections (prose, not macro-dependent — migrated raw).
+	// Single-page prose sections (prose, not macro-dependent; migrated raw).
 	{
 		section: 'printables',
 		slug: 'printables',
@@ -178,7 +178,7 @@ const PLAN = [
 // A packet checkout can carry working-tree-local state that must never ship: a
 // file stripped to a practice scaffold, or WIP prose that has not yet passed the
 // packet's commit-time public-boundary lint. The manifest pins `git rev-parse
-// HEAD` as provenance, so every byte published must come from that same commit —
+// HEAD` as provenance, so every byte published must come from that same commit:
 // read via `git show HEAD:`, exactly like the algorithms lane
 // (scripts/sync-algorithms.mjs).
 function existsAtHead(rel) {
@@ -219,7 +219,7 @@ function resolveSnippets(content, inputs, depth, stack) {
 			const m = line.match(SNIPPET_RE);
 			if (!m) {
 				throw new Error(
-					`unrecognized snippet directive at ${file}:${i + 1}: ${JSON.stringify(line.trim())} — ` +
+					`unrecognized snippet directive at ${file}:${i + 1}: ${JSON.stringify(line.trim())}. ` +
 						'only the quoted single-file form (--8<-- "path") is supported',
 				);
 			}
@@ -259,7 +259,7 @@ function resolveSnippets(content, inputs, depth, stack) {
 
 // ── svx-lane safety tripwire ───────────────────────────────────────────────────
 // The svx lane compiles packet-authored markdown AS a Svelte component (mdsvex),
-// so raw HTML rides straight into the client bundle — the escaping raw lane
+// so raw HTML rides straight into the client bundle. The escaping raw lane
 // never sees it. Packet content is untrusted input (public repo, PRs); reject
 // the script vectors outright rather than trying to sanitize. Anything that
 // trips this belongs on the markdown lane.
@@ -267,7 +267,7 @@ const SVX_HAZARDS = [
 	[/<script/i, '<script tag'],
 	[/\bon[a-z]+\s*=/i, 'on<event>= handler attribute'],
 	[/javascript:/i, 'javascript: URL'],
-	// Svelte evaluates {expression} at compile time — braces are code here, and
+	// Svelte evaluates {expression} at compile time. Braces are code here, and
 	// the lane contract above already excludes brace-bearing prose.
 	[/[{}]/, 'Svelte interpolation brace'],
 ];
@@ -277,7 +277,7 @@ function assertSvxSafe(text, input) {
 		const m = text.match(re);
 		if (m) {
 			throw new Error(
-				`svx-lane input ${input} contains a ${what} (${JSON.stringify(m[0])}) — ` +
+				`svx-lane input ${input} contains a ${what} (${JSON.stringify(m[0])}). ` +
 					'svx compiles to a Svelte component; move the entry to the markdown lane or remove the hazard',
 			);
 		}
@@ -289,7 +289,7 @@ function assertSvxSafe(text, input) {
 // ($lib/docs/registry.ts makeLinkResolver); the svx lane has no render-time hook
 // (mdsvex compiles the file as-is), so rewrite at sync time instead. A relative
 // .md link that resolves to another synced entry becomes that entry's on-site
-// route; anything else becomes the canonical GitHub blob URL — the same shape
+// route; anything else becomes the canonical GitHub blob URL, the same shape
 // the render-time resolver produces. Idempotent: rewritten hrefs are absolute
 // (`/…` or `https://…`) and no longer match the relative-.md pattern.
 const MD_LINK_RE = /\]\(([^)\s]+\.md(?:#[^)]*)?)\)/g;
@@ -309,14 +309,18 @@ function packetJoin(dir, relPath) {
  * Both the mkdocs stub (`input`) and the real sheet (`sourcePath`) address the
  * same page, so either form of cross-reference lands on the synced route. */
 function planRoutes() {
-	// Keep in sync with ROUTED_SECTIONS in src/lib/docs/registry.ts: an unrouted
-	// section's on-site href would 404 (and, under handleHttpError:'fail', break
-	// the build), so those links stay on the GitHub blob fallback below.
-	const ROUTED_SECTIONS = new Set(['guide', 'algorithms', 'reference']);
+	// Keep these shapes in sync with entryHref in src/lib/docs/registry.ts.
+	const ROUTED_SECTIONS = new Set(['guide', 'algorithms', 'reference', 'challenges', 'practice', 'printables']);
+	const SINGLE_PAGE_SLUGS = new Map([
+		['challenges', 'index'],
+		['practice', 'index'],
+		['printables', 'printables'],
+	]);
 	const routes = new Map();
 	for (const item of PLAN) {
 		if (!ROUTED_SECTIONS.has(item.section)) continue;
-		const route = `/${item.section}/${item.slug}`;
+		const route =
+			SINGLE_PAGE_SLUGS.get(item.section) === item.slug ? `/${item.section}` : `/${item.section}/${item.slug}`;
 		routes.set(item.input, route);
 		routes.set(item.sourcePath, route);
 	}
@@ -433,7 +437,7 @@ function main() {
 	entries.sort((a, b) => a.section.localeCompare(b.section) || a.order - b.order || a.slug.localeCompare(b.slug));
 
 	const manifest = {
-		note: 'Generated by scripts/sync-content.mjs. Do not edit by hand — run `pnpm run sync-content`.',
+		note: 'Generated by scripts/sync-content.mjs. Do not edit by hand; run `pnpm run sync-content`.',
 		sourceRepo: SOURCE_REPO,
 		sourceCommit: packetCommit(),
 		entries,

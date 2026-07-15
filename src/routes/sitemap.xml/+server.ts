@@ -1,6 +1,12 @@
 // M3.3 sitemap.xml endpoint. Prerendered at build time by adapter-static so the
 // XML lives at build/sitemap.xml. Add additional routes here as new lanes land.
-import { algorithmParams, algorithmTopicSlugs, guideMarkdownSlugs, sheetSlugs } from '$lib/docs/registry';
+import {
+	algorithmParams,
+	algorithmTopicSlugs,
+	guideMarkdownSlugs,
+	sheetSlugs,
+	SINGLE_PAGE_SECTIONS,
+} from '$lib/docs/registry';
 import type { RequestHandler } from './$types';
 
 const SITE = 'https://dsa-woodshed.space';
@@ -8,6 +14,8 @@ const SITE = 'https://dsa-woodshed.space';
 // by the content registry so new synced entries appear here without a hand edit.
 const PAGES: string[] = [
 	'/',
+	'/library',
+	...SINGLE_PAGE_SECTIONS.map((section) => `/${section}`),
 	'/reference',
 	...sheetSlugs().map((s) => `/reference/${s}`),
 	'/guide/interview-practice-evidence',

@@ -5,6 +5,7 @@ import {
 	allEntries,
 	entryHref,
 	getAlgorithmTopic,
+	getEntry,
 	getSheet,
 	makeLinkResolver,
 	neighbors,
@@ -16,7 +17,7 @@ import {
 // src/content/.manifest.json. entryHref/neighbors must match the live route
 // shapes (flat /{section}/{slug} lanes vs the topic-scoped algorithms lane),
 // and makeLinkResolver must keep packet cross-references on-site whenever the
-// target is a synced, routed entry — those invariants are what SiteNav,
+// target is a synced, routed entry. Those invariants are what SiteNav,
 // PrevNext, the sitemap, and every rendered markdown link stand on.
 
 describe('entryHref', () => {
@@ -31,6 +32,12 @@ describe('entryHref', () => {
 		expect(topic).toBeDefined();
 		const first = topic!.entries[0];
 		expect(entryHref(first)).toBe(`/algorithms/arrays/${first.slug}`);
+	});
+
+	it('uses the section root for each single-page content section', () => {
+		expect(entryHref(getEntry('challenges', 'index')!)).toBe('/challenges');
+		expect(entryHref(getEntry('practice', 'index')!)).toBe('/practice');
+		expect(entryHref(getEntry('printables', 'printables')!)).toBe('/printables');
 	});
 });
 
@@ -62,7 +69,7 @@ describe('makeLinkResolver', () => {
 
 	it('routes a synced target on-site (input alias, not just sourcePath)', () => {
 		// docs/reference/… is an input ALIAS of the sheet whose sourcePath is
-		// reference-sheets/… — both must land on the same on-site page.
+		// reference-sheets/…; both must land on the same on-site page.
 		expect(resolve('../reference/11-14-day-whiteboard-ramp.md')).toBe('/reference/14-day-whiteboard-ramp');
 	});
 
@@ -76,20 +83,18 @@ describe('makeLinkResolver', () => {
 		);
 	});
 
-	it('falls back to the blob URL for synced-but-unrouted sections', () => {
+	it('routes every registered content section on-site', () => {
 		const unrouted = allEntries().filter((e) => !ROUTED_SECTIONS.has(e.section));
-		expect(unrouted.length).toBeGreaterThan(0);
-		for (const entry of unrouted) {
-			expect(makeLinkResolver('README.md')(entry.sourcePath)).toBe(
-				`${REPO_URL}/blob/${REPO_DEFAULT_BRANCH}/${entry.sourcePath}`,
-			);
-		}
+		expect(unrouted).toEqual([]);
+		expect(makeLinkResolver('README.md')('docs/challenges/index.md')).toBe('/challenges');
+		expect(makeLinkResolver('README.md')('docs/practice/index.md')).toBe('/practice');
+		expect(makeLinkResolver('README.md')('docs/printables.md')).toBe('/printables');
 	});
 });
 
 describe('display copy', () => {
 	it('keeps curated summaries and titles free of literal markdown backticks', () => {
-		// Summaries render as plain text (card grids, meta descriptions) — a
+		// Summaries render as plain text (card grids, meta descriptions), so a
 		// backtick would show up literally. Algorithms summaries are auto-derived
 		// from packet docstrings and are the sync's concern, not curated here.
 		for (const entry of allEntries().filter((e) => e.section !== 'algorithms')) {

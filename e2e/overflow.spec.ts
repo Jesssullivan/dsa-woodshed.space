@@ -12,10 +12,14 @@ const breakpoints = [
 ];
 
 // Content routes gained the IA nav shell (persistent sidebar at `lg`, a
-// per-page TOC rail at `xl`) — check them at the same breakpoints so a future
+// per-page TOC rail at `xl`). Check them at the same breakpoints so a future
 // layout change here gets the same overflow guard the home page has.
 const routes = [
 	'/',
+	'/library',
+	'/challenges',
+	'/practice',
+	'/printables',
 	'/reference',
 	'/reference/algorithm-templates',
 	'/guide/interview-practice-evidence',
