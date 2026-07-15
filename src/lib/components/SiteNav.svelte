@@ -39,11 +39,12 @@
 			<p class="text-surface-500 mb-2 text-xs font-semibold tracking-widest uppercase">{section.title}</p>
 			<ul class="space-y-0.5">
 				{#each section.links as { href, label } (href)}
-					{@const current = page.url.pathname === href}
+					{@const current =
+						page.url.pathname === href ? 'page' : page.url.pathname.startsWith(`${href}/`) ? 'location' : undefined}
 					<li>
 						<a
 							{href}
-							aria-current={current ? 'page' : undefined}
+							aria-current={current}
 							onclick={onNavigate}
 							class="block rounded-sm px-2 py-1 leading-snug transition-colors {current
 								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'

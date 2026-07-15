@@ -97,11 +97,14 @@
 			<AppBar.Trail>
 				<nav class="hidden items-center gap-4 text-sm lg:flex" aria-label="Section navigation">
 					{#each navLinks as { href, label, sections } (href)}
+						{@const current = currentNavState(href, sections)}
 						<a
 							{href}
-							class="hover:text-primary-500 transition-colors"
+							class="rounded-sm px-2 py-2 transition-colors {current
+								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
+								: 'hover:text-primary-500'}"
 							aria-label={label}
-							aria-current={currentNavState(href, sections)}>{label}</a
+							aria-current={current}>{label}</a
 						>
 					{/each}
 					<a
@@ -133,11 +136,14 @@
 				<BindableDrawer bind:open={mobileOpen} title={SITE_NAME}>
 					<nav aria-label="Primary" class="mb-6 space-y-0.5 text-sm">
 						{#each navLinks as { href, label, sections } (href)}
+							{@const current = currentNavState(href, sections)}
 							<a
 								{href}
-								aria-current={currentNavState(href, sections)}
+								aria-current={current}
 								onclick={() => (mobileOpen = false)}
-								class="hover:bg-surface-200-800 block rounded-sm px-2 py-1.5">{label}</a
+								class="block rounded-sm px-2 py-1.5 {current
+									? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
+									: 'hover:bg-surface-200-800'}">{label}</a
 							>
 						{/each}
 						<a
