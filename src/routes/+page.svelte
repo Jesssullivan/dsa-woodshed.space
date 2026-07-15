@@ -176,7 +176,9 @@
 		</p>
 		<p class="text-surface-500 mt-4 text-sm">
 			Prefer local VS Code or no agent at all? The same workflow runs through the documented
-			<a href="/guide/local-practice" class="hover:text-primary-600 underline underline-offset-2">just recipes</a>.
+			<a href="/guide/local-practice" class="editorial-link hover:text-primary-600 underline underline-offset-2"
+				>just recipes</a
+			>.
 		</p>
 	</section>
 </main>

@@ -214,6 +214,19 @@ pre.shiki span {
 	text-underline-offset: 2px;
 }
 
+/* Visited state is intentionally limited to reading-path links. Navigation,
+   calls to action, breadcrumbs, link cards, and prev/next controls keep their
+   stable interaction color. */
+.prose a:visited:not(:hover),
+a.editorial-link:visited:not(:hover) {
+	color: var(--color-primary-700);
+}
+
+[data-mode='dark'] .prose a:visited:not(:hover),
+[data-mode='dark'] a.editorial-link:visited:not(:hover) {
+	color: var(--color-primary-300);
+}
+
 .prose a:hover {
 	color: var(--color-primary-600);
 }
