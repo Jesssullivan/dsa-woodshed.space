@@ -19,7 +19,7 @@ concurrency:
 jobs:
   gates:
     name: check / lint / unit / build / e2e
-    runs-on: ubuntu-latest
+    runs-on: tinyland-docker
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v7
@@ -52,5 +52,7 @@ jobs:
       - run: pnpm run build
 
       - name: Install playwright chromium
-        run: pnpm exec playwright install --with-deps chromium
+        # The runner image pre-bakes Playwright's system libs — browser
+        # binary download only, no runtime apt (--with-deps) needed.
+        run: pnpm exec playwright install chromium
       - run: pnpm run test:e2e
