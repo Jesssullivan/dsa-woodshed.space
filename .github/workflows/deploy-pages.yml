@@ -1,19 +1,14 @@
-name: Deploy to GitHub Pages (DRAFT)
+name: Deploy to GitHub Pages
 
-# DRAFT / DISABLED-BY-DEFAULT.
+# Live push-to-main deploy for https://dsa-woodshed.space (custom domain via
+# static/CNAME, so the build uses base="" / no BASE_PATH). Plain pnpm +
+# adapter-static build published to GitHub Pages.
 #
-# No GitHub repository exists for The DSA Woodshed yet, so this workflow is
-# manual-dispatch only (no push/pull_request triggers) and will not run on its
-# own. It is a plain pnpm + adapter-static build that publishes to GitHub Pages;
-# it deliberately carries NO Nix, Bazel, or estate ci-templates coupling (the
-# scaffold's original workflows referenced tinyland-inc/* reusable workflows and
-# `nix develop --command just ...` and were removed on fork).
-#
-# The site targets the custom domain dsa-woodshed.space via static/CNAME, so the
-# build uses base="" (no BASE_PATH). To enable once a repo + Pages exist:
-#   1. Add `push: { branches: [main] }` to the `on:` block below.
-#   2. Enable Pages (Settings -> Pages -> Source: GitHub Actions).
-#   3. Confirm the CNAME (dsa-woodshed.space) matches the DNS target.
+# RUNNERS: jobs run on the self-hosted ARC pool for this repo (shared
+# capability label `tinyland-docker`; scale set jesssullivan-dsa-woodshed-
+# browser, image ghcr.io/tinyland-inc/actions-runner-browser — Playwright
+# system libs pre-baked). Keeps this private repo entirely off GitHub-hosted
+# minutes.
 #
 # CONTENT SYNC: src/content is generated — a fresh checkout carries only the
 # committed .manifest.json, and `pnpm run build` does NOT sync, so the build
@@ -39,7 +34,7 @@ concurrency:
 jobs:
   build:
     name: Build static site
-    runs-on: ubuntu-latest
+    runs-on: tinyland-docker
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
@@ -88,7 +83,7 @@ jobs:
   deploy:
     name: Deploy to GitHub Pages
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: tinyland-docker
     timeout-minutes: 10
     environment:
       name: github-pages
