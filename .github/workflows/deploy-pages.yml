@@ -48,14 +48,16 @@ jobs:
           repository: Jesssullivan/dsa-study-packet
           path: dsa-study-packet
 
-      - uses: pnpm/action-setup@v6
-        with:
-          version: 10.13.1
-
+      # Self-hosted runner image ships no system node: setup-node must run
+      # BEFORE pnpm/action-setup (whose self-installer needs node), and
+      # `cache: pnpm` can't be used (it needs pnpm before pnpm exists).
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
-          cache: pnpm
+
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 10.13.1
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
