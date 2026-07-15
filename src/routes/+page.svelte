@@ -110,14 +110,14 @@
 				headings.
 			</p>
 		</div>
-		<div class="mt-8 grid gap-4 sm:grid-cols-2">
+		<dl class="border-surface-200-800 mt-8 divide-y divide-surface-200-800 border-y">
 			{#each modes as mode (mode.command)}
-				<div class="border-surface-200-800 bg-surface-50-950/75 rounded-lg border p-5">
-					<p class="text-primary-600 font-mono text-lg font-semibold">{mode.command}</p>
-					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">{mode.labels}</p>
+				<div class="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:items-baseline sm:gap-6">
+					<dt class="text-primary-600 font-mono font-semibold">{mode.command}</dt>
+					<dd class="text-surface-700-300 text-sm leading-relaxed">{mode.labels}</dd>
 				</div>
 			{/each}
-		</div>
+		</dl>
 		<p class="text-surface-500 mt-4 text-sm">
 			Add a problem when you want one directly, for example <code>/reacto arrays two_sum</code>.
 		</p>
@@ -126,11 +126,12 @@
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="rep-loop">
 		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">One clean loop</p>
 		<h2 id="rep-loop" class="mt-2 text-2xl font-bold">How a rep works</h2>
-		<ol class="mt-8 grid gap-4 md:grid-cols-2">
-			{#each steps as step, index (step.title)}
-				<li class="border-surface-200-800 rounded-lg border p-5">
-					<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">Step {index + 1}</p>
-					<h3 class="mt-2 text-lg font-semibold">{step.title}</h3>
+		<ol
+			class="border-surface-200-800 mt-8 list-decimal divide-y divide-surface-200-800 border-y pl-8 marker:font-mono marker:font-semibold marker:text-primary-600"
+		>
+			{#each steps as step (step.title)}
+				<li class="py-5 pl-2">
+					<h3 class="text-lg font-semibold">{step.title}</h3>
 					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">{step.body}</p>
 				</li>
 			{/each}
