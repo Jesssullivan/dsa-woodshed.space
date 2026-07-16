@@ -2,20 +2,20 @@
 // section, on which render lane, in what order, and under which title.
 //
 // PROVENANCE / SHAPE
-//   The bodies this registry describes are authored in a SEPARATE repo — the DSA
-//   study packet (Jesssullivan/dsa-study-packet) — and pulled in by
+//   The bodies this registry describes are authored in a SEPARATE repo: the DSA
+//   study packet (Jesssullivan/dsa-study-packet), and pulled in by
 //   scripts/sync-content.mjs, which writes src/content/** (gitignored build
 //   input) plus a committed manifest, src/content/.manifest.json. This registry
 //   reads that manifest for the per-entry facts derived from the source
 //   (title from the doc's frontmatter/H1, sourcePath, lane, order), so those
 //   never drift from the packet and are never hand-typed here. The one thing the
-//   packet has no home for — a short on-site SUMMARY per entry — is curated below.
+//   packet has no home for, a short on-site SUMMARY per entry, is curated below.
 //
 //   Bodies are NOT imported here: the raw text is loaded lazily by detail routes
 //   via $lib/docs/content.ts, so importing this registry (homepage, section
 //   indexes, sitemap) never pulls sheet text into their bundles.
 //
-//   DEEP NAV / SIDEBAR is deliberately out of scope for this module — a follow-up
+//   DEEP NAV / SIDEBAR is deliberately out of scope for this module. A follow-up
 //   IA stream consumes the exported `sections()` / `allEntries()` shape to build
 //   navigation. Keep this file about content identity, not layout.
 import { REPO_URL, REPO_DEFAULT_BRANCH } from '$lib/repo';
@@ -39,11 +39,11 @@ export interface ContentEntry {
 	lane: Lane;
 	/** Display order within the section (for `algorithms`, within its topic). */
 	order: number;
-	/** Path under src/content — the key $lib/docs/content.ts loads a raw body by. */
+	/** Path under src/content; the key $lib/docs/content.ts loads a raw body by. */
 	out: string;
-	/** Topic slug — only set for `section: 'algorithms'` entries. */
+	/** Topic slug, only set for `section: 'algorithms'` entries. */
 	topic?: string;
-	/** Topic display title — only set for `section: 'algorithms'` entries. */
+	/** Topic display title, only set for `section: 'algorithms'` entries. */
 	topicTitle?: string;
 }
 
@@ -59,7 +59,7 @@ interface ManifestEntry {
 	sha256: string;
 	topic?: string;
 	topicTitle?: string;
-	/** Auto-derived one-line summary (algorithms only — the docstring's first line). */
+	/** Auto-derived one-line summary (algorithms only: the docstring's first line). */
 	summary?: string;
 }
 
@@ -74,13 +74,13 @@ const manifest = manifestJson as Manifest;
 /** The packet commit the current src/content was synced from (for provenance UIs). */
 export const sourceCommit = manifest.sourceCommit;
 
-// Curated on-site summaries, keyed `${section}/${slug}`. Editorial copy — the one
+// Curated on-site summaries, keyed `${section}/${slug}`. Editorial copy is the one
 // piece of display metadata the packet does not carry.
 const SUMMARIES: Record<string, string> = {
 	// Summaries are consumed as plain text ({entry.summary} card grids, meta
-	// descriptions), so no markdown syntax here — backticks would render literally.
+	// descriptions), so no markdown syntax here; backticks would render literally.
 	'reference/python-stdlib':
-		'collections, itertools, functools, bisect, and heapq — the built-ins to reach for first, with the calls that matter.',
+		'collections, itertools, functools, bisect, and heapq: the built-ins to reach for first, with the calls that matter.',
 	'reference/data-structures': 'Operations and Big-O for every Python built-in type, plus trees, graphs, and heaps.',
 	'reference/algorithm-templates':
 		'Copy-ready templates for binary search, two pointers, sliding window, BFS/DFS, backtracking, and DP.',
@@ -97,15 +97,16 @@ const SUMMARIES: Record<string, string> = {
 		"What's actually scored, the CLARP loop, panic first-aid, and collaboration scripts.",
 	'reference/14-day-whiteboard-ramp': 'A day-by-day schedule: which drills to run and which sheets to keep open.',
 	'guide/interview-practice-evidence':
-		'Why the daily loop is built from cold retrieval, think-aloud reps, observation stress, and tape review — not passive video.',
-	'guide/getting-started': 'Clone, install, and run your first drill: the shortest path from zero to a green test.',
+		'Why the daily loop is built from cold retrieval, think-aloud reps, observation stress, and tape review instead of passive video.',
+	'guide/getting-started': 'Start an editor rep, write your reasoning in comments, implement, and test.',
 	'guide/when-to-use-what': 'A decision tree mapping a new problem to the pattern that solves it.',
 	'guide/learning-paths': 'Ordered routes through the packet for different timelines and goals.',
 	'guide/source-of-truth': 'How the packet, booklet, and sheets are generated and kept reproducible.',
-	'guide/local-practice': 'Run the same interviewer in local VS Code or a bare clone — Dev Containers or uv + just.',
+	'guide/local-practice':
+		'Run the same editor-first practice loop in local VS Code with a Dev Container or uv and just.',
 	'printables/printables': 'The booklet and reference sheets meant to leave the screen and land on paper.',
-	'practice/index': 'Code-reading and decomposition exercises for practical, analyze-this-code rounds.',
-	'challenges/index': 'The core drill set: strip each solution to its signature and re-implement from scratch.',
+	'practice/index': 'Advanced code-reading and decomposition exercises for practical engineering rounds.',
+	'challenges/index': 'Practice drills that pair written reasoning with implementation and focused tests.',
 };
 
 export interface Section {
@@ -120,13 +121,28 @@ export interface Section {
 // Section display metadata. Order here is a sane default; the IA stream owns the
 // final navigation shape.
 const SECTION_META: Record<SectionId, { title: string; order: number }> = {
-	guide: { title: 'Guide', order: 1 },
-	algorithms: { title: 'Algorithms', order: 2 },
-	reference: { title: 'Reference sheets', order: 3 },
-	practice: { title: 'Practice', order: 4 },
-	challenges: { title: 'Challenges', order: 5 },
+	challenges: { title: 'Practice Drills', order: 1 },
+	practice: { title: 'Advanced Exercises', order: 2 },
+	algorithms: { title: 'Algorithms', order: 3 },
+	reference: { title: 'Reference Sheets', order: 4 },
+	guide: { title: 'Method', order: 5 },
 	printables: { title: 'Printables', order: 6 },
 };
+
+export const SINGLE_PAGE_SECTIONS = ['challenges', 'practice', 'printables'] as const;
+export type SinglePageSection = (typeof SINGLE_PAGE_SECTIONS)[number];
+
+const SINGLE_PAGE_SLUGS: Record<SinglePageSection, string> = {
+	challenges: 'index',
+	practice: 'index',
+	printables: 'printables',
+};
+
+export function getSinglePageEntry(section: string): ContentEntry | undefined {
+	if (!SINGLE_PAGE_SECTIONS.includes(section as SinglePageSection)) return undefined;
+	const typedSection = section as SinglePageSection;
+	return getEntry(typedSection, SINGLE_PAGE_SLUGS[typedSection]);
+}
 
 const LANES = new Set<Lane>(['markdown', 'svx']);
 
@@ -139,7 +155,7 @@ function toEntry(m: ManifestEntry): ContentEntry {
 		slug: m.slug,
 		title: m.title,
 		// Algorithms carry an auto-derived summary (the docstring's first line) on
-		// the manifest itself — there are ~70 of them, too many to hand-curate.
+		// the manifest itself. There are ~70 of them, too many to hand-curate.
 		// Every other lane's summary is hand-curated editorial copy above.
 		summary: m.section === 'algorithms' ? (m.summary ?? '') : (SUMMARIES[key] ?? ''),
 		sourcePath: m.sourcePath,
@@ -182,25 +198,37 @@ export function getEntry(section: SectionId, slug: string): ContentEntry | undef
 	return contentEntries.find((e) => e.section === section && e.slug === slug);
 }
 
-// Sections with a live page route today. practice/challenges/printables carry
-// registered content with no route yet (a follow-up content stream); consumers
-// that emit hrefs (SiteNav, the link resolver below) filter on this so no
-// surface ships a dead link into an unrouted section.
-export const ROUTED_SECTIONS: ReadonlySet<SectionId> = new Set(['guide', 'algorithms', 'reference']);
+// Every registered section has a live page route. The three single-page
+// sections use their section root; guide/reference use flat detail pages, and
+// algorithms include a topic segment.
+export const ROUTED_SECTIONS: ReadonlySet<SectionId> = new Set([
+	'guide',
+	'algorithms',
+	'reference',
+	'challenges',
+	'practice',
+	'printables',
+]);
 
 /**
- * The entry's URL — `/{section}/{slug}` for the flat sections, with the topic
- * segment inserted for the topic-scoped algorithms lane
- * (`/algorithms/{topic}/{slug}`), matching the live route shapes.
+ * The entry's URL: `/{section}` for a single-page section,
+ * `/{section}/{slug}` for flat detail sections, and
+ * `/algorithms/{topic}/{slug}` for algorithms.
  */
 export function entryHref(entry: ContentEntry): string {
+	if (
+		SINGLE_PAGE_SECTIONS.includes(entry.section as SinglePageSection) &&
+		SINGLE_PAGE_SLUGS[entry.section as SinglePageSection] === entry.slug
+	) {
+		return `/${entry.section}`;
+	}
 	return entry.topic ? `/${entry.section}/${entry.topic}/${entry.slug}` : `/${entry.section}/${entry.slug}`;
 }
 
 /**
  * Adjacent entries (in display order) for prev/next footer nav. Flat sections
  * walk the whole section; algorithms entries (slug unique only within a topic)
- * walk their topic's problems in the order the topic index lists them — pass
+ * walk their topic's problems in the order the topic index lists them; pass
  * `topic` for that lane.
  */
 export function neighbors(
@@ -270,12 +298,12 @@ export function getAlgorithmTopic(topic: string): AlgorithmTopic | undefined {
 	return algorithmTopics().find((t) => t.topic === topic);
 }
 
-/** Every algorithm topic's slug, alphabetically — for the `/algorithms/[topic]` prerender entries. */
+/** Every algorithm topic's slug, alphabetically, for the `/algorithms/[topic]` prerender entries. */
 export function algorithmTopicSlugs(): string[] {
 	return algorithmTopics().map((t) => t.topic);
 }
 
-/** Every (topic, slug) pair — for the `/algorithms/[topic]/[slug]` prerender entries. */
+/** Every (topic, slug) pair for the `/algorithms/[topic]/[slug]` prerender entries. */
 export function algorithmParams(): { topic: string; slug: string }[] {
 	return entriesInSection('algorithms').map((e) => ({ topic: e.topic ?? '', slug: e.slug }));
 }
@@ -299,8 +327,8 @@ function normalizeJoin(dirSegments: string[], relative: string): string {
 // sourcePath AND its input aliases (e.g. docs/reference/01-python-stdlib.md and
 // reference-sheets/01-python-stdlib.md both name the python-stdlib sheet), so
 // the resolver below can keep cross-references between synced docs on-site.
-// Restricted to ROUTED_SECTIONS: an unrouted entry's href would 404, so those
-// links stay on the GitHub blob fallback until their section lands a route.
+// Restricted to ROUTED_SECTIONS so a future staged content lane cannot emit a
+// route until its page surface exists.
 const entryByPacketPath = (() => {
 	const byOut = new Map(contentEntries.map((e) => [e.out, e]));
 	const map = new Map<string, ContentEntry>();
@@ -313,15 +341,21 @@ const entryByPacketPath = (() => {
 })();
 
 // Special-case packet paths with no synced entry but a better target than a
-// GitHub blob: the routed section indexes (their mkdocs stubs are generated —
-// docs/algorithms/index.md is gitignored, so its blob URL is a hard 404) and
-// the generated booklet PDF (never in git; the packet's Releases page carries
-// it from the first CalVer release onward).
+// GitHub blob. The routed section indexes have generated mkdocs stubs, and
+// docs/algorithms/index.md is gitignored, so its blob URL is a hard 404.
 const SPECIAL_PACKET_ROUTES = new Map<string, string>([
 	['docs/algorithms/index.md', '/algorithms'],
 	['docs/reference/index.md', '/reference'],
-	['docs/assets/booklet.pdf', `${REPO_URL}/releases/latest`],
 ]);
+
+// Printable PDFs are generated release assets, not tracked packet files.
+// Sheet links have appeared both directly under docs/assets/ and under its
+// sheets/ directory, so accept either packet-relative shape and keep the
+// filename stable at the release boundary.
+function printableReleaseUrl(path: string): string | undefined {
+	const match = /^docs\/assets\/(?:sheets\/)?([^/]+\.pdf)$/.exec(path);
+	return match ? `${REPO_URL}/releases/latest/download/${match[1]}` : undefined;
+}
 
 /**
  * Build a link resolver for one entry: resolves its relative markdown links
@@ -340,6 +374,8 @@ export function makeLinkResolver(sourcePath: string): (href: string) => string {
 		const resolved = normalizeJoin(dirSegments, pathPart);
 		const entry = entryByPacketPath.get(resolved);
 		if (entry) return `${entryHref(entry)}${hash}`;
+		const printable = printableReleaseUrl(resolved);
+		if (printable) return `${printable}${hash}`;
 		const special = SPECIAL_PACKET_ROUTES.get(resolved);
 		if (special) return `${special}${hash}`;
 		return `${REPO_URL}/blob/${REPO_DEFAULT_BRANCH}/${resolved}${hash}`;

@@ -5,6 +5,7 @@ import { expect, test } from '@playwright/test';
 // resolves to an actual element.
 
 const breakpoints = [
+	{ label: 'mobile-min', width: 320, height: 1200 },
 	{ label: 'mobile-small', width: 390, height: 1200 },
 	{ label: 'mobile-large', width: 430, height: 1200 },
 	{ label: 'tablet', width: 768, height: 1200 },
@@ -12,10 +13,14 @@ const breakpoints = [
 ];
 
 // Content routes gained the IA nav shell (persistent sidebar at `lg`, a
-// per-page TOC rail at `xl`) — check them at the same breakpoints so a future
+// per-page TOC rail at `xl`). Check them at the same breakpoints so a future
 // layout change here gets the same overflow guard the home page has.
 const routes = [
 	'/',
+	'/library',
+	'/challenges',
+	'/practice',
+	'/printables',
 	'/reference',
 	'/reference/algorithm-templates',
 	'/guide/interview-practice-evidence',
@@ -54,4 +59,10 @@ test('home-route same-page hash links all resolve to an element', async ({ page 
 		return unique.filter((h) => h.length > 1 && !document.querySelector(h));
 	});
 	expect(broken, 'home-route hash targets without matching element').toEqual([]);
+});
+
+test('minimum-width navigation control remains visible', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 1200 });
+	await page.goto('/');
+	await expect(page.getByRole('button', { name: 'Open navigation' })).toBeInViewport();
 });

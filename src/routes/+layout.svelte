@@ -16,21 +16,31 @@
 	let mobileOpen = $state(false);
 
 	// Absolute paths keep section navigation stable from any route.
-	const navLinks: { href: string; label: string }[] = [
-		{ href: '/', label: 'Home' },
-		{ href: '/guide/interview-practice-evidence', label: 'Guide' },
-		{ href: '/reference', label: 'Reference' },
-		{ href: '/algorithms', label: 'Algorithms' },
+	const navLinks: { href: string; label: string; sections: string[] }[] = [
+		{ href: '/challenges', label: 'Practice', sections: ['/challenges'] },
+		{
+			href: '/library',
+			label: 'Library',
+			sections: ['/library', '/algorithms', '/reference', '/practice', '/printables'],
+		},
+		{ href: '/guide/getting-started', label: 'Method', sections: ['/guide'] },
 	];
+	const isCurrentSection = (sections: string[]) =>
+		sections.some((section) => page.url.pathname === section || page.url.pathname.startsWith(`${section}/`));
+	const currentNavState = (href: string, sections: string[]): 'page' | 'location' | undefined => {
+		if (page.url.pathname === href) return 'page';
+		return isCurrentSection(sections) ? 'location' : undefined;
+	};
+	const showMobileSectionNav = $derived(isCurrentSection(['/guide', '/reference', '/algorithms']));
 
 	const SITE_NAME = 'The DSA Woodshed';
 	const SITE_URL = 'https://dsa-woodshed.space';
-	const SITE_TITLE = 'The DSA Woodshed — practice interviews with a resident agent interviewer';
+	const SITE_TITLE = 'The DSA Woodshed | Editor-first technical interview practice';
 	const SITE_DESCRIPTION =
-		'A practice room for technical interviews: one click opens a live session where a kind, exacting agent interviewer runs the rep — plus the printable booklet and reference library it draws on.';
+		'Practice technical interviews in a real editor. Choose REACTO, CLARP, UMPIRE, or plain comments, then write code and focused tests.';
 	const SECURITY_URL = `${REPO_URL}/security/advisories/new`;
 	const OG_IMAGE = `${SITE_URL}/og-image.png`;
-	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}`;
+	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}?quickstart=1`;
 
 	const jsonLd = {
 		'@context': 'https://schema.org',
@@ -45,14 +55,14 @@
 	// Per-page SEO: routes expose `title` / `summary` from their load functions
 	// (see App.PageData); this ONE layout-level <SEOHead> derives its head values
 	// from them, so every prerendered page carries exactly one title/description
-	// — and matching og:/twitter: pairs — with the site generics only as the
+	// and matching og:/twitter: pairs, with the site generics only as the
 	// fallback (home page, error surface).
-	const headTitle = $derived(page.data.title ? `${page.data.title} — ${SITE_NAME}` : SITE_TITLE);
+	const headTitle = $derived(page.data.title ? `${page.data.title} | ${SITE_NAME}` : SITE_TITLE);
 	const headDescription = $derived(page.data.summary || SITE_DESCRIPTION);
 </script>
 
 <!-- House-canon SEO via the extracted <SEOHead> (TIN-2225). The single head
-     block for every route — pages contribute via load data, never their own
+     block for every route. Pages contribute via load data, never their own
      <svelte:head> meta, so built pages cannot stack duplicate descriptions. -->
 <SEOHead
 	title={headTitle}
@@ -73,32 +83,35 @@
 	>
 
 	<AppBar class="saturn-nav sticky top-0 z-40" data-pagefind-ignore>
-		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto] px-4 py-2">
+		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto] px-4 py-2 max-[374px]:gap-0 max-[374px]:px-0">
 			<AppBar.Lead>
 				<a
 					href="/"
-					class="hover:text-primary-500 font-mono text-lg font-bold tracking-tight whitespace-nowrap transition-colors inline-flex items-center gap-2"
+					class="hover:text-primary-500 inline-flex min-h-11 items-center gap-2 font-mono text-lg font-bold tracking-tight whitespace-nowrap transition-colors"
 					aria-label={SITE_NAME + ' home'}
 				>
 					<SaturnMark class="text-primary-500 h-[1.05em] w-[1.05em]" />{SITE_NAME}</a
 				>
 			</AppBar.Lead>
 			<AppBar.Headline></AppBar.Headline>
-			<AppBar.Trail>
+			<AppBar.Trail class="max-[374px]:gap-0">
 				<nav class="hidden items-center gap-4 text-sm lg:flex" aria-label="Section navigation">
-					{#each navLinks as { href, label } (href)}
+					{#each navLinks as { href, label, sections } (href)}
+						{@const current = currentNavState(href, sections)}
 						<a
 							{href}
-							class="hover:text-primary-500 transition-colors"
+							class="inline-flex min-h-11 items-center rounded-sm px-2 py-2 transition-colors {current
+								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
+								: 'hover:text-primary-500'}"
 							aria-label={label}
-							aria-current={page.url.pathname === href ? 'page' : undefined}>{label}</a
+							aria-current={current}>{label}</a
 						>
 					{/each}
 					<a
 						href={CODESPACES_URL}
 						target="_blank"
 						rel="noopener"
-						class="bg-primary-500 hover:bg-primary-600 rounded-md px-3 py-1.5 text-sm font-semibold text-white transition-colors"
+						class="bg-primary-500 hover:bg-primary-600 inline-flex min-h-11 items-center rounded-md px-3 py-1.5 text-sm font-semibold text-white transition-colors"
 						aria-label="Start a practice session in GitHub Codespaces">Start</a
 					>
 					<SearchDialog />
@@ -109,12 +122,12 @@
 					<SearchDialog />
 				</div>
 
-				<!-- Mobile drawer: reuses the house BindableDrawer + the same <SiteNav>
-				     the desktop persistent sidebar renders, so mobile gets the full
-				     section/entry IA instead of just the three top-level links. -->
+				<!-- Mobile keeps the primary IA short. On content routes, SiteNav adds
+				     only the current section's entries instead of repeating the entire
+				     library tree inside every drawer. -->
 				<button
 					type="button"
-					class="hover:bg-surface-200-800 rounded-sm p-2 lg:hidden"
+					class="hover:bg-surface-200-800 inline-flex min-h-11 min-w-11 items-center justify-center rounded-sm p-2 lg:hidden"
 					aria-label="Open navigation"
 					onclick={() => (mobileOpen = true)}
 				>
@@ -122,12 +135,15 @@
 				</button>
 				<BindableDrawer bind:open={mobileOpen} title={SITE_NAME}>
 					<nav aria-label="Primary" class="mb-6 space-y-0.5 text-sm">
-						{#each navLinks as { href, label } (href)}
+						{#each navLinks as { href, label, sections } (href)}
+							{@const current = currentNavState(href, sections)}
 							<a
 								{href}
-								aria-current={page.url.pathname === href ? 'page' : undefined}
+								aria-current={current}
 								onclick={() => (mobileOpen = false)}
-								class="hover:bg-surface-200-800 block rounded-sm px-2 py-1.5">{label}</a
+								class="flex min-h-11 items-center rounded-sm px-2 py-1.5 {current
+									? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
+									: 'hover:bg-surface-200-800'}">{label}</a
 							>
 						{/each}
 						<a
@@ -135,11 +151,15 @@
 							target="_blank"
 							rel="noopener"
 							onclick={() => (mobileOpen = false)}
-							class="bg-primary-500 hover:bg-primary-600 mt-1 block w-fit rounded-md px-3 py-1.5 font-semibold text-white transition-colors"
+							class="bg-primary-500 hover:bg-primary-600 mt-1 inline-flex min-h-11 w-fit items-center rounded-md px-3 py-1.5 font-semibold text-white transition-colors"
 							aria-label="Start a practice session in GitHub Codespaces">Start</a
 						>
 					</nav>
-					<SiteNav onNavigate={() => (mobileOpen = false)} />
+					{#if showMobileSectionNav}
+						<div class="border-surface-200-800 border-t pt-5">
+							<SiteNav currentSectionOnly onNavigate={() => (mobileOpen = false)} />
+						</div>
+					{/if}
 					<div class="border-surface-200-800 mt-6 flex justify-center border-t pt-4">
 						<ThemeSwitcher />
 					</div>
@@ -159,7 +179,7 @@
 	>
 		<div class="container mx-auto flex flex-col gap-4 px-6 py-8 text-sm md:flex-row md:items-center md:justify-between">
 			<p class="text-surface-700-300">
-				A practice room with a resident interviewer. Content is tracked in git; every page links to its source.
+				Editor-first interview practice. Content is tracked in git, and every packet page links to its source.
 			</p>
 			<nav class="flex flex-wrap gap-4" aria-label="Footer">
 				<a href={REPO_URL} target="_blank" rel="noopener" class="hover:text-primary-500 transition-colors"

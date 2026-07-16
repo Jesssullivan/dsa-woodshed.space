@@ -73,39 +73,39 @@ body {
 	overscroll-behavior-y: none;
 }
 
-/* Refined heading scale with theme typography variables.
-   omux theme already declares --typo-heading--*; we tune sizes + tracking
-   here so the visual hierarchy reads as a devtool launch surface (sharp,
-   tight) rather than generic prose. */
-h1,
-.h1 {
-	font-size: clamp(2.5rem, 5vw + 1rem, 5rem);
-	line-height: 1.05;
-	letter-spacing: -0.025em;
-	font-weight: 700;
-}
+/* Refined heading defaults belong in Tailwind's base layer so an explicit
+   component utility can still choose a smaller local heading. */
+@layer base {
+	h1,
+	.h1 {
+		font-size: clamp(2.5rem, 5vw + 1rem, 5rem);
+		line-height: 1.05;
+		letter-spacing: -0.025em;
+		font-weight: 700;
+	}
 
-h2,
-.h2 {
-	font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem);
-	line-height: 1.15;
-	letter-spacing: -0.02em;
-	font-weight: 700;
-}
+	h2,
+	.h2 {
+		font-size: clamp(1.5rem, 2.5vw + 0.5rem, 2.25rem);
+		line-height: 1.15;
+		letter-spacing: -0.02em;
+		font-weight: 700;
+	}
 
-h3,
-.h3 {
-	font-size: 1.5rem;
-	line-height: 1.25;
-	letter-spacing: -0.015em;
-	font-weight: 600;
-}
+	h3,
+	.h3 {
+		font-size: 1.5rem;
+		line-height: 1.25;
+		letter-spacing: -0.015em;
+		font-weight: 600;
+	}
 
-h4,
-.h4 {
-	font-size: 1.25rem;
-	line-height: 1.3;
-	font-weight: 600;
+	h4,
+	.h4 {
+		font-size: 1.25rem;
+		line-height: 1.3;
+		font-weight: 600;
+	}
 }
 
 /* Section anchor offset so #hash jumps land below the sticky AppBar.
@@ -212,6 +212,19 @@ pre.shiki span {
 	color: var(--color-primary-500);
 	text-decoration: underline;
 	text-underline-offset: 2px;
+}
+
+/* Visited state is intentionally limited to reading-path links. Navigation,
+   calls to action, breadcrumbs, link cards, and prev/next controls keep their
+   stable interaction color. */
+.prose a:visited:not(:hover),
+a.editorial-link:visited:not(:hover) {
+	color: var(--color-primary-700);
+}
+
+[data-mode='dark'] .prose a:visited:not(:hover),
+[data-mode='dark'] a.editorial-link:visited:not(:hover) {
+	color: var(--color-primary-300);
 }
 
 .prose a:hover {
