@@ -83,7 +83,7 @@
 	>
 
 	<AppBar class="saturn-nav sticky top-0 z-40" data-pagefind-ignore>
-		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto] px-4 py-2">
+		<AppBar.Toolbar class="grid-cols-[auto_1fr_auto] px-4 py-2 max-[374px]:gap-0 max-[374px]:px-0">
 			<AppBar.Lead>
 				<a
 					href="/"
@@ -94,7 +94,7 @@
 				>
 			</AppBar.Lead>
 			<AppBar.Headline></AppBar.Headline>
-			<AppBar.Trail>
+			<AppBar.Trail class="max-[374px]:gap-0">
 				<nav class="hidden items-center gap-4 text-sm lg:flex" aria-label="Section navigation">
 					{#each navLinks as { href, label, sections } (href)}
 						{@const current = currentNavState(href, sections)}
