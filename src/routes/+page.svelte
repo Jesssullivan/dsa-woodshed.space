@@ -46,14 +46,15 @@
 <main class="mx-auto max-w-5xl px-6 py-16 md:py-24" data-pagefind-body>
 	<header class="max-w-4xl">
 		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The DSA Woodshed</p>
-		<h1 class="mt-3 max-w-3xl text-4xl leading-tight font-bold md:text-6xl">Woodshedding for the whiteboard.</h1>
+		<h1 class="mt-3 max-w-3xl text-4xl leading-tight font-bold md:text-6xl">Practice the interview in the editor.</h1>
 		<p class="text-surface-700-300 mt-6 max-w-2xl text-xl leading-relaxed font-semibold">
-			One click opens a Codespace where a resident interviewer runs on GitHub's own Copilot harness.
+			Open a Codespace and work in ordinary comments, real code, and focused tests with a resident interviewer.
 		</p>
 		<p class="text-surface-700-300 mt-4 max-w-2xl text-lg leading-relaxed">
-			You own the comments, code, and tests. The interviewer checks visible work through a deterministic
-			<code>just</code> command and file contract designed to remain legible to lightweight models. The packet includes 43
-			core drills, 72 editor targets, a printable booklet, and reference sheets.
+			You own the reasoning, solution, and tests. The interviewer uses GitHub's native Copilot harness and a
+			deterministic
+			<code>just</code> contract designed to stay legible to lightweight models. The current Python track includes 43 core
+			drills and 72 editor targets.
 		</p>
 
 		<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
