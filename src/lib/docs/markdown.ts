@@ -46,6 +46,11 @@ import type { Highlighter } from 'shiki';
 import { slugify } from './slugify.js';
 export { slugify };
 
+// Build-time Mermaid → SVG rendering (see mermaid.ts's header for the full
+// rationale and its failure-mode contract: it never throws, only resolves to
+// `null` per diagram on any failure).
+import { renderMermaidDiagrams } from './mermaid';
+
 export interface MarkdownOptions {
 	/**
 	 * Resolve a relative (non-http, non-anchor, non-mailto) link href, e.g. a
@@ -268,6 +273,24 @@ function renderInline(text: string, options: MarkdownOptions): string {
 	return out;
 }
 
+/**
+ * The labelled-source fallback figure for a mermaid diagram: used both when a
+ * fence-level render call fails (see renderMermaidDiagrams in ./mermaid.ts)
+ * and as the synchronous safety net in renderBlocks below for any mermaid
+ * fence the build-time extraction in renderMarkdown didn't catch (e.g. one
+ * indented inside a list or admonition body — out of scope for the synced
+ * content today, but the renderer must still never lose the diagram text).
+ */
+function mermaidFallbackFigure(code: string): string {
+	const plain = `<pre><code class="language-mermaid">${escapeHtml(code)}\n</code></pre>`;
+	return `<figure class="diagram-fallback"><figcaption class="diagram-note">Diagram — rendered as source; see the source page for the visual.</figcaption>${plain}</figure>`;
+}
+
+/** A successfully build-time-rendered mermaid diagram, as inline SVG. */
+function mermaidFigure(svg: string): string {
+	return `<figure class="diagram">${svg}</figure>`;
+}
+
 const FENCE_RE = /^(```|~~~)\s*([\w-]*)\s*$/;
 const HEADING_RE = /^(#{1,6})\s+(.*?)\s*#*\s*$/;
 const HR_RE = /^\s*(?:-{3,}|\*{3,}|_{3,})\s*$/;
@@ -421,17 +444,15 @@ function renderBlocks(lines: string[], options: RenderContext): string {
 				out.push(highlighted);
 				continue;
 			}
-			const cls = lang ? ` class="language-${escapeAttr(lang)}"` : '';
-			const plain = `<pre><code${cls}>${escapeHtml(code)}\n</code></pre>`;
 			if (lang === 'mermaid') {
-				// No client-side mermaid renderer on this surface (a zero-dependency
-				// constraint). Show the diagram SOURCE as a labelled code block so the
-				// information is not lost and the reader knows to view the original.
-				out.push(
-					`<figure class="diagram-fallback"><figcaption class="diagram-note">Diagram — rendered as source; see the source page for the visual.</figcaption>${plain}</figure>`,
-				);
+				// Reached only for a mermaid fence the build-time extraction in
+				// renderMarkdown did not lift out (see MERMAID_FENCE_RE below — it
+				// only matches column-0 fences); fall back to the labelled source so
+				// the diagram is never silently dropped.
+				out.push(mermaidFallbackFigure(code));
 			} else {
-				out.push(plain);
+				const cls = lang ? ` class="language-${escapeAttr(lang)}"` : '';
+				out.push(`<pre><code${cls}>${escapeHtml(code)}\n</code></pre>`);
 			}
 			continue;
 		}
@@ -582,13 +603,56 @@ function renderBlocks(lines: string[], options: RenderContext): string {
 	return out.join('\n');
 }
 
+// Matches a top-level (column-0) ```mermaid or ~~~mermaid fence, across the
+// WHOLE source (multiline, not the per-line FENCE_RE the block renderer uses),
+// so it can be lifted out before renderBlocks ever sees it. Scoped to column-0
+// fences: every synced doc's mermaid fence is unindented (see markdown.test.ts
+// and docs/guide/when-to-use-what.md); an indented one — inside a list or
+// admonition body — still renders, just via the synchronous fallback in
+// renderBlocks above, never lost.
+const MERMAID_FENCE_RE = /^(```|~~~)mermaid[ \t]*\r?\n([\s\S]*?)\r?\n\1[ \t]*$/gm;
+
+interface ExtractedMermaidDiagram {
+	/** Unique, HTML-metacharacter-free token standing in for the diagram in the text the block renderer sees. */
+	placeholder: string;
+	/** The diagram's raw Mermaid source (unescaped). */
+	source: string;
+}
+
+/**
+ * Lift every top-level ```mermaid fence out of the raw markdown source before
+ * the (synchronous) block renderer runs, replacing each with a unique
+ * placeholder line. This lets renderMarkdown render the diagrams themselves
+ * ASYNCHRONOUSLY (mermaid-isomorphic drives a real browser) without making the
+ * whole recursive, synchronous block renderer async. The placeholder is
+ * isolated with forced blank lines so it always becomes its own paragraph
+ * regardless of the surrounding markdown, which keeps the later substitution
+ * in renderMarkdown a plain, unambiguous string swap.
+ */
+function extractMermaidDiagrams(text: string): { text: string; diagrams: ExtractedMermaidDiagram[] } {
+	const diagrams: ExtractedMermaidDiagram[] = [];
+	const replaced = text.replace(MERMAID_FENCE_RE, (_match, _marker: string, source: string) => {
+		// Delimited with `§` (a character no synced doc's prose uses): outside
+		// escapeHtml's fixed character set (&<>"'), and not part of any inline
+		// construct this renderer matches (emphasis, code spans, links), so it
+		// survives renderInline/renderBlocks completely inert and unambiguous.
+		const placeholder = `§MERMAID-${diagrams.length}§`;
+		diagrams.push({ placeholder, source });
+		return `\n\n${placeholder}\n\n`;
+	});
+	return { text: replaced, diagrams };
+}
+
 /**
  * Render a markdown source string to safe HTML for the .prose container.
  *
  * Async because fenced code is highlighted with Shiki, whose grammar/theme JSON
- * loads lazily. Prefer calling this at LOAD/BUILD time (see the prerendered
- * reference [slug] +page.server.ts) so highlighted HTML is baked into the static
- * output and no Shiki payload ships to the client.
+ * loads lazily, AND because any mermaid fence is rendered to inline SVG via a
+ * headless-browser call (see ./mermaid.ts) that resolves once per whole
+ * document. Prefer calling this at LOAD/BUILD time (see the prerendered
+ * reference [slug] +page.server.ts) so the highlighted, diagram-rendered HTML
+ * is baked into the static output and neither Shiki nor Playwright/mermaid
+ * ships to the client.
  */
 export async function renderMarkdown(src: string, options: MarkdownOptions = {}): Promise<string> {
 	// Normalize newlines; strip a leading YAML frontmatter block if present.
@@ -598,8 +662,33 @@ export async function renderMarkdown(src: string, options: MarkdownOptions = {})
 	// otherwise escape into literal paragraph text. Dropping just the wrapper
 	// lines leaves the list inside to render as a normal <ul>.
 	text = text.replace(/^<div class="grid cards" markdown>\s*$/gm, '').replace(/^<\/div>\s*$/gm, '');
+
+	const { text: withPlaceholders, diagrams } = extractMermaidDiagrams(text);
 	const highlight = await resolveHighlight();
-	return renderBlocks(text.split('\n'), { ...options, highlight });
+	let html = renderBlocks(withPlaceholders.split('\n'), { ...options, highlight });
+
+	if (diagrams.length) {
+		// renderMermaidDiagrams's own contract is to never reject (see
+		// mermaid.ts): a failure degrades every entry to `null`. This catch is
+		// defense in depth ONLY — if that contract is ever violated, every
+		// diagram in this document still gets its fallback figure instead of
+		// failing the whole page (and the build with it).
+		const rendered = await renderMermaidDiagrams(diagrams.map((d) => d.source)).catch(() => diagrams.map(() => null));
+		for (const [i, diagram] of diagrams.entries()) {
+			const svg = rendered[i];
+			const figure = svg ? mermaidFigure(svg) : mermaidFallbackFigure(diagram.source);
+			// The placeholder is almost always its own isolated paragraph (the
+			// blank lines forced around it in extractMermaidDiagrams); fall back to
+			// a raw swap for the one case that unwraps a lone <p>, a list item
+			// whose ENTIRE content was the diagram (renderListItemContent strips a
+			// single wrapping <p>) — out of scope for synced content today, but
+			// still handled rather than silently dropped.
+			const wrapped = `<p>${diagram.placeholder}</p>`;
+			html = html.includes(wrapped) ? html.split(wrapped).join(figure) : html.split(diagram.placeholder).join(figure);
+		}
+	}
+
+	return html;
 }
 
 export interface Heading {

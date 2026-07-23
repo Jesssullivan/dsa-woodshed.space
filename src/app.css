@@ -343,8 +343,25 @@ a.editorial-link:visited:not(:hover) {
 	margin-right: 0.4em;
 }
 
-/* Mermaid fallback: the raw renderer has no client-side diagram engine, so a
-   ```mermaid block renders as its labelled source (see $lib/docs/markdown.ts). */
+/* Mermaid diagrams are rendered to inline SVG at BUILD time via mermaid-isomorphic
+   (see $lib/docs/mermaid.ts + the extraction in $lib/docs/markdown.ts). A fixed
+   light card behind the SVG keeps Mermaid's default black-on-transparent output
+   legible under the dark theme too, since the build-time render has no notion of
+   the reader's color-scheme preference. `.diagram-fallback` below is the
+   labelled-source figure used only when a render call fails. */
+.prose figure.diagram {
+	margin: 1.25em 0;
+	padding: 1rem;
+	border-radius: 0.5rem;
+	background: #fff;
+	overflow-x: auto;
+}
+.prose figure.diagram svg {
+	display: block;
+	margin: 0 auto;
+	max-width: 100%;
+	height: auto;
+}
 .prose figure.diagram-fallback {
 	margin: 1.25em 0;
 }

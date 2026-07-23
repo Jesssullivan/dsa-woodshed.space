@@ -13,9 +13,14 @@ import { describe, expect, it } from 'vitest';
 // the scaffold-side twin so the two repos cannot re-diverge silently.
 //
 // The invariants, per `context/house-frontend-stack.md`:
-// - Skeleton + skeleton-svelte are EXACT `4.15.2` — there is NO Skeleton v5 GA
-//   (only `5.0.0-next.*`); a "bump to v5" PR must fail here first, before
-//   anything visual.
+// - Skeleton + skeleton-svelte are EXACT `4.15.2`. Skeleton v5 IS GA upstream
+//   (`5.0.0`, not just a `-next.*` prerelease) as of this writing, but the v4→v5
+//   jump is a breaking major (new theming/component APIs) and this repo is
+//   deliberately deferring that migration to its own scoped follow-up rather
+//   than absorbing it as a drive-by dependency bump. A "bump to v5" PR must
+//   fail here first, before anything visual, until that follow-up lands; see
+//   the dependabot ignore rule for this pair in .github/dependabot.yml (the
+//   reason recreating dependency PRs like #20/#21 stopped).
 // - `typescript` is EXACT-pinned on the 6.0.x line (the one real manifest
 //   major); it must never float behind a caret/tilde.
 // - pnpm is `10.13.1` EXACT via corepack — never pnpm 9.
