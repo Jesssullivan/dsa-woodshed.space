@@ -157,8 +157,14 @@ test('printables serves the verified booklet from the same origin with keyboard 
 	const localUrl = await openAction.getAttribute('href');
 	expect(localUrl).toMatch(/^\/generated\/booklet-[0-9a-f]{64}\.pdf$/);
 	await expect(downloadAction).toHaveAttribute('download', 'booklet.pdf');
-	await expect(reader.locator('object[type="application/pdf"]')).toBeVisible();
-	await expect(reader.locator('object[type="application/pdf"]')).toHaveAttribute('data', localUrl!);
+	const pdfViewerEnabled = await page.evaluate(() => navigator.pdfViewerEnabled);
+	if (pdfViewerEnabled) {
+		await expect(reader.locator('object[type="application/pdf"]')).toBeVisible();
+		await expect(reader.locator('object[type="application/pdf"]')).toHaveAttribute('data', localUrl!);
+	} else {
+		await expect(reader.locator('object[type="application/pdf"]')).toHaveCount(0);
+		await expect(reader.getByTestId('pdf-reader-unavailable')).toBeVisible();
+	}
 
 	expect(await openAction.evaluate((element) => element.tabIndex)).toBe(0);
 	if (browserName === 'webkit') {
@@ -192,7 +198,11 @@ test('printables serves the verified booklet from the same origin with keyboard 
 	await expect(downloadAction).toBeFocused();
 
 	await page.setViewportSize({ width: 768, height: 1024 });
-	await expect(reader.locator('object[type="application/pdf"]')).toBeVisible();
+	if (pdfViewerEnabled) {
+		await expect(reader.locator('object[type="application/pdf"]')).toBeVisible();
+	} else {
+		await expect(reader.getByTestId('pdf-reader-unavailable')).toBeVisible();
+	}
 
 	const response = await page.request.get(localUrl!);
 	expect(response.ok()).toBe(true);
