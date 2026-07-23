@@ -103,13 +103,16 @@
 						class="bg-primary-500 hover:bg-primary-600 inline-flex min-h-11 items-center rounded-md px-3 py-1.5 text-sm font-semibold text-white transition-colors"
 						aria-label="Start a practice session in GitHub Codespaces">Start</a
 					>
-					<SearchDialog />
 					<ThemeSwitcher />
 				</nav>
 
-				<div class="lg:hidden">
-					<SearchDialog />
-				</div>
+				<!-- One SearchDialog subtree, always in the document (no display-class
+				     toggling). AppBar.Trail is a flex row (see [data-part='trail'] in
+				     @skeletonlabs/skeleton-common), so this single instance naturally
+				     sits at the right edge next to ThemeSwitcher on lg (the `nav` above
+				     collapses to zero width below lg) and next to the hamburger below
+				     lg — no forked trigger/content halves needed. -->
+				<SearchDialog />
 
 				<!-- Mobile keeps the primary IA short. On content routes, SiteNav adds
 				     only the current section's entries instead of repeating the entire
