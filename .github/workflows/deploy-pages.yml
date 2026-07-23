@@ -8,8 +8,8 @@ name: Deploy to GitHub Pages
 # RUNNERS: jobs run on the self-hosted ARC pool for this repo (shared
 # capability label `tinyland-docker`; scale set jesssullivan-dsa-woodshed-
 # browser, image ghcr.io/tinyland-inc/actions-runner-browser — Playwright
-# system libs pre-baked). Keeps this private repo entirely off GitHub-hosted
-# minutes.
+# system libs pre-baked). Keeps browser-capable work on the shared pool and
+# off GitHub-hosted minutes.
 #
 # CONTENT SYNC: src/content is generated — a fresh checkout carries only the
 # committed .manifest.json, and `pnpm run build` does NOT sync, so the build
@@ -29,8 +29,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: github-pages-${{ github.ref }}
@@ -99,6 +97,10 @@ jobs:
     needs: build
     runs-on: tinyland-docker
     timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
