@@ -17,6 +17,16 @@ updates:
       - dependency-name: '@types/node'
         update-types:
           - 'version-update:semver-major'
+      # Skeleton v5 is GA but the v4->v5 jump is a deliberate, scoped follow-up
+      # migration, not a routine bump (see src/lib/house-stack-contract.test.ts).
+      # Without this, dependabot recreates the same major-bump PR weekly
+      # (#20/#21 before this rule).
+      - dependency-name: '@skeletonlabs/skeleton'
+        update-types:
+          - 'version-update:semver-major'
+      - dependency-name: '@skeletonlabs/skeleton-svelte'
+        update-types:
+          - 'version-update:semver-major'
     groups:
       minor-and-patch:
         update-types:
