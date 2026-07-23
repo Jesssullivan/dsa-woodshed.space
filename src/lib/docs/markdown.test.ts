@@ -187,6 +187,12 @@ describe('renderMarkdown', () => {
 		expect(html).toContain('<a href="https://greatfallstoolbus.org" rel="noopener external">the site</a>');
 	});
 
+	it('keeps literal C2, L2, and L3 prose distinct from internal sentinels', async () => {
+		const html = await renderMarkdown('Scores C2 and L2 remain; L2 is a *method*; L3 is a *dossier*.');
+		expect(html).toBe('<p>Scores C2 and L2 remain; L2 is a <em>method</em>; L3 is a <em>dossier</em>.</p>');
+		expect(html).not.toContain('undefined');
+	});
+
 	it('resolves relative links via the provided resolver', async () => {
 		const html = await renderMarkdown('[adr](../decisions/0002.md)', {
 			resolveLink: (href) => `https://github.com/o/r/blob/main/docs/${href.replace('../', '')}`,

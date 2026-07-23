@@ -181,8 +181,14 @@ interface InlineStores {
 	links: string[];
 }
 
-const CODE_SENTINEL = (i: number) => ` C${i} `;
-const LINK_SENTINEL = (i: number) => ` L${i} `;
+// Unicode noncharacters are reserved for internal processing and cannot occur
+// in authored interchange text. Keep sentinels out of ordinary prose so score
+// tokens such as "C2" and layer labels such as "L2" never become store lookups.
+// Both markers are restored before rendered HTML leaves this module.
+const SENTINEL_OPEN = '\uFDD0';
+const SENTINEL_CLOSE = '\uFDD1';
+const CODE_SENTINEL = (i: number) => `${SENTINEL_OPEN}C${i}${SENTINEL_CLOSE}`;
+const LINK_SENTINEL = (i: number) => `${SENTINEL_OPEN}L${i}${SENTINEL_CLOSE}`;
 
 // CommonMark 6.1 code spans: a run of N backticks opens a span closed by the
 // NEXT run of exactly N backticks; shorter/longer runs in between stay literal
@@ -268,8 +274,8 @@ function renderInline(text: string, options: MarkdownOptions): string {
 	let out = formatInto(text, options, stores);
 	// Restore links (labels may still carry code sentinels) THEN code, so every
 	// sentinel resolves against the one shared store.
-	out = out.replace(/ L(\d+) /g, (_m, i: string) => stores.links[Number(i)]);
-	out = out.replace(/ C(\d+) /g, (_m, i: string) => `<code>${stores.code[Number(i)]}</code>`);
+	out = out.replace(/\uFDD0L(\d+)\uFDD1/g, (_m, i: string) => stores.links[Number(i)]);
+	out = out.replace(/\uFDD0C(\d+)\uFDD1/g, (_m, i: string) => `<code>${stores.code[Number(i)]}</code>`);
 	return out;
 }
 

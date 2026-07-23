@@ -71,6 +71,9 @@ test('minimum-width navigation control remains visible', async ({ page }) => {
 test('Project is current without also marking Method', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1200 });
 	await page.goto('/guide/source-of-truth');
+	const article = page.locator('article');
+	await expect(article).not.toContainText('undefined');
+	await expect(article).toContainText(/The distinction that keeps this publishable: L2 is a method .* L3 is a dossier/);
 	const navigation = page.getByRole('navigation', { name: 'Section navigation' });
 	await expect(navigation.getByRole('link', { name: 'Project' })).toHaveAttribute('aria-current', 'page');
 	await expect(navigation.getByRole('link', { name: 'Method' })).not.toHaveAttribute('aria-current');
