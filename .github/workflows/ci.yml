@@ -46,6 +46,7 @@ jobs:
       - name: Sync content from the packet
         run: pnpm run sync-content
         env:
+          GITHUB_TOKEN: ${{ github.token }}
           WOODSHED_PACKET_PATH: ${{ github.workspace }}/dsa-study-packet
 
       - run: pnpm run check

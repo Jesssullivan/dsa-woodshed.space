@@ -14,6 +14,7 @@ dist/
 # Regenerate with `pnpm run sync-content` (or `just build`).
 src/content/**
 !src/content/.manifest.json
+static/generated/booklet-*.pdf
 
 # Web-perf artifacts: generated image variants, bundle treemap, and the
 # generated image manifest. Regenerate via `pnpm run optimize:images`.

@@ -1,6 +1,8 @@
 import { error } from '@sveltejs/kit';
+import { bookletMetadata } from '$lib/docs/booklet';
 import { loadRawBody } from '$lib/docs/content';
 import { extractHeadings, renderMarkdown } from '$lib/docs/markdown';
+import { splitPrintableMarkdown } from '$lib/docs/printables';
 import { getSinglePageEntry, makeLinkResolver, SINGLE_PAGE_SECTIONS } from '$lib/docs/registry';
 import type { EntryGenerator, PageServerLoad } from './$types';
 
@@ -19,7 +21,15 @@ export const load: PageServerLoad = async ({ params }) => {
 	if (!entry) throw error(404, `No content section: ${params.section}`);
 	const raw = await loadRawBody(entry.out);
 	if (raw === undefined) throw error(404, `No synced body for content section: ${params.section}`);
-	const html = await renderMarkdown(raw, { resolveLink: makeLinkResolver(entry.sourcePath) });
+	const resolveLink = makeLinkResolver(entry.sourcePath);
+	const printableParts = entry.section === 'printables' ? splitPrintableMarkdown(raw) : undefined;
+	const html = printableParts ? '' : await renderMarkdown(raw, { resolveLink });
+	const beforeReaderHtml = printableParts
+		? await renderMarkdown(printableParts.beforeReader, { resolveLink })
+		: undefined;
+	const afterReaderHtml = printableParts
+		? await renderMarkdown(printableParts.afterReader, { resolveLink })
+		: undefined;
 	return {
 		section: entry.section,
 		sectionTitle: SECTION_TITLES[entry.section as keyof typeof SECTION_TITLES],
@@ -27,6 +37,9 @@ export const load: PageServerLoad = async ({ params }) => {
 		summary: entry.summary,
 		sourcePath: entry.sourcePath,
 		html,
+		beforeReaderHtml,
+		afterReaderHtml,
+		booklet: printableParts ? bookletMetadata : undefined,
 		headings: extractHeadings(raw),
 	};
 };

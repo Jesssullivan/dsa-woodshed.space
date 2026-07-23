@@ -18,6 +18,7 @@
 //   DEEP NAV / SIDEBAR is deliberately out of scope for this module. A follow-up
 //   IA stream consumes the exported `sections()` / `allEntries()` shape to build
 //   navigation. Keep this file about content identity, not layout.
+import { bookletMetadata } from '$lib/docs/booklet';
 import { REPO_URL, REPO_DEFAULT_BRANCH } from '$lib/repo';
 import manifestJson from '$content/.manifest.json';
 
@@ -352,12 +353,15 @@ const SPECIAL_PACKET_ROUTES = new Map<string, string>([
 ]);
 
 // Printable PDFs are generated release assets, not tracked packet files.
-// Sheet links have appeared both directly under docs/assets/ and under its
-// sheets/ directory, so accept either packet-relative shape and keep the
-// filename stable at the release boundary.
-function printableReleaseUrl(path: string): string | undefined {
+// The full booklet is copied and digest-verified during content sync so its
+// reading route can use a same-origin native PDF object. Individual sheets stay
+// on GitHub Releases. Accept both historical packet-relative directory shapes.
+function printableAssetUrl(path: string): string | undefined {
 	const match = /^docs\/assets\/(?:sheets\/)?([^/]+\.pdf)$/.exec(path);
-	return match ? `${REPO_URL}/releases/latest/download/${match[1]}` : undefined;
+	if (!match) return undefined;
+	return match[1] === 'booklet.pdf'
+		? bookletMetadata.asset.localUrl
+		: `${REPO_URL}/releases/latest/download/${match[1]}`;
 }
 
 /**
@@ -377,7 +381,7 @@ export function makeLinkResolver(sourcePath: string): (href: string) => string {
 		const resolved = normalizeJoin(dirSegments, pathPart);
 		const entry = entryByPacketPath.get(resolved);
 		if (entry) return `${entryHref(entry)}${hash}`;
-		const printable = printableReleaseUrl(resolved);
+		const printable = printableAssetUrl(resolved);
 		if (printable) return `${printable}${hash}`;
 		const special = SPECIAL_PACKET_ROUTES.get(resolved);
 		if (special) return `${special}${hash}`;

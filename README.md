@@ -29,8 +29,16 @@ rendering code.
 `scripts/sync-content.mjs` reads a packet checkout at
 `WOODSHED_PACKET_PATH`, or `../dsa-study-packet` by default, and writes build
 inputs under the gitignored `src/content/`. It also updates the committed
-`src/content/.manifest.json`. The sync reads the packet at `HEAD`, is
+`src/content/.manifest.json`. The source sync reads the packet at `HEAD`, is
 deterministic, and does not use the packet working tree.
+
+The same command resolves the packet's latest stable GitHub release, downloads
+its single `booklet.pdf`, and verifies the release size, SHA-256 digest, and PDF
+signature before accepting it. Generated metadata lives at the gitignored
+`src/content/.booklet.json`; the PDF uses a digest-addressed path under
+`static/generated/`. This step requires outbound access to the public GitHub API
+and release asset. It fails closed on a timeout, ambiguous asset, oversized
+asset, or verification mismatch.
 
 The packet is public. Local builds and GitHub Actions use the normal read-only
 checkout path and require no deploy key or repository secret. Each rendered
@@ -66,12 +74,15 @@ just check
 just lint
 just test
 just build
+just verify-booklet
 just e2e
 ```
 
 `dev`, `check`, `test`, and `build` sync packet content first. The underlying
 `pnpm run check`, `pnpm run lint`, and `pnpm run test:unit` commands can validate
-site code against content that is already present.
+site code against content that is already present. `just verify-booklet` checks
+the already-synced static PDF against its generated metadata without fetching it
+again.
 
 ## Deploy
 

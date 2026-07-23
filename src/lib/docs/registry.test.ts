@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { bookletMetadata } from '$lib/docs/booklet';
 import { REPO_DEFAULT_BRANCH, REPO_URL } from '$lib/repo';
 import {
 	algorithmTopics,
@@ -124,10 +125,9 @@ describe('makeLinkResolver special-case packet paths', () => {
 		expect(resolve('../reference/index.md')).toBe('/reference');
 	});
 
-	it('routes every printable PDF to its exact latest-release asset', () => {
+	it('routes the verified booklet same-origin and keeps sheets on Releases', () => {
 		const resolve = makeLinkResolver('docs/printables.md');
 		const filenames = [
-			'booklet.pdf',
 			'01-python-stdlib.pdf',
 			'02-data-structures.pdf',
 			'03-algorithm-templates.pdf',
@@ -141,8 +141,9 @@ describe('makeLinkResolver special-case packet paths', () => {
 			'11-14-day-whiteboard-ramp.pdf',
 		];
 
+		expect(resolve('assets/booklet.pdf')).toBe(bookletMetadata.asset.localUrl);
 		for (const filename of filenames) {
-			const packetPath = filename === 'booklet.pdf' ? `assets/${filename}` : `assets/sheets/${filename}`;
+			const packetPath = `assets/sheets/${filename}`;
 			expect(resolve(packetPath)).toBe(`${REPO_URL}/releases/latest/download/${filename}`);
 		}
 	});

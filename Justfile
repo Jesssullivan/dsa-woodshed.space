@@ -36,6 +36,11 @@ format:
 test: sync-content
 	pnpm run test:unit
 
+# Verify the already-synced static booklet against its generated metadata.
+# `just build` separately verifies the copied production asset after SvelteKit.
+verify-booklet:
+	pnpm run verify:booklet
+
 # End-to-end tests (playwright).
 e2e:
 	pnpm run test:e2e
