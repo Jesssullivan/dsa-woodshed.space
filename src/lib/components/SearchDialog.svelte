@@ -48,6 +48,7 @@
 	let query = $state('');
 	let status = $state<Status>('idle');
 	let results = $state<PagefindResultData[]>([]);
+	let searching = $state(false);
 	let pagefind: PagefindModule | null = null;
 	let searchToken = 0;
 
@@ -81,13 +82,23 @@
 		if (!pagefind || status !== 'ready') return;
 		const trimmed = term.trim();
 		if (trimmed.length < 2) {
+			searchToken += 1;
 			results = [];
+			searching = false;
 			return;
 		}
 		const token = ++searchToken;
-		const response = await pagefind.debouncedSearch(trimmed);
-		if (response === null || token !== searchToken) return; // superseded by a newer keystroke
-		results = await Promise.all(response.results.map((r) => r.data()));
+		results = [];
+		searching = true;
+		try {
+			const response = await pagefind.debouncedSearch(trimmed);
+			if (response === null || token !== searchToken) return; // superseded by a newer keystroke
+			const nextResults = await Promise.all(response.results.map((r) => r.data()));
+			if (token !== searchToken) return;
+			results = nextResults;
+		} finally {
+			if (token === searchToken) searching = false;
+		}
 	}
 
 	$effect(() => {
@@ -98,6 +109,8 @@
 		open = false;
 		query = '';
 		results = [];
+		searching = false;
+		searchToken += 1;
 	}
 </script>
 
@@ -153,6 +166,10 @@
 				{:else if status === 'ready'}
 					{#if query.trim().length < 2}
 						<p class="text-surface-500 px-3 py-4 text-sm">Type at least 2 characters to search.</p>
+					{:else if searching}
+						<p class="text-surface-500 flex items-center gap-2 px-3 py-4 text-sm">
+							<Loader2 class="h-4 w-4 animate-spin" aria-hidden="true" /> Searching…
+						</p>
 					{:else if results.length === 0}
 						<p class="text-surface-500 px-3 py-4 text-sm">No results for "{query}".</p>
 					{:else}
