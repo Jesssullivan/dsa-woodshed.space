@@ -11,7 +11,7 @@ describe('public product surface', () => {
 		const home = read('src/routes/+page.svelte');
 		expect(home).toContain('Start with ordinary comments');
 		expect(home).toMatch(/There are no\s+required prefixes or labels\./);
-		expect(home).toContain('Optional vocabulary');
+		expect(home).toMatch(/the same loop with\s+optional labels/);
 		expect(home).not.toContain('Pick the labels that help you think');
 	});
 

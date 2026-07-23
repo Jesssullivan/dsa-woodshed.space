@@ -26,7 +26,7 @@
 	const SITE_URL = 'https://dsa-woodshed.space';
 	const SITE_TITLE = 'The DSA Woodshed | Editor-first technical interview practice';
 	const SITE_DESCRIPTION =
-		'Practice technical interviews in a real editor. Write ordinary reasoning comments, then build code and prove it with focused tests.';
+		"Open a GitHub Codespace where a resident interviewer uses ordinary reasoning comments, focused tests, and GitHub's native Copilot harness.";
 	const SECURITY_URL = `${REPO_URL}/security/advisories/new`;
 	const OG_IMAGE = `${SITE_URL}/og-image.png`;
 	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}?quickstart=1`;

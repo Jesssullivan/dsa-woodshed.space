@@ -85,7 +85,8 @@ test('home defaults to ordinary comments and keeps Printables easy to reach', as
 	const defaultComments = page.getByRole('region', { name: 'Start with ordinary comments' });
 	await expect(defaultComments).toBeVisible();
 	await expect(defaultComments).toContainText(/There are no\s+required prefixes or labels/);
-	await expect(page.getByRole('heading', { name: 'Optional vocabulary' })).toBeVisible();
+	await expect(defaultComments).toContainText('/reacto');
+	await expect(defaultComments).toContainText('optional labels');
 	await expect(
 		page.getByRole('navigation', { name: 'Library shortcuts' }).getByRole('link', { name: 'Printables' }),
 	).toBeVisible();

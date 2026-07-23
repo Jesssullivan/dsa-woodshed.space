@@ -1,4 +1,16 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+// Build-time Mermaid rendering (./mermaid.ts) drives a real headless browser,
+// which is slow and — outside a machine with a Playwright Chromium install —
+// not guaranteed to succeed at all. The renderMarkdown ⇄ mermaid.ts CONTRACT
+// (extract a fence, call renderMermaidDiagrams, substitute an SVG figure on
+// success or the labelled-source figure on `null`) is what these unit tests
+// pin, so it's mocked here for determinism; the real render is exercised for
+// real by the production build (docs/guide/when-to-use-what.md's decision
+// tree), not by this fast unit suite.
+const { renderMermaidDiagramsMock } = vi.hoisted(() => ({ renderMermaidDiagramsMock: vi.fn() }));
+vi.mock('./mermaid', () => ({ renderMermaidDiagrams: renderMermaidDiagramsMock }));
+
 import { extractHeadings, renderMarkdown, slugify } from './markdown';
 
 // Contract for the dependency-free operator-docs markdown renderer (see the
@@ -10,6 +22,10 @@ import { extractHeadings, renderMarkdown, slugify } from './markdown';
 //
 // renderMarkdown is async (Shiki's highlighter loads lazily), so every case
 // awaits it.
+
+beforeEach(() => {
+	renderMermaidDiagramsMock.mockReset();
+});
 
 describe('renderMarkdown', () => {
 	it('renders ATX headings with GitHub-style slug ids', async () => {
@@ -53,14 +69,32 @@ describe('renderMarkdown', () => {
 		expect(html).toMatch(/<span[^>]*>def/);
 	});
 
-	it('renders a mermaid block as labelled source (no client diagram engine)', async () => {
+	it('renders a mermaid fence to inline SVG when the build-time render succeeds', async () => {
+		renderMermaidDiagramsMock.mockResolvedValue(['<svg viewBox="0 0 10 10"><text>start → end</text></svg>']);
 		const src = ['```mermaid', 'graph TD', 'A["start"] --> B["end"]', '```'].join('\n');
+		const html = await renderMarkdown(src);
+		expect(renderMermaidDiagramsMock).toHaveBeenCalledWith(['graph TD\nA["start"] --> B["end"]']);
+		expect(html).toContain('<figure class="diagram"><svg viewBox="0 0 10 10">');
+		expect(html).not.toContain('diagram-fallback');
+	});
+
+	it('keeps the labelled-source fallback figure when the build-time render fails (broken diagram)', async () => {
+		renderMermaidDiagramsMock.mockResolvedValue([null]);
+		const src = ['```mermaid', 'this is not [valid mermaid syntax', '```'].join('\n');
 		const html = await renderMarkdown(src);
 		expect(html).toContain('<figure class="diagram-fallback">');
 		expect(html).toContain('<figcaption class="diagram-note">Diagram');
-		// The diagram source is preserved as an escaped mermaid code block.
+		// The diagram source is preserved as an escaped mermaid code block, never lost.
 		expect(html).toContain('<pre><code class="language-mermaid">');
-		expect(html).toContain('A[&quot;start&quot;] --&gt; B[&quot;end&quot;]');
+		expect(html).toContain('this is not [valid mermaid syntax');
+	});
+
+	it('never fails the render when the mermaid renderer itself rejects (defense in depth)', async () => {
+		renderMermaidDiagramsMock.mockRejectedValue(new Error('no browser available'));
+		const src = ['```mermaid', 'graph TD', 'A --> B', '```'].join('\n');
+		const html = await renderMarkdown(src);
+		expect(html).toContain('<figure class="diagram-fallback">');
+		expect(html).toContain('A --&gt; B');
 	});
 
 	it('highlights fenced bash, and escapes angle-brackets inside highlighted tokens', async () => {
