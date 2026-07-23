@@ -21,9 +21,9 @@
 //     stripped practice file or uncommitted WIP prose in the packet checkout can
 //     never ship attributed to a commit that does not contain it.
 //   - Recorded: src/content/.manifest.json pins the packet commit and lists
-//     every entry (its source inputs, resolved output, lane, and a content hash)
-//     so the on-site registry can read titles/lanes/order without hand-typing
-//     and drift is auditable.
+//     every entry (its source inputs, resolved output, lane, source-authored
+//     title/summary, and a content hash) so display metadata does not drift and
+//     the published input remains auditable.
 //
 // PLAIN NODE. No dependencies or bundler. Runs under `node scripts/sync-content.mjs`.
 
@@ -34,7 +34,8 @@ import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { syncAlgorithms } from './sync-algorithms.mjs';
 
-const HERE = dirname(fileURLToPath(import.meta.url));
+const THIS_FILE = fileURLToPath(import.meta.url);
+const HERE = dirname(THIS_FILE);
 const REPO_ROOT = resolve(HERE, '..');
 const CONTENT_DIR = join(REPO_ROOT, 'src', 'content');
 const MANIFEST_PATH = join(CONTENT_DIR, '.manifest.json');
@@ -45,6 +46,7 @@ const PACKET_PATH = resolve(REPO_ROOT, process.env.WOODSHED_PACKET_PATH ?? '../d
 
 const SOURCE_REPO = 'Jesssullivan/dsa-study-packet';
 const MAX_SNIPPET_DEPTH = 10;
+const MAX_PROSE_SUMMARY_LENGTH = 180;
 
 // ── Content plan (the SSOT of WHAT to sync) ────────────────────────────────────
 // Each entry: which packet file to read (`input`), where it lands under
@@ -343,19 +345,69 @@ function rewriteSvxLinks(text, entryInput) {
 }
 
 // ── Metadata extraction ────────────────────────────────────────────────────────
-function stripFrontmatter(text) {
+export function stripFrontmatter(text) {
 	const m = text.match(/^---\n([\s\S]*?)\n---\n?/);
 	return { frontmatter: m ? m[1] : '', body: m ? text.slice(m[0].length) : text };
 }
 
+/** Read one frontmatter scalar. Concise one-line and folded YAML values are supported. */
+function frontmatterScalar(frontmatter, key) {
+	const lines = frontmatter.split('\n');
+	for (let i = 0; i < lines.length; i += 1) {
+		const match = lines[i].match(new RegExp(`^${key}:\\s*(.*?)\\s*$`));
+		if (!match) continue;
+
+		const raw = match[1];
+		if (/^[>|][-+]?$/.test(raw)) {
+			const parts = [];
+			for (let j = i + 1; j < lines.length; j += 1) {
+				const line = lines[j];
+				if (line.trim() === '') {
+					if (parts.length > 0) parts.push('');
+					continue;
+				}
+				if (!/^\s+/.test(line)) break;
+				parts.push(line.trim());
+			}
+			return parts.join(' ').replace(/\s+/g, ' ').trim();
+		}
+
+		const first = raw[0];
+		const last = raw[raw.length - 1];
+		return first && first === last && (first === '"' || first === "'") ? raw.slice(1, -1).trim() : raw.trim();
+	}
+	return undefined;
+}
+
 /** Title = frontmatter `title:` if declared, else the first H1, else the slug. */
-function extractTitle(text, fallback) {
+export function extractTitle(text, fallback) {
 	const { frontmatter, body } = stripFrontmatter(text);
-	const fm = frontmatter.match(/^title:\s*(.+?)\s*$/m);
-	if (fm) return fm[1].replace(/^["']|["']$/g, '');
+	const title = frontmatterScalar(frontmatter, 'title');
+	if (title) return title;
 	const h1 = body.match(/^#\s+(.+?)\s*#*\s*$/m);
 	if (h1) return h1[1].trim();
 	return fallback;
+}
+
+/**
+ * Summary = packet frontmatter `description:` when present. Missing values are
+ * intentionally allowed so older packet commits keep using the registry's
+ * compatibility fallback.
+ */
+export function extractDescription(text, input = 'content') {
+	const { frontmatter } = stripFrontmatter(text);
+	const description = frontmatterScalar(frontmatter, 'description');
+	if (!description) return undefined;
+	if (description.length > MAX_PROSE_SUMMARY_LENGTH) {
+		throw new Error(
+			`${input} frontmatter description is ${description.length} characters; ` +
+				`keep prose summaries at or below ${MAX_PROSE_SUMMARY_LENGTH}`,
+		);
+	}
+	if (description.includes('`')) {
+		throw new Error(`${input} frontmatter description contains a markdown backtick; summaries render as plain text`);
+	}
+	return description;
 }
 
 function sha256(text) {
@@ -410,11 +462,13 @@ function main() {
 		}
 
 		writeFileDeep(join(CONTENT_DIR, item.out), resolved);
+		const summary = extractDescription(resolved, item.input);
 
 		entries.push({
 			section: item.section,
 			slug: item.slug,
 			title: extractTitle(resolved, item.slug),
+			...(summary ? { summary } : {}),
 			lane: item.lane,
 			order: item.order,
 			out: item.out,
@@ -450,4 +504,6 @@ function main() {
 	);
 }
 
-main();
+if (resolve(process.argv[1] ?? '') === THIS_FILE) {
+	main();
+}

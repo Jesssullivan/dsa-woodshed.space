@@ -28,6 +28,7 @@ const routes = [
 	// indented tables are the widest constructs the renderer emits.
 	'/guide/getting-started',
 	'/guide/learning-paths',
+	'/guide/source-of-truth',
 	'/guide/when-to-use-what',
 ];
 
@@ -65,4 +66,62 @@ test('minimum-width navigation control remains visible', async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 1200 });
 	await page.goto('/');
 	await expect(page.getByRole('button', { name: 'Open navigation' })).toBeInViewport();
+});
+
+test('Project is current without also marking Method', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1200 });
+	await page.goto('/guide/source-of-truth');
+	const navigation = page.getByRole('navigation', { name: 'Section navigation' });
+	await expect(navigation.getByRole('link', { name: 'Project' })).toHaveAttribute('aria-current', 'page');
+	await expect(navigation.getByRole('link', { name: 'Method' })).not.toHaveAttribute('aria-current');
+	await expect(page.getByRole('complementary', { name: 'Site sections' })).toHaveCount(0);
+	await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toContainText('Project');
+	await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).not.toContainText('Guide');
+	await expect(page.getByRole('navigation', { name: 'Section pages' })).toHaveCount(0);
+});
+
+test('home defaults to ordinary comments and keeps Printables easy to reach', async ({ page }) => {
+	await page.goto('/');
+	const defaultComments = page.getByRole('region', { name: 'Start with ordinary comments' });
+	await expect(defaultComments).toBeVisible();
+	await expect(defaultComments).toContainText(/There are no\s+required prefixes or labels/);
+	await expect(defaultComments).toContainText('/reacto');
+	await expect(defaultComments).toContainText('optional labels');
+	await expect(
+		page.getByRole('navigation', { name: 'Library shortcuts' }).getByRole('link', { name: 'Printables' }),
+	).toBeVisible();
+});
+
+test('practice-table code tokens wrap within their cells at minimum width', async ({ page }) => {
+	await page.setViewportSize({ width: 320, height: 1200 });
+	await page.goto('/challenges');
+	const clipped = await page.locator('table code').evaluateAll((tokens) =>
+		tokens
+			.filter((token) => {
+				const cell = token.closest('td');
+				if (!cell) return false;
+				const cellRect = cell.getBoundingClientRect();
+				return Array.from(token.getClientRects()).some(
+					(rect) => rect.left < cellRect.left - 1 || rect.right > cellRect.right + 1,
+				);
+			})
+			.map((token) => token.textContent),
+	);
+	expect(clipped).toEqual([]);
+});
+
+test('reading-path utility links retain 44px targets', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 1200 });
+	await page.goto('/guide/source-of-truth');
+	const undersized = await page
+		.locator('nav[aria-label="Breadcrumb"] a, [data-pagefind-ignore] a[title], footer a')
+		.evaluateAll((links) =>
+			links
+				.filter((link) => {
+					const rect = link.getBoundingClientRect();
+					return rect.width > 0 && rect.height < 44;
+				})
+				.map((link) => ({ text: link.textContent?.trim(), height: link.getBoundingClientRect().height })),
+		);
+	expect(undersized).toEqual([]);
 });

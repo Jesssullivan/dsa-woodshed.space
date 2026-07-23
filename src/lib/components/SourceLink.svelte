@@ -37,7 +37,7 @@
 		<span>This page lives in git. Anyone can propose an edit.</span>
 		<span class="flex items-center gap-x-3">
 			<a
-				class="hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center gap-1 underline-offset-2 hover:underline"
+				class="hover:text-primary-600 dark:hover:text-primary-400 inline-flex min-h-11 items-center gap-1 underline-offset-2 hover:underline"
 				href={edit}
 				target="_blank"
 				rel="noopener"
@@ -48,7 +48,7 @@
 				<span>Edit this page</span>
 			</a>
 			<a
-				class="hover:text-primary-600 dark:hover:text-primary-400 inline-flex items-center gap-1 underline-offset-2 hover:underline"
+				class="hover:text-primary-600 dark:hover:text-primary-400 inline-flex min-h-11 items-center gap-1 underline-offset-2 hover:underline"
 				href={blob}
 				target="_blank"
 				rel="noopener"

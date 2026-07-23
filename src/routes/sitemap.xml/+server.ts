@@ -7,22 +7,26 @@ import {
 	sheetSlugs,
 	SINGLE_PAGE_SECTIONS,
 } from '$lib/docs/registry';
+import { PROJECT_ROUTE } from '$lib/navigation';
 import type { RequestHandler } from './$types';
 
 const SITE = 'https://dsa-woodshed.space';
 // Enumerate exactly the routed pages. Reference + guide + algorithms are driven
 // by the content registry so new synced entries appear here without a hand edit.
 const PAGES: string[] = [
-	'/',
-	'/library',
-	...SINGLE_PAGE_SECTIONS.map((section) => `/${section}`),
-	'/reference',
-	...sheetSlugs().map((s) => `/reference/${s}`),
-	'/guide/interview-practice-evidence',
-	...guideMarkdownSlugs().map((s) => `/guide/${s}`),
-	'/algorithms',
-	...algorithmTopicSlugs().map((t) => `/algorithms/${t}`),
-	...algorithmParams().map((p) => `/algorithms/${p.topic}/${p.slug}`),
+	...new Set([
+		'/',
+		'/library',
+		...SINGLE_PAGE_SECTIONS.map((section) => `/${section}`),
+		'/reference',
+		...sheetSlugs().map((s) => `/reference/${s}`),
+		'/guide/interview-practice-evidence',
+		PROJECT_ROUTE,
+		...guideMarkdownSlugs().map((s) => `/guide/${s}`),
+		'/algorithms',
+		...algorithmTopicSlugs().map((t) => `/algorithms/${t}`),
+		...algorithmParams().map((p) => `/algorithms/${p.topic}/${p.slug}`),
+	]),
 ];
 
 export const prerender = true;

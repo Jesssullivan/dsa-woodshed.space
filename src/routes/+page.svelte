@@ -6,8 +6,12 @@
 
 	const steps = [
 		{
-			title: 'Show the thinking',
-			body: 'Enter one command — /reacto, /clarp, /umpire, or /comments — fill the reasoning comments, save, and remove the THINKING GATE yourself.',
+			title: 'Write the thinking',
+			body: 'Use ordinary comments to restate the problem, work an example, and name an approach.',
+		},
+		{
+			title: 'Open the gate',
+			body: 'Save your comments and remove the THINKING GATE yourself when you are ready to code.',
 		},
 		{
 			title: 'Build and test',
@@ -19,26 +23,22 @@
 		},
 	];
 
-	const library = [
+	const libraryLinks = [
 		{
 			title: 'Printables',
 			href: '/printables',
-			body: 'The booklet and every reference sheet, generated from the same source for offline review.',
 		},
 		{
 			title: 'Algorithm Library',
 			href: '/algorithms',
-			body: 'Complete implementations and complexity notes to review after a rep.',
 		},
 		{
 			title: 'Reference Sheets',
 			href: '/reference',
-			body: 'Compact lookups for Python, patterns, data structures, and interview method.',
 		},
 		{
 			title: 'Advanced Exercises',
 			href: '/practice',
-			body: 'Code-reading and decomposition practice for practical engineering rounds.',
 		},
 	];
 </script>
@@ -51,9 +51,9 @@
 			One click opens a Codespace where a resident interviewer runs on GitHub's own Copilot harness.
 		</p>
 		<p class="text-surface-700-300 mt-4 max-w-2xl text-lg leading-relaxed">
-			You own the comments, code, and tests; the interviewer checks visible work through a deterministic
-			<code>just</code> command contract built for even the smallest models. Forty-three core drills, seventy-two editor targets,
-			printable booklet and reference sheets.
+			You own the comments, code, and tests. The interviewer checks visible work through a deterministic
+			<code>just</code> command and file contract designed to remain legible to lightweight models. The packet includes 43
+			core drills, 72 editor targets, a printable booklet, and reference sheets.
 		</p>
 
 		<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -81,12 +81,28 @@
 		<p class="text-surface-500 mt-3 text-sm">No separate agent CLI or repository API key is required.</p>
 	</header>
 
+	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="choose-mode">
+		<div class="max-w-2xl">
+			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The default</p>
+			<h2 id="choose-mode" class="mt-2 text-2xl font-bold">Start with ordinary comments</h2>
+			<p class="text-surface-700-300 mt-3 leading-relaxed">
+				Open Copilot Chat and enter <code>/comments</code>. Write comments the way you would in real code. There are no
+				required prefixes or labels.
+			</p>
+			<p class="text-surface-500 mt-4 text-sm">
+				Add a problem when you want one directly, for example <code>/comments arrays two_sum</code>. If named vocabulary
+				already helps you think, <code>/reacto</code>, <code>/clarp</code>, and <code>/umpire</code> start the same loop with
+				optional labels.
+			</p>
+		</div>
+	</section>
+
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="rep-loop">
 		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">One clean loop</p>
 		<h2 id="rep-loop" class="mt-2 text-2xl font-bold">How a rep works</h2>
 		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
 			Open Copilot Chat in the Codespace. With no arguments, a command draws the next due problem; add a topic and
-			problem, for example <code>/reacto arrays two_sum</code>, to choose one directly.
+			problem, for example <code>/comments arrays two_sum</code>, to choose one directly.
 		</p>
 		<ol
 			class="border-surface-200-800 mt-8 list-decimal divide-y divide-surface-200-800 border-y pl-8 marker:font-mono marker:font-semibold marker:text-primary-600"
@@ -117,17 +133,19 @@
 				>See the full library</a
 			>
 		</div>
-		<div class="mt-8 grid gap-4 md:grid-cols-2">
-			{#each library as item (item.href)}
+		<p class="text-surface-700-300 mt-4 max-w-2xl leading-relaxed">
+			Review complete solutions only after a rep exposes a gap, or take a printable sheet away from the screen.
+		</p>
+		<nav class="mt-5 flex flex-wrap gap-x-6 gap-y-1" aria-label="Library shortcuts">
+			{#each libraryLinks as item (item.href)}
 				<a
 					href={item.href}
-					class="border-surface-200-800 bg-surface-50-950/75 hover:border-primary-500 block rounded-lg border p-5 transition-colors"
+					class="editorial-link text-primary-600 hover:text-primary-700 inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-2"
 				>
-					<h3 class="font-semibold">{item.title}</h3>
-					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">{item.body}</p>
+					{item.title}
 				</a>
 			{/each}
-		</div>
+		</nav>
 	</section>
 
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="other-surfaces">

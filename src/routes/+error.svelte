@@ -12,7 +12,7 @@
 	<h1 class="mt-2 text-3xl font-bold">{notFound ? 'Page not found' : 'Something went wrong'}</h1>
 	<p class="text-surface-700 dark:text-surface-300 mt-3 leading-relaxed">
 		{#if notFound}
-			Nothing lives at this address — the link may be stale, or the page may have moved when content was reorganized.
+			Nothing lives at this address. The link may be stale, or the page may have moved when content was reorganized.
 		{:else}
 			{page.error?.message ?? 'An unexpected error occurred.'}
 		{/if}
