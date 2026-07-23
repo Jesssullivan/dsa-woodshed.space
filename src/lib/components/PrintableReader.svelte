@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Download, ExternalLink, FileCheck2 } from '@lucide/svelte';
+	import { onMount } from 'svelte';
 	import type { BookletMetadata } from '$lib/docs/booklet';
 
 	interface Props {
@@ -7,9 +8,14 @@
 	}
 
 	let { booklet }: Props = $props();
+	let pdfViewerEnabled = $state(true);
 
 	const digest = $derived(booklet.asset.digest.replace(/^sha256:/, ''));
 	const digestLabel = $derived(`${digest.slice(0, 12)}…${digest.slice(-8)}`);
+
+	onMount(() => {
+		pdfViewerEnabled = navigator.pdfViewerEnabled;
+	});
 </script>
 
 <section
@@ -61,24 +67,33 @@
 			</a>
 		</nav>
 
-		<div class="border-surface-300-700 hidden overflow-hidden rounded-lg border md:block">
-			<div
-				class="bg-surface-200-800 text-surface-600-400 flex min-h-11 items-center border-b border-inherit px-4 text-sm font-medium"
-			>
-				{booklet.asset.name} · native browser reader
+		{#if pdfViewerEnabled}
+			<div class="border-surface-300-700 hidden overflow-hidden rounded-lg border md:block">
+				<div
+					class="bg-surface-200-800 text-surface-600-400 flex min-h-11 items-center border-b border-inherit px-4 text-sm font-medium"
+				>
+					{booklet.asset.name} · native browser reader
+				</div>
+				<object
+					data={booklet.asset.localUrl}
+					type="application/pdf"
+					title={`The DSA Woodshed booklet ${booklet.tagName}`}
+					class="bg-surface-200 h-[70vh] min-h-[36rem] max-h-[56rem] w-full"
+				>
+					<p class="p-6">
+						This browser could not embed the booklet.
+						<a class="underline" href={booklet.asset.localUrl}>Open the PDF directly.</a>
+					</p>
+				</object>
 			</div>
-			<object
-				data={booklet.asset.localUrl}
-				type="application/pdf"
-				title={`The DSA Woodshed booklet ${booklet.tagName}`}
-				class="bg-surface-200 h-[70vh] min-h-[36rem] max-h-[56rem] w-full"
+		{:else}
+			<p
+				class="border-surface-300-700 bg-surface-50-950 text-surface-700-300 hidden rounded-lg border p-4 md:block"
+				data-testid="pdf-reader-unavailable"
 			>
-				<p class="p-6">
-					This browser could not embed the booklet.
-					<a class="underline" href={booklet.asset.localUrl}>Open the PDF directly.</a>
-				</p>
-			</object>
-		</div>
+				This browser does not expose a native PDF reader. Use Open full screen or Download PDF above.
+			</p>
+		{/if}
 
 		<p class="text-surface-600-400 md:hidden">
 			Phone PDF viewers vary, so the reliable full-screen and download controls stay outside the document.
