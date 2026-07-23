@@ -210,6 +210,48 @@ test('printables serves the verified booklet from the same origin with keyboard 
 	expect((await response.body()).subarray(0, 5).toString('ascii')).toBe('%PDF-');
 });
 
+// Issue #30 regression guard: +layout.svelte used to mount two SearchDialog
+// subtrees (one CSS-hidden at each breakpoint via `hidden lg:flex` /
+// `lg:hidden`), so a raw DOM query always found two trigger buttons and two
+// search inputs even though Playwright's role query only ever saw the one
+// exposed by the current viewport's `display` value. Assert both the role
+// query AND a raw DOM count stay at exactly one, at every breakpoint.
+for (const bp of breakpoints) {
+	test(`exactly one search trigger and searchbox subtree at ${bp.label} (${bp.width}px)`, async ({ page }) => {
+		await page.setViewportSize({ width: bp.width, height: bp.height });
+		await page.goto('/');
+		await page.waitForLoadState('networkidle');
+
+		const trigger = page.getByRole('button', { name: 'Search the Woodshed' });
+		await expect(trigger).toHaveCount(1);
+		expect(await page.locator('[aria-label="Search the Woodshed"]').count()).toBe(1);
+		expect(await page.locator('input[type="search"]').count()).toBe(1);
+
+		if (bp.width === 320 || bp.width === 1440) {
+			const box = await trigger.boundingBox();
+			expect(box?.width).toBeGreaterThanOrEqual(44);
+			expect(box?.height).toBeGreaterThanOrEqual(44);
+		}
+
+		await trigger.click();
+		await expect(page.getByRole('searchbox', { name: 'Search query' })).toHaveCount(1);
+	});
+}
+
+test('mobile-viewport search resolves a real result end-to-end (390px)', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 1200 });
+	await page.goto('/');
+	await page.getByRole('button', { name: 'Search the Woodshed' }).click();
+	const input = page.getByRole('searchbox', { name: 'Search query' });
+	await expect(page.getByText('Type at least 2 characters to search.')).toBeVisible();
+
+	await input.fill('is prime');
+	await expect(page.getByText('Searching…')).toBeVisible();
+	await expect(page.getByText('No results for "is prime".')).toHaveCount(0);
+	await expect(page.getByRole('link', { name: /^Is Prime/ })).toBeVisible();
+	await expect(page.getByText('No results for "is prime".')).toHaveCount(0);
+});
+
 test('printables keeps both 44px actions visible when the embedded reader is hidden on mobile', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 1200 });
 	await page.goto('/printables');
