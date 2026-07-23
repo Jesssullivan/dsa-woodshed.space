@@ -67,6 +67,13 @@ jobs:
         env:
           WOODSHED_PACKET_PATH: ${{ github.workspace }}/dsa-study-packet
 
+      - name: Install playwright chromium
+        # The runner image pre-bakes Playwright's system libs — browser
+        # binary download only. Must precede the build: mermaid-isomorphic
+        # renders diagrams through this browser at build time and falls
+        # back to source otherwise.
+        run: pnpm exec playwright install chromium
+
       - name: Build static site (custom domain, base="")
         run: pnpm run build
         env:
