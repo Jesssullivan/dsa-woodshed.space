@@ -30,6 +30,7 @@ const routes = [
 	'/guide/learning-paths',
 	'/guide/source-of-truth',
 	'/guide/when-to-use-what',
+	'/project',
 ];
 
 for (const bp of breakpoints) {
@@ -70,17 +71,24 @@ test('minimum-width navigation control remains visible', async ({ page }) => {
 
 test('Project is current without also marking Method', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1200 });
-	await page.goto('/guide/source-of-truth');
-	const article = page.locator('article');
-	await expect(article).not.toContainText('undefined');
-	await expect(article).toContainText(/The distinction that keeps this publishable: L2 is a method .* L3 is a dossier/);
+	await page.goto('/project');
+	await expect(page.getByRole('heading', { level: 1, name: 'A public woodshed' })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Source and privacy contract' })).toHaveAttribute(
+		'href',
+		'/guide/source-of-truth',
+	);
 	const navigation = page.getByRole('navigation', { name: 'Section navigation' });
 	await expect(navigation.getByRole('link', { name: 'Project' })).toHaveAttribute('aria-current', 'page');
 	await expect(navigation.getByRole('link', { name: 'Method' })).not.toHaveAttribute('aria-current');
-	await expect(page.getByRole('complementary', { name: 'Site sections' })).toHaveCount(0);
-	await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toContainText('Project');
-	await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).not.toContainText('Guide');
-	await expect(page.getByRole('navigation', { name: 'Section pages' })).toHaveCount(0);
+	await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toHaveCount(0);
+});
+
+test('/guide/source-of-truth never marks Method or Project current at once', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1200 });
+	await page.goto('/guide/source-of-truth');
+	const navigation = page.getByRole('navigation', { name: 'Section navigation' });
+	await expect(navigation.getByRole('link', { name: 'Method' })).not.toHaveAttribute('aria-current');
+	await expect(navigation.getByRole('link', { name: 'Project' })).not.toHaveAttribute('aria-current');
 });
 
 test('home defaults to ordinary comments and keeps Printables easy to reach', async ({ page }) => {

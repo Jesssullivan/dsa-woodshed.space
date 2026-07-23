@@ -10,7 +10,7 @@
 	import '../app.css';
 	import SearchDialog from '$lib/components/SearchDialog.svelte';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
-	import { PRIMARY_NAV_LINKS, isPathInSection, primaryNavState } from '$lib/navigation';
+	import { PRIMARY_NAV_LINKS, SOURCE_OF_TRUTH_ROUTE, isPathInSection, primaryNavState } from '$lib/navigation';
 
 	let { children } = $props();
 
@@ -19,7 +19,7 @@
 	const isCurrentSection = (sections: string[]) =>
 		sections.some((section) => isPathInSection(page.url.pathname, section));
 	const showMobileSectionNav = $derived(
-		page.url.pathname !== '/guide/source-of-truth' && isCurrentSection(['/guide', '/reference', '/algorithms']),
+		page.url.pathname !== SOURCE_OF_TRUTH_ROUTE && isCurrentSection(['/guide', '/reference', '/algorithms']),
 	);
 
 	const SITE_NAME = 'The DSA Woodshed';
