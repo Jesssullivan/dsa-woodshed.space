@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { REPO_SLUG, REPO_URL } from '$lib/repo';
+	import { REPO_SLUG } from '$lib/repo';
 
 	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}?quickstart=1`;
-	const BOOKLET_URL = `${REPO_URL}/releases/latest/download/booklet.pdf`;
+	const BOOKLET_URL = '/printables';
 
 	const steps = [
 		{
@@ -69,7 +69,7 @@
 				href={BOOKLET_URL}
 				class="border-surface-200-800 hover:border-primary-500 hover:text-primary-600 inline-flex w-fit items-center justify-center rounded-lg border px-5 py-3 text-sm font-semibold transition-colors"
 			>
-				Download the booklet (PDF)
+				Read the booklet
 			</a>
 			<a
 				href="/guide/getting-started"

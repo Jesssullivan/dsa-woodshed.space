@@ -33,6 +33,7 @@ import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } f
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { syncAlgorithms } from './sync-algorithms.mjs';
+import { syncBookletRelease } from './sync-booklet.mjs';
 
 const THIS_FILE = fileURLToPath(import.meta.url);
 const HERE = dirname(THIS_FILE);
@@ -438,7 +439,7 @@ function packetCommit() {
 }
 
 // ── Main ───────────────────────────────────────────────────────────────────────
-function main() {
+async function main() {
 	if (!existsSync(PACKET_PATH) || !statSync(PACKET_PATH).isDirectory()) {
 		console.error(`sync-content: packet checkout not found at ${PACKET_PATH}`);
 		console.error('  Set WOODSHED_PACKET_PATH, or place the packet at ../dsa-study-packet.');
@@ -502,8 +503,11 @@ function main() {
 	console.log(
 		`sync-content: wrote ${entries.length} entries to ${rel(CONTENT_DIR)}/ from ${SOURCE_REPO}@${manifest.sourceCommit.slice(0, 12)}`,
 	);
+
+	const booklet = await syncBookletRelease();
+	console.log(`sync-content: wrote verified ${booklet.asset.name} from ${SOURCE_REPO}@${booklet.tagName}`);
 }
 
 if (resolve(process.argv[1] ?? '') === THIS_FILE) {
-	main();
+	await main();
 }

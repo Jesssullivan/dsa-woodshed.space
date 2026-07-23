@@ -141,3 +141,79 @@ test('the first search query stays truthful while Pagefind resolves it', async (
 	await expect(page.getByRole('link', { name: /^Is Prime/ })).toBeVisible();
 	await expect(page.getByText('No results for "is prime".')).toHaveCount(0);
 });
+
+test('printables serves the verified booklet from the same origin with keyboard escape paths', async ({
+	page,
+	browserName,
+}) => {
+	await page.setViewportSize({ width: 1440, height: 1200 });
+	await page.goto('/printables');
+
+	const reader = page.getByTestId('printable-reader');
+	const openAction = reader.getByRole('link', { name: 'Open full screen' });
+	const downloadAction = reader.getByRole('link', { name: 'Download PDF' });
+	await expect(reader).toBeVisible();
+	await expect(reader.getByText(/v\d+\.\d+\.\d+ · SHA-256 verified/)).toBeVisible();
+	const localUrl = await openAction.getAttribute('href');
+	expect(localUrl).toMatch(/^\/generated\/booklet-[0-9a-f]{64}\.pdf$/);
+	await expect(downloadAction).toHaveAttribute('download', 'booklet.pdf');
+	await expect(reader.locator('object[type="application/pdf"]')).toBeVisible();
+	await expect(reader.locator('object[type="application/pdf"]')).toHaveAttribute('data', localUrl!);
+
+	expect(await openAction.evaluate((element) => element.tabIndex)).toBe(0);
+	if (browserName === 'webkit') {
+		// macOS WebKit follows the system "keyboard navigation" preference and
+		// may skip links during synthetic Tab traversal. The semantic link is
+		// still focusable, so verify the same focus-visible contract directly.
+		await openAction.focus();
+	} else {
+		let reachedOpenAction = false;
+		for (let step = 0; step < 30; step += 1) {
+			await page.keyboard.press('Tab');
+			if (await openAction.evaluate((element) => element === document.activeElement)) {
+				reachedOpenAction = true;
+				break;
+			}
+		}
+		expect(reachedOpenAction).toBe(true);
+	}
+	await expect(openAction).toBeFocused();
+	const focusStyle = await openAction.evaluate((element) => {
+		const style = getComputedStyle(element);
+		return { style: style.outlineStyle, width: Number.parseFloat(style.outlineWidth) };
+	});
+	expect(focusStyle.style).not.toBe('none');
+	expect(focusStyle.width).toBeGreaterThanOrEqual(2);
+	if (browserName === 'webkit') {
+		await downloadAction.focus();
+	} else {
+		await page.keyboard.press('Tab');
+	}
+	await expect(downloadAction).toBeFocused();
+
+	await page.setViewportSize({ width: 768, height: 1024 });
+	await expect(reader.locator('object[type="application/pdf"]')).toBeVisible();
+
+	const response = await page.request.get(localUrl!);
+	expect(response.ok()).toBe(true);
+	expect(response.headers()['content-type']).toContain('application/pdf');
+	expect((await response.body()).subarray(0, 5).toString('ascii')).toBe('%PDF-');
+});
+
+test('printables keeps both 44px actions visible when the embedded reader is hidden on mobile', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 1200 });
+	await page.goto('/printables');
+
+	const reader = page.getByTestId('printable-reader');
+	await expect(reader.locator('object[type="application/pdf"]')).toBeHidden();
+	const actions = [
+		reader.getByRole('link', { name: 'Open full screen' }),
+		reader.getByRole('link', { name: 'Download PDF' }),
+	];
+	for (const action of actions) {
+		await expect(action).toBeVisible();
+		const box = await action.boundingBox();
+		expect(box?.height).toBeGreaterThanOrEqual(44);
+	}
+	await expect(reader.getByText(/Phone PDF viewers vary/)).toBeVisible();
+});
