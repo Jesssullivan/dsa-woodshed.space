@@ -51,10 +51,12 @@ jobs:
       - run: pnpm run check
       - run: pnpm run lint
       - run: pnpm run test:unit
-      - run: pnpm run build
 
       - name: Install playwright chromium
         # The runner image pre-bakes Playwright's system libs — browser
-        # binary download only, no runtime apt (--with-deps) needed.
+        # binary download only, no runtime apt (--with-deps) needed. Must
+        # precede the build: mermaid-isomorphic renders diagrams through
+        # this browser at build time and falls back to source otherwise.
         run: pnpm exec playwright install chromium
+      - run: pnpm run build
       - run: pnpm run test:e2e
