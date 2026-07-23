@@ -28,7 +28,9 @@
 				links:
 					s.id === 'algorithms'
 						? algorithmTopics().map((t) => ({ href: `/algorithms/${t.topic}`, label: t.title }))
-						: s.entries.map((e) => ({ href: entryHref(e), label: e.title })),
+						: s.entries
+								.filter((e) => !(s.id === 'guide' && e.slug === 'source-of-truth'))
+								.map((e) => ({ href: entryHref(e), label: e.title })),
 			})),
 	);
 </script>

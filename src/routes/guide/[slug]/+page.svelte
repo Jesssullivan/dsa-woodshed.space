@@ -9,21 +9,28 @@
 
 	let { data }: { data: PageData } = $props();
 
+	const isProject = $derived(data.slug === 'source-of-truth');
 	const adjacent = $derived(neighbors('guide', data.slug));
 </script>
 
 <main class="mx-auto max-w-5xl py-16">
-	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Guide' }, { label: data.title }]} />
+	<Breadcrumbs
+		items={isProject
+			? [{ label: 'The DSA Woodshed', href: '/' }, { label: 'Project' }]
+			: [{ label: 'The DSA Woodshed', href: '/' }, { label: 'Guide' }, { label: data.title }]}
+	/>
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">
 		<article class="min-w-0" data-pagefind-body>
 			<!-- Pre-rendered, Shiki-highlighted HTML from +page.server.ts (build time):
 			     ships highlighted markup with zero client-side Shiki. -->
 			<Markdown html={data.html} />
 			<SourceLink sourcePath={data.sourcePath} />
-			<PrevNext
-				prev={adjacent.prev && { title: adjacent.prev.title, href: entryHref(adjacent.prev) }}
-				next={adjacent.next && { title: adjacent.next.title, href: entryHref(adjacent.next) }}
-			/>
+			{#if !isProject}
+				<PrevNext
+					prev={adjacent.prev && { title: adjacent.prev.title, href: entryHref(adjacent.prev) }}
+					next={adjacent.next && { title: adjacent.next.title, href: entryHref(adjacent.next) }}
+				/>
+			{/if}
 		</article>
 		<aside class="hidden xl:sticky xl:top-20 xl:block" aria-label="Page sections">
 			<TableOfContents headings={data.headings} />

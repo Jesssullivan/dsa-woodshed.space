@@ -328,6 +328,12 @@ a.editorial-link:visited:not(:hover) {
 	text-align: left;
 	vertical-align: top;
 }
+.prose td code {
+	white-space: normal;
+	overflow-wrap: anywhere;
+	-webkit-box-decoration-break: clone;
+	box-decoration-break: clone;
+}
 .prose th {
 	background: var(--color-surface-100-900);
 	font-weight: 600;

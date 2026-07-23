@@ -13,8 +13,10 @@ The public information architecture is deliberately small:
 - **Library** groups algorithms, reference sheets, Advanced Exercises, and
   Printables.
 - **Method** explains how and why to practice.
-- **Search** covers the current landing routes at `/library`, `/challenges`,
-  `/practice`, and `/printables`, plus their detailed content.
+- **Project** explains the source-of-truth and public-boundary contract.
+
+Search covers the landing routes at `/library`, `/challenges`, `/practice`, and
+`/printables`, plus their detailed content.
 
 ## Content contract
 
@@ -73,10 +75,11 @@ site code against content that is already present.
 
 ## Deploy
 
-Pushes to `main` run `.github/workflows/deploy-pages.yml`. The workflow checks
-out this repository and the public packet, syncs content, builds the static
-site, and publishes `build/` to GitHub Pages at `dsa-woodshed.space`. CI runs
-the same check, lint, unit, build, and browser gates on pull requests.
+Pushes to `main` and a daily scheduled refresh run
+`.github/workflows/deploy-pages.yml`. The workflow checks out this repository
+and the public packet, syncs content, builds the static site, and publishes
+`build/` to GitHub Pages at `dsa-woodshed.space`. CI runs the same check, lint,
+unit, build, and browser gates on pull requests.
 
 The app began as a private house SvelteKit scaffold. Estate coupling was
 removed: there are no Bazel files, Nix flake, private CI templates,

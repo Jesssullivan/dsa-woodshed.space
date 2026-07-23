@@ -10,34 +10,23 @@
 	import '../app.css';
 	import SearchDialog from '$lib/components/SearchDialog.svelte';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
+	import { PRIMARY_NAV_LINKS, isPathInSection, primaryNavState } from '$lib/navigation';
 
 	let { children } = $props();
 
 	let mobileOpen = $state(false);
 
-	// Absolute paths keep section navigation stable from any route.
-	const navLinks: { href: string; label: string; sections: string[] }[] = [
-		{ href: '/challenges', label: 'Practice', sections: ['/challenges'] },
-		{
-			href: '/library',
-			label: 'Library',
-			sections: ['/library', '/algorithms', '/reference', '/practice', '/printables'],
-		},
-		{ href: '/guide/getting-started', label: 'Method', sections: ['/guide'] },
-	];
 	const isCurrentSection = (sections: string[]) =>
-		sections.some((section) => page.url.pathname === section || page.url.pathname.startsWith(`${section}/`));
-	const currentNavState = (href: string, sections: string[]): 'page' | 'location' | undefined => {
-		if (page.url.pathname === href) return 'page';
-		return isCurrentSection(sections) ? 'location' : undefined;
-	};
-	const showMobileSectionNav = $derived(isCurrentSection(['/guide', '/reference', '/algorithms']));
+		sections.some((section) => isPathInSection(page.url.pathname, section));
+	const showMobileSectionNav = $derived(
+		page.url.pathname !== '/guide/source-of-truth' && isCurrentSection(['/guide', '/reference', '/algorithms']),
+	);
 
 	const SITE_NAME = 'The DSA Woodshed';
 	const SITE_URL = 'https://dsa-woodshed.space';
 	const SITE_TITLE = 'The DSA Woodshed | Editor-first technical interview practice';
 	const SITE_DESCRIPTION =
-		'Practice technical interviews in a real editor. Choose REACTO, CLARP, UMPIRE, or plain comments, then write code and focused tests.';
+		'Practice technical interviews in a real editor. Write ordinary reasoning comments, then build code and prove it with focused tests.';
 	const SECURITY_URL = `${REPO_URL}/security/advisories/new`;
 	const OG_IMAGE = `${SITE_URL}/og-image.png`;
 	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}?quickstart=1`;
@@ -96,15 +85,15 @@
 			<AppBar.Headline></AppBar.Headline>
 			<AppBar.Trail class="max-[374px]:gap-0">
 				<nav class="hidden items-center gap-4 text-sm lg:flex" aria-label="Section navigation">
-					{#each navLinks as { href, label, sections } (href)}
-						{@const current = currentNavState(href, sections)}
+					{#each PRIMARY_NAV_LINKS as link (link.href)}
+						{@const current = primaryNavState(page.url.pathname, link)}
 						<a
-							{href}
+							href={link.href}
 							class="inline-flex min-h-11 items-center rounded-sm px-2 py-2 transition-colors {current
 								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
 								: 'hover:text-primary-500'}"
-							aria-label={label}
-							aria-current={current}>{label}</a
+							aria-label={link.label}
+							aria-current={current}>{link.label}</a
 						>
 					{/each}
 					<a
@@ -135,15 +124,15 @@
 				</button>
 				<BindableDrawer bind:open={mobileOpen} title={SITE_NAME}>
 					<nav aria-label="Primary" class="mb-6 space-y-0.5 text-sm">
-						{#each navLinks as { href, label, sections } (href)}
-							{@const current = currentNavState(href, sections)}
+						{#each PRIMARY_NAV_LINKS as link (link.href)}
+							{@const current = primaryNavState(page.url.pathname, link)}
 							<a
-								{href}
+								href={link.href}
 								aria-current={current}
 								onclick={() => (mobileOpen = false)}
 								class="flex min-h-11 items-center rounded-sm px-2 py-1.5 {current
 									? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
-									: 'hover:bg-surface-200-800'}">{label}</a
+									: 'hover:bg-surface-200-800'}">{link.label}</a
 							>
 						{/each}
 						<a
@@ -182,11 +171,17 @@
 				Editor-first interview practice. Content is tracked in git, and every packet page links to its source.
 			</p>
 			<nav class="flex flex-wrap gap-4" aria-label="Footer">
-				<a href={REPO_URL} target="_blank" rel="noopener" class="hover:text-primary-500 transition-colors"
-					>Study packet</a
+				<a
+					href={REPO_URL}
+					target="_blank"
+					rel="noopener"
+					class="hover:text-primary-500 inline-flex min-h-11 items-center transition-colors">Study packet</a
 				>
-				<a href={SECURITY_URL} target="_blank" rel="noopener" class="hover:text-primary-500 transition-colors"
-					>Security</a
+				<a
+					href={SECURITY_URL}
+					target="_blank"
+					rel="noopener"
+					class="hover:text-primary-500 inline-flex min-h-11 items-center transition-colors">Security</a
 				>
 			</nav>
 		</div>

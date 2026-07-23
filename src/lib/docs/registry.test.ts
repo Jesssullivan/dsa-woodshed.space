@@ -9,6 +9,7 @@ import {
 	getSheet,
 	makeLinkResolver,
 	neighbors,
+	resolveEntrySummary,
 	ROUTED_SECTIONS,
 	sheetsInOrder,
 } from './registry';
@@ -93,10 +94,22 @@ describe('makeLinkResolver', () => {
 });
 
 describe('display copy', () => {
+	it('prefers packet descriptions while retaining the legacy prose fallback', () => {
+		expect(
+			resolveEntrySummary({
+				section: 'guide',
+				slug: 'getting-started',
+				summary: 'Source-authored summary.',
+			}),
+		).toBe('Source-authored summary.');
+		expect(resolveEntrySummary({ section: 'guide', slug: 'getting-started' })).toBe(
+			'Start an editor rep, write your reasoning in comments, implement, and test.',
+		);
+	});
+
 	it('keeps curated summaries and titles free of literal markdown backticks', () => {
 		// Summaries render as plain text (card grids, meta descriptions), so a
-		// backtick would show up literally. Algorithms summaries are auto-derived
-		// from packet docstrings and are the sync's concern, not curated here.
+		// backtick would show up literally.
 		for (const entry of allEntries().filter((e) => e.section !== 'algorithms')) {
 			expect(entry.summary, `${entry.section}/${entry.slug} summary`).not.toContain('`');
 			expect(entry.title, `${entry.section}/${entry.slug} title`).not.toContain('`');

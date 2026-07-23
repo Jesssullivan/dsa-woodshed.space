@@ -7,9 +7,9 @@
 //   scripts/sync-content.mjs, which writes src/content/** (gitignored build
 //   input) plus a committed manifest, src/content/.manifest.json. This registry
 //   reads that manifest for the per-entry facts derived from the source
-//   (title from the doc's frontmatter/H1, sourcePath, lane, order), so those
-//   never drift from the packet and are never hand-typed here. The one thing the
-//   packet has no home for, a short on-site SUMMARY per entry, is curated below.
+//   (title and summary from frontmatter, sourcePath, lane, order), so those
+//   never drift from the packet and are never hand-typed here. Curated summaries
+//   remain below only as a compatibility fallback for older packet commits.
 //
 //   Bodies are NOT imported here: the raw text is loaded lazily by detail routes
 //   via $lib/docs/content.ts, so importing this registry (homepage, section
@@ -31,7 +31,7 @@ export interface ContentEntry {
 	slug: string;
 	/** Display title, sourced from the packet doc (frontmatter title, else first H1). */
 	title: string;
-	/** Short on-site summary (curated here; the packet has no field for it). */
+	/** Short on-site summary, sourced from packet frontmatter when available. */
 	summary: string;
 	/** Packet-relative path the "edit this page" affordance points at. */
 	sourcePath: string;
@@ -59,7 +59,7 @@ interface ManifestEntry {
 	sha256: string;
 	topic?: string;
 	topicTitle?: string;
-	/** Auto-derived one-line summary (algorithms only: the docstring's first line). */
+	/** Source-derived summary: prose frontmatter description or algorithm docstring title. */
 	summary?: string;
 }
 
@@ -74,8 +74,8 @@ const manifest = manifestJson as Manifest;
 /** The packet commit the current src/content was synced from (for provenance UIs). */
 export const sourceCommit = manifest.sourceCommit;
 
-// Curated on-site summaries, keyed `${section}/${slug}`. Editorial copy is the one
-// piece of display metadata the packet does not carry.
+// Compatibility summaries for packet commits that predate source-authored
+// frontmatter descriptions, keyed `${section}/${slug}`.
 const SUMMARIES: Record<string, string> = {
 	// Summaries are consumed as plain text ({entry.summary} card grids, meta
 	// descriptions), so no markdown syntax here; backticks would render literally.
@@ -149,15 +149,11 @@ const LANES = new Set<Lane>(['markdown', 'svx']);
 function toEntry(m: ManifestEntry): ContentEntry {
 	if (!(m.section in SECTION_META)) throw new Error(`content registry: unknown section "${m.section}" for ${m.out}`);
 	if (!LANES.has(m.lane as Lane)) throw new Error(`content registry: unknown lane "${m.lane}" for ${m.out}`);
-	const key = `${m.section}/${m.slug}`;
 	return {
 		section: m.section as SectionId,
 		slug: m.slug,
 		title: m.title,
-		// Algorithms carry an auto-derived summary (the docstring's first line) on
-		// the manifest itself. There are ~70 of them, too many to hand-curate.
-		// Every other lane's summary is hand-curated editorial copy above.
-		summary: m.section === 'algorithms' ? (m.summary ?? '') : (SUMMARIES[key] ?? ''),
+		summary: resolveEntrySummary(m),
 		sourcePath: m.sourcePath,
 		lane: m.lane as Lane,
 		order: m.order,
@@ -165,6 +161,13 @@ function toEntry(m: ManifestEntry): ContentEntry {
 		topic: m.topic,
 		topicTitle: m.topicTitle,
 	};
+}
+
+/** Prefer source-authored metadata; retain curated prose copy for old manifests. */
+export function resolveEntrySummary(m: Pick<ManifestEntry, 'section' | 'slug' | 'summary'>): string {
+	const sourceSummary = m.summary?.trim();
+	if (sourceSummary) return sourceSummary;
+	return m.section === 'algorithms' ? '' : (SUMMARIES[`${m.section}/${m.slug}`] ?? '');
 }
 
 /** Every content entry, in a stable (section order, then entry order, then slug) sort. */

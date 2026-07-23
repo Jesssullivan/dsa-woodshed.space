@@ -3,33 +3,29 @@
 
 	const CODESPACES_URL = `https://codespaces.new/${REPO_SLUG}?quickstart=1`;
 
-	const modes = [
+	const optionalFrameworks = [
 		{
 			command: '/reacto',
-			labels: 'Repeat, Examples, Approach, Code, Test, Optimize',
+			note: 'A familiar repeat-to-optimize sequence.',
 		},
 		{
 			command: '/clarp',
-			labels: 'Clarify, Lay out, Attack, Run, Polish',
+			note: 'A concise collaboration and recovery loop.',
 		},
 		{
 			command: '/umpire',
-			labels: 'Understand, Match, Plan, Implement, Review, Evaluate',
-		},
-		{
-			command: '/comments',
-			labels: 'Restate, Example, Invariant, Approach, Tests, Complexity',
+			note: 'A pattern-first implementation and review loop.',
 		},
 	];
 
 	const steps = [
 		{
-			title: 'Choose a comment format',
-			body: 'Enter one slash command. With no arguments, it draws the next due problem.',
+			title: 'Write the thinking',
+			body: 'Use ordinary comments to restate the problem, work an example, and name an approach.',
 		},
 		{
-			title: 'Show the thinking',
-			body: 'Fill the reasoning comments, save, and remove the THINKING GATE yourself.',
+			title: 'Open the gate',
+			body: 'Save your comments and remove the THINKING GATE yourself when you are ready to code.',
 		},
 		{
 			title: 'Build and test',
@@ -41,26 +37,22 @@
 		},
 	];
 
-	const library = [
+	const libraryLinks = [
 		{
 			title: 'Algorithm Library',
 			href: '/algorithms',
-			body: 'Complete implementations and complexity notes to review after a rep.',
 		},
 		{
 			title: 'Reference Sheets',
 			href: '/reference',
-			body: 'Compact lookups for Python, patterns, data structures, and interview method.',
 		},
 		{
 			title: 'Advanced Exercises',
 			href: '/practice',
-			body: 'Code-reading and decomposition practice for practical engineering rounds.',
 		},
 		{
 			title: 'Printables',
 			href: '/printables',
-			body: 'The booklet and individual sheets for offline review.',
 		},
 	];
 </script>
@@ -103,24 +95,28 @@
 
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="choose-mode">
 		<div class="max-w-2xl">
-			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">Your first choice</p>
-			<h2 id="choose-mode" class="mt-2 text-2xl font-bold">Pick the labels that help you think</h2>
+			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The default</p>
+			<h2 id="choose-mode" class="mt-2 text-2xl font-bold">Start with ordinary comments</h2>
 			<p class="text-surface-700-300 mt-3 leading-relaxed">
-				Open Copilot Chat and enter one command. All four commands run the same practice loop with different comment
-				headings.
+				Open Copilot Chat and enter <code>/comments</code>. Write comments the way you would in real code. There are no
+				required prefixes or labels.
 			</p>
 		</div>
-		<dl class="border-surface-200-800 mt-8 divide-y divide-surface-200-800 border-y">
-			{#each modes as mode (mode.command)}
+		<p class="text-surface-500 mt-4 text-sm">
+			Add a problem when you want one directly, for example <code>/comments arrays two_sum</code>.
+		</p>
+		<h3 class="mt-8 text-lg font-semibold">Optional vocabulary</h3>
+		<p class="text-surface-700-300 mt-2 max-w-2xl text-sm leading-relaxed">
+			If a named framework already helps you think, use it. The practice gates and candidate ownership stay the same.
+		</p>
+		<dl class="border-surface-200-800 mt-5 divide-y divide-surface-200-800 border-y">
+			{#each optionalFrameworks as framework (framework.command)}
 				<div class="grid gap-1 py-4 sm:grid-cols-[8rem_1fr] sm:items-baseline sm:gap-6">
-					<dt class="text-primary-600 font-mono font-semibold">{mode.command}</dt>
-					<dd class="text-surface-700-300 text-sm leading-relaxed">{mode.labels}</dd>
+					<dt class="text-primary-600 font-mono font-semibold">{framework.command}</dt>
+					<dd class="text-surface-700-300 text-sm leading-relaxed">{framework.note}</dd>
 				</div>
 			{/each}
 		</dl>
-		<p class="text-surface-500 mt-4 text-sm">
-			Add a problem when you want one directly, for example <code>/reacto arrays two_sum</code>.
-		</p>
 	</section>
 
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="rep-loop">
@@ -155,17 +151,19 @@
 				>See the full library</a
 			>
 		</div>
-		<div class="mt-8 grid gap-4 md:grid-cols-2">
-			{#each library as item (item.href)}
+		<p class="text-surface-700-300 mt-4 max-w-2xl leading-relaxed">
+			Review complete solutions only after a rep exposes a gap, or take a printable sheet away from the screen.
+		</p>
+		<nav class="mt-5 flex flex-wrap gap-x-6 gap-y-1" aria-label="Library shortcuts">
+			{#each libraryLinks as item (item.href)}
 				<a
 					href={item.href}
-					class="border-surface-200-800 bg-surface-50-950/75 hover:border-primary-500 block rounded-lg border p-5 transition-colors"
+					class="editorial-link text-primary-600 hover:text-primary-700 inline-flex min-h-11 items-center text-sm font-semibold underline underline-offset-2"
 				>
-					<h3 class="font-semibold">{item.title}</h3>
-					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">{item.body}</p>
+					{item.title}
 				</a>
 			{/each}
-		</div>
+		</nav>
 	</section>
 
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="other-surfaces">

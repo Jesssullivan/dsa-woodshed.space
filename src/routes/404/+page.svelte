@@ -7,7 +7,7 @@
 	<p class="text-surface-500 text-xs tracking-widest uppercase">404</p>
 	<h1 class="mt-2 text-3xl font-bold">Page not found</h1>
 	<p class="text-surface-700 dark:text-surface-300 mt-3 leading-relaxed">
-		Nothing lives at this address — the link may be stale, or the page may have moved when content was reorganized.
+		Nothing lives at this address. The link may be stale, or the page may have moved when content was reorganized.
 	</p>
 	<ul class="mt-8 space-y-3 text-sm">
 		<li>
