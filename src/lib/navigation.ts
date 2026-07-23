@@ -7,7 +7,12 @@ export interface PrimaryNavLink {
 	excludeSections?: string[];
 }
 
-export const PROJECT_ROUTE = '/guide/source-of-truth';
+export const PROJECT_ROUTE = '/project';
+
+/** The source-of-truth contract page: an ordinary Method entry, but excluded
+ * from Method's nav highlighting (see below) so it never doubles up with the
+ * dedicated Project landing. */
+export const SOURCE_OF_TRUTH_ROUTE = '/guide/source-of-truth';
 
 export const PRIMARY_NAV_LINKS: PrimaryNavLink[] = [
 	{ href: '/challenges', label: 'Practice', sections: ['/challenges'] },
@@ -20,7 +25,7 @@ export const PRIMARY_NAV_LINKS: PrimaryNavLink[] = [
 		href: '/guide/getting-started',
 		label: 'Method',
 		sections: ['/guide'],
-		excludeSections: [PROJECT_ROUTE],
+		excludeSections: [SOURCE_OF_TRUTH_ROUTE],
 	},
 	{ href: PROJECT_ROUTE, label: 'Project', sections: [PROJECT_ROUTE] },
 ];

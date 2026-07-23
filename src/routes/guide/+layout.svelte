@@ -4,12 +4,12 @@
 	// shell. See $lib/components/ContentShell.svelte.
 	import { page } from '$app/state';
 	import ContentShell from '$lib/components/ContentShell.svelte';
-	import { PROJECT_ROUTE } from '$lib/navigation';
+	import { SOURCE_OF_TRUTH_ROUTE } from '$lib/navigation';
 	let { children } = $props();
-	const isProject = $derived(page.url.pathname === PROJECT_ROUTE);
+	const isSourceOfTruth = $derived(page.url.pathname === SOURCE_OF_TRUTH_ROUTE);
 </script>
 
-{#if isProject}
+{#if isSourceOfTruth}
 	<div class="mx-auto max-w-7xl px-6 lg:px-8">
 		{@render children()}
 	</div>

@@ -5,6 +5,7 @@
 	// one source of truth so the two surfaces cannot drift.
 	import { page } from '$app/state';
 	import { algorithmTopics, entryHref, ROUTED_SECTIONS, sections } from '$lib/docs/registry';
+	import { SOURCE_OF_TRUTH_ROUTE } from '$lib/navigation';
 
 	interface Props {
 		/** Called after a link is activated. The mobile drawer uses this to close itself. */
@@ -29,7 +30,7 @@
 					s.id === 'algorithms'
 						? algorithmTopics().map((t) => ({ href: `/algorithms/${t.topic}`, label: t.title }))
 						: s.entries
-								.filter((e) => !(s.id === 'guide' && e.slug === 'source-of-truth'))
+								.filter((e) => !(s.id === 'guide' && entryHref(e) === SOURCE_OF_TRUTH_ROUTE))
 								.map((e) => ({ href: entryHref(e), label: e.title })),
 			})),
 	);

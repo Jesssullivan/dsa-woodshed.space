@@ -13,7 +13,8 @@ The public information architecture is deliberately small:
 - **Library** groups algorithms, reference sheets, Advanced Exercises, and
   Printables.
 - **Method** explains how and why to practice.
-- **Project** explains the source-of-truth and public-boundary contract.
+- **Project** is a concise public landing that links the source-of-truth and
+  public-boundary contract.
 
 Search covers the landing routes at `/library`, `/challenges`, `/practice`, and
 `/printables`, plus their detailed content.

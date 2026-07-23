@@ -9,14 +9,14 @@
 
 	let { data }: { data: PageData } = $props();
 
-	const isProject = $derived(data.slug === 'source-of-truth');
+	const isSourceOfTruth = $derived(data.slug === 'source-of-truth');
 	const adjacent = $derived(neighbors('guide', data.slug));
 </script>
 
 <main class="mx-auto max-w-5xl py-16">
 	<Breadcrumbs
-		items={isProject
-			? [{ label: 'The DSA Woodshed', href: '/' }, { label: 'Project' }]
+		items={isSourceOfTruth
+			? [{ label: 'The DSA Woodshed', href: '/' }, { label: data.title }]
 			: [{ label: 'The DSA Woodshed', href: '/' }, { label: 'Guide' }, { label: data.title }]}
 	/>
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">
@@ -25,7 +25,7 @@
 			     ships highlighted markup with zero client-side Shiki. -->
 			<Markdown html={data.html} />
 			<SourceLink sourcePath={data.sourcePath} />
-			{#if !isProject}
+			{#if !isSourceOfTruth}
 				<PrevNext
 					prev={adjacent.prev && { title: adjacent.prev.title, href: entryHref(adjacent.prev) }}
 					next={adjacent.next && { title: adjacent.next.title, href: entryHref(adjacent.next) }}

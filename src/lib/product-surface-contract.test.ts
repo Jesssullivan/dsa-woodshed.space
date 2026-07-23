@@ -25,7 +25,7 @@ describe('public product surface', () => {
 	it('keeps Project in the documented information architecture', () => {
 		const readme = read('README.md');
 		const sitemap = read('src/routes/sitemap.xml/+server.ts');
-		expect(readme).toContain('**Project** explains the source-of-truth');
+		expect(readme).toContain('**Project** is a concise public landing that links the source-of-truth');
 		expect(sitemap).toContain('PROJECT_ROUTE');
 	});
 
