@@ -125,3 +125,16 @@ test('reading-path utility links retain 44px targets', async ({ page }) => {
 		);
 	expect(undersized).toEqual([]);
 });
+
+test('the first search query stays truthful while Pagefind resolves it', async ({ page }) => {
+	await page.goto('/');
+	await page.getByRole('button', { name: 'Search the Woodshed' }).click();
+	const input = page.getByRole('searchbox', { name: 'Search query' });
+	await expect(page.getByText('Type at least 2 characters to search.')).toBeVisible();
+
+	await input.fill('is prime');
+	await expect(page.getByText('Searching…')).toBeVisible();
+	await expect(page.getByText('No results for "is prime".')).toHaveCount(0);
+	await expect(page.getByRole('link', { name: /^Is Prime/ })).toBeVisible();
+	await expect(page.getByText('No results for "is prime".')).toHaveCount(0);
+});
