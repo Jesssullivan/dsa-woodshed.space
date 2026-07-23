@@ -7,7 +7,7 @@
 	const steps = [
 		{
 			title: 'Write the thinking',
-			body: 'Use ordinary comments to restate the problem, work an example, and name an approach.',
+			body: "Restate the problem, work an example, and name an approach in comments or the function's docstring.",
 		},
 		{
 			title: 'Open the gate',
@@ -46,15 +46,15 @@
 <main class="mx-auto max-w-5xl px-6 py-16 md:py-24" data-pagefind-body>
 	<header class="max-w-4xl">
 		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The DSA Woodshed</p>
-		<h1 class="mt-3 max-w-3xl text-4xl leading-tight font-bold md:text-6xl">Practice the interview in the editor.</h1>
+		<h1 class="mt-3 max-w-3xl text-4xl leading-tight font-bold md:text-6xl">Woodshedding for the whiteboard.</h1>
 		<p class="text-surface-700-300 mt-6 max-w-2xl text-xl leading-relaxed font-semibold">
-			Open a Codespace and work in ordinary comments, real code, and focused tests with a resident interviewer.
+			Musicians woodshed: practice the hard passages alone until the performance holds under pressure. This is that room
+			for technical interviews: real problems, real code, and a resident interviewer, one click from the browser.
 		</p>
 		<p class="text-surface-700-300 mt-4 max-w-2xl text-lg leading-relaxed">
-			You own the reasoning, solution, and tests. The interviewer uses GitHub's native Copilot harness and a
-			deterministic
-			<code>just</code> contract designed to stay legible to lightweight models. The current Python track includes 43 core
-			drills and 72 editor targets.
+			You reason in ordinary <code>#</code> comments and docstrings, in the file you are solving. The interviewer checks
+			visible work through a deterministic <code>just</code> contract: it reads what you wrote, requires no format, and never
+			writes your solution, tests, or gate. The Python track ships 43 core drills, a printable booklet, and reference sheets.
 		</p>
 
 		<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -87,13 +87,14 @@
 			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The default</p>
 			<h2 id="choose-mode" class="mt-2 text-2xl font-bold">Start with ordinary comments</h2>
 			<p class="text-surface-700-300 mt-3 leading-relaxed">
-				Open Copilot Chat and enter <code>/comments</code>. Write comments the way you would in real code. There are no
-				required prefixes or labels.
+				Enter <code>/comments</code> in Copilot Chat to start a rep, then write your reasoning in the source file:
+				<code>#</code> comments and docstrings, the way you would write them anyway. There are no required prefixes or labels.
+				The interviewer reads and understands what you wrote; you never format comments for its sake.
 			</p>
 			<p class="text-surface-500 mt-4 text-sm">
-				Add a problem when you want one directly, for example <code>/comments arrays two_sum</code>. If named vocabulary
-				already helps you think, <code>/reacto</code>, <code>/clarp</code>, and <code>/umpire</code> start the same loop with
-				optional labels.
+				Name a drill and its source and test files open at once, for example <code>/comments arrays two_sum</code>. If
+				named vocabulary helps you think, <code>/reacto</code>, <code>/clarp</code>, and <code>/umpire</code> start the same
+				loop with optional labels.
 			</p>
 		</div>
 	</section>
@@ -102,8 +103,7 @@
 		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">One clean loop</p>
 		<h2 id="rep-loop" class="mt-2 text-2xl font-bold">How a rep works</h2>
 		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
-			Open Copilot Chat in the Codespace. With no arguments, a command draws the next due problem; add a topic and
-			problem, for example <code>/comments arrays two_sum</code>, to choose one directly.
+			With nothing named, the interviewer draws the next due drill. Either way, every rep is the same four movements.
 		</p>
 		<ol
 			class="border-surface-200-800 mt-8 list-decimal divide-y divide-surface-200-800 border-y pl-8 marker:font-mono marker:font-semibold marker:text-primary-600"
@@ -118,8 +118,25 @@
 		<div class="bg-surface-100-900 mt-6 rounded-lg p-5 text-sm leading-relaxed">
 			<p class="font-semibold">The interviewer conducts; you do the work.</p>
 			<p class="text-surface-700-300 mt-2">
-				It opens the current files, reports the next state, runs the focused tests, and asks interview questions through
-				that same <code>just</code> command contract. It does not write your solution, tests, or gate.
+				It opens the drill's files, reports the next state, runs the focused tests, and asks interview questions through
+				the same <code>just</code> contract. It does not write your solution, tests, or gate.
+			</p>
+		</div>
+	</section>
+
+	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="why-woodshed">
+		<div class="max-w-2xl">
+			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The point</p>
+			<h2 id="why-woodshed" class="mt-2 text-2xl font-bold">Practice the performance, not just the algorithms</h2>
+			<p class="text-surface-700-300 mt-3 leading-relaxed">
+				An interview is a performance under observation: a clock, a stranger, a whiteboard, no compiler. Most
+				preparation drills the material and leaves the performing untrained, so panic gets the first word in the room.
+			</p>
+			<p class="text-surface-700-300 mt-4 leading-relaxed">
+				There is no whiteboard in a Codespace; your comments are the whiteboard. Narrating your reasoning as you code,
+				in a room where nothing is at stake, builds the habit that holds when everything is. It is also simply good
+				engineering: clear, succinct, accurate comments, written while you work. The ritual is arcane; your engineering
+				is the music. The Woodshed exists so the music comes through.
 			</p>
 		</div>
 	</section>
