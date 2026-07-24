@@ -62,6 +62,30 @@ test('home-route same-page hash links all resolve to an element', async ({ page 
 	expect(broken, 'home-route hash targets without matching element').toEqual([]);
 });
 
+test('cross-page fragment links from home resolve on their target pages', async ({ page }) => {
+	await page.goto('/');
+	await page.waitForLoadState('networkidle');
+	const fragmentLinks = await page.evaluate(() =>
+		Array.from(
+			new Set(
+				Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href]'))
+					.map((a) => a.getAttribute('href') ?? '')
+					.filter((h) => h.startsWith('/') && !h.startsWith('/#') && h.includes('#')),
+			),
+		),
+	);
+	expect(fragmentLinks, 'expected the Extended problems library link').toContain('/challenges#extended-problems');
+	for (const link of fragmentLinks) {
+		const [path, fragment] = link.split('#');
+		await page.goto(path);
+		await page.waitForLoadState('networkidle');
+		await expect(
+			page.locator(`[id="${fragment}"]`),
+			`${link}: no element with id="${fragment}" on ${path}`,
+		).toHaveCount(1);
+	}
+});
+
 test('minimum-width navigation control remains visible', async ({ page }) => {
 	await page.setViewportSize({ width: 320, height: 1200 });
 	await page.goto('/');
