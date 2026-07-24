@@ -74,8 +74,20 @@ describe('renderMarkdown', () => {
 		const src = ['```mermaid', 'graph TD', 'A["start"] --> B["end"]', '```'].join('\n');
 		const html = await renderMarkdown(src);
 		expect(renderMermaidDiagramsMock).toHaveBeenCalledWith(['graph TD\nA["start"] --> B["end"]']);
-		expect(html).toContain('<figure class="diagram"><svg viewBox="0 0 10 10">');
+		expect(html).toContain(
+			'<figure class="diagram"><svg viewBox="0 0 10 10" style="width:10px;max-width:none;height:auto">',
+		);
 		expect(html).not.toContain('diagram-fallback');
+	});
+
+	it('pins a rendered diagram to its intrinsic viewBox width instead of scaling to the column', async () => {
+		renderMermaidDiagramsMock.mockResolvedValue([
+			'<svg aria-roledescription="flowchart-v2" viewBox="0 0 8142.4 846.06" width="100%" style="max-width: 8142.4px;"><g/></svg>',
+		]);
+		const src = ['```mermaid', 'graph LR', 'A --> B', '```'].join('\n');
+		const html = await renderMarkdown(src);
+		expect(html).toContain('style="width:8143px;max-width:none;height:auto"');
+		expect(html).not.toContain('width="100%"');
 	});
 
 	it('keeps the labelled-source fallback figure when the build-time render fails (broken diagram)', async () => {

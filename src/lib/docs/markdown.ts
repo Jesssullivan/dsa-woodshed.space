@@ -292,9 +292,27 @@ function mermaidFallbackFigure(code: string): string {
 	return `<figure class="diagram-fallback"><figcaption class="diagram-note">Diagram — rendered as source; see the source page for the visual.</figcaption>${plain}</figure>`;
 }
 
+/**
+ * Mermaid emits `width="100%"` plus an intrinsic max-width, which lets a wide
+ * diagram scale down to the prose column until it is unreadable (the packet's
+ * decision tree is thousands of pixels wide). Pin the SVG to its intrinsic
+ * viewBox width instead; figure.diagram's overflow-x pans anything wider than
+ * the column while narrow diagrams still center at natural size.
+ */
+function diagramAtNaturalSize(svg: string): string {
+	const viewBox = /viewBox="([\d.eE+-]+)[ ,]+([\d.eE+-]+)[ ,]+([\d.eE+-]+)[ ,]+([\d.eE+-]+)"/.exec(svg);
+	if (!viewBox) return svg;
+	const width = Math.ceil(Number(viewBox[3]));
+	if (!Number.isFinite(width) || width <= 0) return svg;
+	return svg.replace(/<svg([^>]*)>/, (_full, attrs: string) => {
+		const cleaned = attrs.replace(/\s+width="[^"]*"/, '').replace(/\s+style="[^"]*"/, '');
+		return `<svg${cleaned} style="width:${width}px;max-width:none;height:auto">`;
+	});
+}
+
 /** A successfully build-time-rendered mermaid diagram, as inline SVG. */
 function mermaidFigure(svg: string): string {
-	return `<figure class="diagram">${svg}</figure>`;
+	return `<figure class="diagram">${diagramAtNaturalSize(svg)}</figure>`;
 }
 
 const FENCE_RE = /^(```|~~~)\s*([\w-]*)\s*$/;
