@@ -133,6 +133,43 @@
 				preparation repeats the material and leaves the performing untrained, so panic gets the first word in the room.
 			</p>
 			<p class="text-surface-700-300 mt-4 leading-relaxed">
+				That is why the interviewer's first offer to a nervous candidate is regulation, not a problem:
+			</p>
+			<ul class="border-surface-200-800 mt-6 divide-y divide-surface-200-800 border-y">
+				<li class="py-5">
+					<h3 class="text-lg font-semibold">A racing heart is preparation</h3>
+					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">
+						The surge is your body delivering oxygen for thinking. Naming it that way, out loud, is a
+						<a
+							href="/guide/interview-practice-evidence"
+							class="editorial-link text-primary-600 hover:text-primary-700 underline underline-offset-2"
+							>studied aid to performance under stress</a
+						>, not a pep talk.
+					</p>
+				</li>
+				<li class="py-5">
+					<h3 class="text-lg font-semibold">Four sighs, thirty seconds</h3>
+					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">
+						A double inhale through the nose, then a long exhale, four times. The interviewer offers it once at the
+						start of a rep; no is a complete answer.
+					</p>
+				</li>
+				<li class="py-5">
+					<h3 class="text-lg font-semibold">Narrated stuck beats silent stuck</h3>
+					<p class="text-surface-700-300 mt-2 text-sm leading-relaxed">
+						"I am blanking for a second" is a passing answer; going silent is the only failing one. After a real stall,
+						a hint arrives one step at a time and stops when you recover.
+					</p>
+				</li>
+			</ul>
+			<div class="bg-surface-100-900 mt-6 rounded-lg p-5 text-sm leading-relaxed">
+				<p class="font-semibold">None of it is scored.</p>
+				<p class="text-surface-700-300 mt-2">
+					No streaks, no badges, no solve counts. Arrival writing is never scored or logged. Taking a hint is
+					engagement, not failure.
+				</p>
+			</div>
+			<p class="text-surface-700-300 mt-6 leading-relaxed">
 				There is no whiteboard in a Codespace; your comments are the whiteboard. Narrating your reasoning as you code,
 				in a room where nothing is at stake, builds the habit that holds when everything is. It is also simply good
 				engineering: clear, succinct, accurate comments, written while you work. The ritual is arcane; your engineering
