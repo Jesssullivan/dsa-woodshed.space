@@ -11,8 +11,8 @@
 			body: 'Compact lookups for Python, data structures, patterns, complexity, and interview method.',
 		},
 		{
-			title: 'Advanced Exercises',
-			href: '/practice',
+			title: 'Extended problems',
+			href: '/challenges#extended-problems',
 			body: 'Code-reading and decomposition exercises for practical engineering rounds.',
 		},
 		{

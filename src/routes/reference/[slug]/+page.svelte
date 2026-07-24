@@ -16,7 +16,7 @@
 	<Breadcrumbs
 		items={[
 			{ label: 'The DSA Woodshed', href: '/' },
-			{ label: 'Reference sheets', href: '/reference' },
+			{ label: 'Reference Sheets', href: '/reference' },
 			{ label: data.title },
 		]}
 	/>

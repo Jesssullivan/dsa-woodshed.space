@@ -38,7 +38,6 @@ describe('entryHref', () => {
 
 	it('uses the section root for each single-page content section', () => {
 		expect(entryHref(getEntry('challenges', 'index')!)).toBe('/challenges');
-		expect(entryHref(getEntry('practice', 'index')!)).toBe('/practice');
 		expect(entryHref(getEntry('printables', 'printables')!)).toBe('/printables');
 	});
 });
@@ -89,7 +88,6 @@ describe('makeLinkResolver', () => {
 		const unrouted = allEntries().filter((e) => !ROUTED_SECTIONS.has(e.section));
 		expect(unrouted).toEqual([]);
 		expect(makeLinkResolver('README.md')('docs/challenges/index.md')).toBe('/challenges');
-		expect(makeLinkResolver('README.md')('docs/practice/index.md')).toBe('/practice');
 		expect(makeLinkResolver('README.md')('docs/printables.md')).toBe('/printables');
 	});
 });

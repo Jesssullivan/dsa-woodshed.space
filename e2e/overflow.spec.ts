@@ -19,7 +19,6 @@ const routes = [
 	'/',
 	'/library',
 	'/challenges',
-	'/practice',
 	'/printables',
 	'/reference',
 	'/reference/algorithm-templates',

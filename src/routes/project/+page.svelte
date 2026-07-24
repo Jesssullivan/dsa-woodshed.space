@@ -11,7 +11,7 @@
 		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The project</p>
 		<h1 class="mt-3 max-w-3xl text-4xl leading-tight font-bold md:text-6xl">A public woodshed</h1>
 		<p class="text-surface-700-300 mt-6 max-w-2xl text-xl leading-relaxed font-semibold">
-			The DSA Woodshed is a public, company-neutral interview-practice product: a packet repository of drills, tests,
+			The DSA Woodshed is a public, company-neutral interview-practice product: a packet repository of problems, tests,
 			and print material, plus this reading site, which re-syncs the packet's content on every deploy.
 		</p>
 	</header>
@@ -19,7 +19,7 @@
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="live-now">
 		<h2 id="live-now" class="text-2xl font-bold">What is live now</h2>
 		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
-			The Python track: 43 core drills with reference solutions and focused tests, editor-first reps in GitHub
+			The Python track: 43 core problems with reference solutions and focused tests, editor-first reps in GitHub
 			Codespaces with a resident interviewer, and a printable booklet with reference sheets you can also read on this
 			site. Python is the only runnable track today; other language tracks are deliberate future work, not stubs.
 		</p>
@@ -28,9 +28,9 @@
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="who-owns-what">
 		<h2 id="who-owns-what" class="text-2xl font-bold">Who owns what</h2>
 		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
-			In a rep, you own the source, the tests, and the THINKING GATE: the interviewer conducts and checks visible work,
-			and never writes them. In the repository, tracked drills are complete and tested; personal practice state lives in
-			a gitignored workspace and never enters the public tree.
+			In a rep, you own the source and the tests: the interviewer conducts and checks visible work, and never writes
+			them. In the repository, tracked problems are complete and tested; personal practice state lives in a gitignored
+			workspace and never enters the public tree.
 		</p>
 	</section>
 

@@ -7,8 +7,7 @@ import { getSinglePageEntry, makeLinkResolver, SINGLE_PAGE_SECTIONS } from '$lib
 import type { EntryGenerator, PageServerLoad } from './$types';
 
 const SECTION_TITLES: Record<(typeof SINGLE_PAGE_SECTIONS)[number], string> = {
-	challenges: 'Practice Drills',
-	practice: 'Advanced Exercises',
+	challenges: 'Practice Problems',
 	printables: 'Printables',
 };
 

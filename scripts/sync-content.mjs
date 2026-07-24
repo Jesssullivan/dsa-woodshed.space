@@ -158,15 +158,6 @@ const PLAN = [
 		out: 'printables/printables.md',
 	},
 	{
-		section: 'practice',
-		slug: 'index',
-		lane: 'markdown',
-		order: 1,
-		input: 'docs/practice/index.md',
-		sourcePath: 'docs/practice/index.md',
-		out: 'practice/index.md',
-	},
-	{
 		section: 'challenges',
 		slug: 'index',
 		lane: 'markdown',
@@ -313,10 +304,9 @@ function packetJoin(dir, relPath) {
  * same page, so either form of cross-reference lands on the synced route. */
 function planRoutes() {
 	// Keep these shapes in sync with entryHref in src/lib/docs/registry.ts.
-	const ROUTED_SECTIONS = new Set(['guide', 'algorithms', 'reference', 'challenges', 'practice', 'printables']);
+	const ROUTED_SECTIONS = new Set(['guide', 'algorithms', 'reference', 'challenges', 'printables']);
 	const SINGLE_PAGE_SLUGS = new Map([
 		['challenges', 'index'],
-		['practice', 'index'],
 		['printables', 'printables'],
 	]);
 	const routes = new Map();
