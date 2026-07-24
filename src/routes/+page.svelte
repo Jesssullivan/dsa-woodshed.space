@@ -10,16 +10,16 @@
 			body: "Restate the problem, work an example, and name an approach in comments or the function's docstring.",
 		},
 		{
-			title: 'Open the gate',
-			body: 'Save your comments and remove the THINKING GATE yourself when you are ready to code.',
-		},
-		{
 			title: 'Build and test',
 			body: 'Implement in your private, gitignored workspace and add focused cases to your test file.',
 		},
 		{
+			title: 'Reconcile the receipt',
+			body: 'Run the focused tests; a failed, stale, or missing run asks you to trace, revise, and rerun.',
+		},
+		{
 			title: 'Keep one correction',
-			body: 'Say /continue for the next instruction, run the focused tests, and finish with one fix.',
+			body: 'Say /continue for the next instruction and finish with one fix.',
 		},
 	];
 
@@ -37,8 +37,8 @@
 			href: '/reference',
 		},
 		{
-			title: 'Advanced Exercises',
-			href: '/practice',
+			title: 'Extended problems',
+			href: '/challenges#extended-problems',
 		},
 	];
 </script>
@@ -54,7 +54,7 @@
 		<p class="text-surface-700-300 mt-4 max-w-2xl text-lg leading-relaxed">
 			You reason in ordinary <code>#</code> comments and docstrings, in the file you are solving. The interviewer checks
 			visible work through a deterministic <code>just</code> contract: it reads what you wrote, requires no format, and never
-			writes your solution, tests, or gate. The Python track ships 43 core drills, a printable booklet, and reference sheets.
+			writes your solution or tests. The Python track ships 43 core problems, a printable booklet, and reference sheets.
 		</p>
 
 		<div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -92,7 +92,7 @@
 				The interviewer reads and understands what you wrote; you never format comments for its sake.
 			</p>
 			<p class="text-surface-500 mt-4 text-sm">
-				Name a drill and its source and test files open at once, for example <code>/comments arrays two_sum</code>. If
+				Name a problem and its source and test files open at once, for example <code>/comments arrays two_sum</code>. If
 				named vocabulary helps you think, <code>/reacto</code>, <code>/clarp</code>, and <code>/umpire</code> start the same
 				loop with optional labels.
 			</p>
@@ -103,7 +103,7 @@
 		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">One clean loop</p>
 		<h2 id="rep-loop" class="mt-2 text-2xl font-bold">How a rep works</h2>
 		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
-			With nothing named, the interviewer draws the next due drill. Either way, every rep is the same four movements.
+			With nothing named, the interviewer draws the next due problem. Either way, every rep is the same four movements.
 		</p>
 		<ol
 			class="border-surface-200-800 mt-8 list-decimal divide-y divide-surface-200-800 border-y pl-8 marker:font-mono marker:font-semibold marker:text-primary-600"
@@ -118,8 +118,8 @@
 		<div class="bg-surface-100-900 mt-6 rounded-lg p-5 text-sm leading-relaxed">
 			<p class="font-semibold">The interviewer conducts; you do the work.</p>
 			<p class="text-surface-700-300 mt-2">
-				It opens the drill's files, reports the next state, runs the focused tests, and asks interview questions through
-				the same <code>just</code> contract. It does not write your solution, tests, or gate.
+				It opens the problem's files, reports the next state, runs the focused tests, and asks interview questions
+				through the same <code>just</code> contract. It does not write your solution or tests.
 			</p>
 		</div>
 	</section>
@@ -130,7 +130,7 @@
 			<h2 id="why-woodshed" class="mt-2 text-2xl font-bold">Practice the performance, not just the algorithms</h2>
 			<p class="text-surface-700-300 mt-3 leading-relaxed">
 				An interview is a performance under observation: a clock, a stranger, a whiteboard, no compiler. Most
-				preparation drills the material and leaves the performing untrained, so panic gets the first word in the room.
+				preparation repeats the material and leaves the performing untrained, so panic gets the first word in the room.
 			</p>
 			<p class="text-surface-700-300 mt-4 leading-relaxed">
 				There is no whiteboard in a Codespace; your comments are the whiteboard. Narrating your reasoning as you code,

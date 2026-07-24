@@ -18,7 +18,13 @@
 </script>
 
 <main class="mx-auto max-w-5xl py-16">
-	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Guide' }, { label: title }]} />
+	<Breadcrumbs
+		items={[
+			{ label: 'The DSA Woodshed', href: '/' },
+			{ label: 'Method', href: '/guide/getting-started' },
+			{ label: title },
+		]}
+	/>
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">
 		<article class="min-w-0" data-pagefind-body>
 			<!-- Heading ids are stamped at build time by the mdsvex rehype

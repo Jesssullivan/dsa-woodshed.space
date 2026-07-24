@@ -5,5 +5,5 @@ import type { PageLoad } from './$types';
 export const load: PageLoad = () => ({
 	title: 'Project',
 	summary:
-		"The DSA Woodshed is a public, company-neutral interview-practice product: a packet repository of drills, tests, and print material, plus this reading site, which re-syncs the packet's content on every deploy.",
+		"The DSA Woodshed is a public, company-neutral interview-practice product: a packet repository of problems, tests, and print material, plus this reading site, which re-syncs the packet's content on every deploy.",
 });

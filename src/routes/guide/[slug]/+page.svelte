@@ -17,7 +17,11 @@
 	<Breadcrumbs
 		items={isSourceOfTruth
 			? [{ label: 'The DSA Woodshed', href: '/' }, { label: data.title }]
-			: [{ label: 'The DSA Woodshed', href: '/' }, { label: 'Guide' }, { label: data.title }]}
+			: [
+					{ label: 'The DSA Woodshed', href: '/' },
+					{ label: 'Method', href: '/guide/getting-started' },
+					{ label: data.title },
+				]}
 	/>
 	<div class="xl:grid xl:grid-cols-[minmax(0,1fr)_220px] xl:items-start xl:gap-10">
 		<article class="min-w-0" data-pagefind-body>

@@ -19,7 +19,7 @@ export const PRIMARY_NAV_LINKS: PrimaryNavLink[] = [
 	{
 		href: '/library',
 		label: 'Library',
-		sections: ['/library', '/algorithms', '/reference', '/practice', '/printables'],
+		sections: ['/library', '/algorithms', '/reference', '/printables'],
 	},
 	{
 		href: '/guide/getting-started',

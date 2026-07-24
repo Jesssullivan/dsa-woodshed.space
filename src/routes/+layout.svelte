@@ -101,7 +101,7 @@
 						target="_blank"
 						rel="noopener"
 						class="bg-primary-500 hover:bg-primary-600 inline-flex min-h-11 items-center rounded-md px-3 py-1.5 text-sm font-semibold text-white transition-colors"
-						aria-label="Start a practice session in GitHub Codespaces">Start</a
+						aria-label="Start a practice rep in GitHub Codespaces">Start</a
 					>
 					<ThemeSwitcher />
 				</nav>
@@ -144,7 +144,7 @@
 							rel="noopener"
 							onclick={() => (mobileOpen = false)}
 							class="bg-primary-500 hover:bg-primary-600 mt-1 inline-flex min-h-11 w-fit items-center rounded-md px-3 py-1.5 font-semibold text-white transition-colors"
-							aria-label="Start a practice session in GitHub Codespaces">Start</a
+							aria-label="Start a practice rep in GitHub Codespaces">Start</a
 						>
 					</nav>
 					{#if showMobileSectionNav}

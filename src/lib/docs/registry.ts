@@ -23,7 +23,7 @@ import { REPO_URL, REPO_DEFAULT_BRANCH } from '$lib/repo';
 import manifestJson from '$content/.manifest.json';
 
 export type Lane = 'markdown' | 'svx';
-export type SectionId = 'guide' | 'reference' | 'algorithms' | 'printables' | 'practice' | 'challenges';
+export type SectionId = 'guide' | 'reference' | 'algorithms' | 'printables' | 'challenges';
 
 export interface ContentEntry {
 	/** Section this entry belongs to. */
@@ -96,7 +96,7 @@ const SUMMARIES: Record<string, string> = {
 		'PEP 750 t-strings, PEP 649 lazy annotations, PEP 695 type syntax, Hypothesis, and advanced typing.',
 	'reference/whiteboard-performance-protocol':
 		"What's actually scored, the CLARP loop, panic first-aid, and collaboration scripts.",
-	'reference/14-day-whiteboard-ramp': 'A day-by-day schedule: which drills to run and which sheets to keep open.',
+	'reference/14-day-whiteboard-ramp': 'A day-by-day schedule: which problems to run and which sheets to keep open.',
 	'guide/interview-practice-evidence':
 		'Why the daily loop is built from cold retrieval, think-aloud reps, observation stress, and tape review instead of passive video.',
 	'guide/getting-started': 'Start an editor rep, write your reasoning in comments, implement, and test.',
@@ -106,8 +106,7 @@ const SUMMARIES: Record<string, string> = {
 	'guide/local-practice':
 		'Run the same editor-first practice loop in local VS Code with a Dev Container or uv and just.',
 	'printables/printables': 'The booklet and reference sheets meant to leave the screen and land on paper.',
-	'practice/index': 'Advanced code-reading and decomposition exercises for practical engineering rounds.',
-	'challenges/index': 'Practice drills that pair written reasoning with implementation and focused tests.',
+	'challenges/index': 'Practice problems that pair written reasoning with implementation and focused tests.',
 };
 
 export interface Section {
@@ -122,20 +121,18 @@ export interface Section {
 // Section display metadata. Order here is a sane default; the IA stream owns the
 // final navigation shape.
 const SECTION_META: Record<SectionId, { title: string; order: number }> = {
-	challenges: { title: 'Practice Drills', order: 1 },
-	practice: { title: 'Advanced Exercises', order: 2 },
+	challenges: { title: 'Practice Problems', order: 1 },
 	algorithms: { title: 'Algorithms', order: 3 },
 	reference: { title: 'Reference Sheets', order: 4 },
 	guide: { title: 'Method', order: 5 },
 	printables: { title: 'Printables', order: 6 },
 };
 
-export const SINGLE_PAGE_SECTIONS = ['challenges', 'practice', 'printables'] as const;
+export const SINGLE_PAGE_SECTIONS = ['challenges', 'printables'] as const;
 export type SinglePageSection = (typeof SINGLE_PAGE_SECTIONS)[number];
 
 const SINGLE_PAGE_SLUGS: Record<SinglePageSection, string> = {
 	challenges: 'index',
-	practice: 'index',
 	printables: 'printables',
 };
 
@@ -210,7 +207,6 @@ export const ROUTED_SECTIONS: ReadonlySet<SectionId> = new Set([
 	'algorithms',
 	'reference',
 	'challenges',
-	'practice',
 	'printables',
 ]);
 

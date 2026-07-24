@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import { algorithmTopics } from '$lib/docs/registry';
 
 	const topics = algorithmTopics();
@@ -10,6 +11,7 @@
      indexing it would rank the hub above the actual content for every topic
      query. Contrast /reference, whose index carries editorial summaries. -->
 <main class="mx-auto max-w-3xl px-6 py-16">
+	<Breadcrumbs items={[{ label: 'The DSA Woodshed', href: '/' }, { label: 'Algorithms' }]} />
 	<h1 class="text-3xl font-bold">Algorithms</h1>
 	<p class="text-surface-700 dark:text-surface-300 mt-3 leading-relaxed">
 		{total} implementations from the study packet, each with its problem statement, approach, complexity, and full source.

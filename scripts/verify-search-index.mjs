@@ -41,10 +41,10 @@ const KNOWN_TERM = 'two pointer';
 // Detailed content lanes protect the searchable library beyond its indexes.
 const LEAF_LANES = ['/reference/', '/guide/', '/algorithms/'];
 
-// The four public IA destinations that search must always expose. These are
+// The public IA destinations that search must always expose. These are
 // exact routes, not broad section prefixes, so the landing pages themselves
 // cannot disappear while a child page keeps the check green.
-const REQUIRED_ROUTES = ['/library', '/challenges', '/practice', '/printables'];
+const REQUIRED_ROUTES = ['/library', '/challenges', '/printables'];
 
 function fail(message) {
 	console.error(`verify-search-index: ${message}`);
