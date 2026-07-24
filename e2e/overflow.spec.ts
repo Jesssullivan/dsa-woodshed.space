@@ -30,6 +30,7 @@ const routes = [
 	'/guide/source-of-truth',
 	'/guide/when-to-use-what',
 	'/project',
+	'/agent',
 ];
 
 for (const bp of breakpoints) {
@@ -104,6 +105,24 @@ test('Project is current without also marking Method', async ({ page }) => {
 	await expect(navigation.getByRole('link', { name: 'Project' })).toHaveAttribute('aria-current', 'page');
 	await expect(navigation.getByRole('link', { name: 'Method' })).not.toHaveAttribute('aria-current');
 	await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toHaveCount(0);
+});
+
+test('/agent renders the read order, command surface, and packet links', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 1200 });
+	await page.goto('/agent');
+	await expect(page.getByRole('heading', { level: 1, name: 'Read this first' })).toBeVisible();
+	await expect(page.getByRole('heading', { level: 2, name: 'Command surface' })).toBeVisible();
+	await expect(page.getByText('just practice-start comments|reacto|clarp|umpire')).toBeVisible();
+	await expect(page.getByRole('link', { name: 'AGENTS.md', exact: true })).toHaveAttribute(
+		'href',
+		'https://github.com/Jesssullivan/dsa-study-packet/blob/main/AGENTS.md',
+	);
+	await expect(page.getByRole('link', { name: 'TRACK-CONTRACT.md', exact: true })).toHaveAttribute(
+		'href',
+		'https://github.com/Jesssullivan/dsa-study-packet/blob/main/TRACK-CONTRACT.md',
+	);
+	await expect(page.getByRole('link', { name: 'llms.txt' })).toHaveAttribute('href', '/llms.txt');
+	await expect(page.getByRole('link', { name: 'agent-map.md' })).toHaveAttribute('href', '/agent-map.md');
 });
 
 test('/guide/source-of-truth never marks Method or Project current at once', async ({ page }) => {

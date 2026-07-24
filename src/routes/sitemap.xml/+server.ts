@@ -7,7 +7,7 @@ import {
 	sheetSlugs,
 	SINGLE_PAGE_SECTIONS,
 } from '$lib/docs/registry';
-import { PROJECT_ROUTE } from '$lib/navigation';
+import { AGENT_ROUTE, PROJECT_ROUTE } from '$lib/navigation';
 import type { RequestHandler } from './$types';
 
 const SITE = 'https://dsa-woodshed.space';
@@ -22,6 +22,7 @@ const PAGES: string[] = [
 		...sheetSlugs().map((s) => `/reference/${s}`),
 		'/guide/interview-practice-evidence',
 		PROJECT_ROUTE,
+		AGENT_ROUTE,
 		...guideMarkdownSlugs().map((s) => `/guide/${s}`),
 		'/algorithms',
 		...algorithmTopicSlugs().map((t) => `/algorithms/${t}`),
