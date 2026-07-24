@@ -165,7 +165,7 @@
 			<div class="bg-surface-100-900 mt-6 rounded-lg p-5 text-sm leading-relaxed">
 				<p class="font-semibold">None of it is scored.</p>
 				<p class="text-surface-700-300 mt-2">
-					No streaks, no badges, no solve counts. Arrival writing is never scored or logged. Taking a hint is
+					No streaks, no badges, no solve counts. Arrival writing is never read, scored, or logged. Taking a hint is
 					engagement, not failure.
 				</p>
 			</div>
