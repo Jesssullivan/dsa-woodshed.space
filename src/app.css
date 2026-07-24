@@ -355,10 +355,14 @@ a.editorial-link:visited:not(:hover) {
 }
 
 /* Mermaid diagrams are rendered to inline SVG at BUILD time via mermaid-isomorphic
-   (see $lib/docs/mermaid.ts + the extraction in $lib/docs/markdown.ts). A fixed
-   light card behind the SVG keeps Mermaid's default black-on-transparent output
-   legible under the dark theme too, since the build-time render has no notion of
-   the reader's color-scheme preference. `.diagram-fallback` below is the
+   (see $lib/docs/mermaid.ts + the extraction in $lib/docs/markdown.ts), and the
+   build-time render has no notion of the reader's color-scheme preference —
+   Mermaid's default theme assumes a light card underneath. The light mode card
+   stays a fixed white surface. Dark mode gets its own card (the 50/950
+   light/dark surface pairing used for admonitions above) plus the blog's
+   proven filter on the SVG itself (invert + hue-rotate), which flips Mermaid's
+   black-on-transparent output to something legible against a dark surface
+   without needing a per-theme render. `.diagram-fallback` below is the
    labelled-source figure used only when a render call fails. */
 .prose figure.diagram {
 	margin: 1.25em 0;
@@ -367,11 +371,17 @@ a.editorial-link:visited:not(:hover) {
 	background: #fff;
 	overflow-x: auto;
 }
+[data-mode='dark'] .prose figure.diagram {
+	background: var(--color-surface-950);
+}
 .prose figure.diagram svg {
 	display: block;
 	margin: 0 auto;
 	max-width: 100%;
 	height: auto;
+}
+[data-mode='dark'] .prose figure.diagram svg {
+	filter: invert(0.88) hue-rotate(180deg);
 }
 .prose figure.diagram-fallback {
 	margin: 1.25em 0;
