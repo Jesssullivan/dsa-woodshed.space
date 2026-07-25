@@ -21,8 +21,8 @@ importers:
         specifier: ^1.25.0
         version: 1.25.0(svelte@5.56.7(@typescript-eslint/types@8.65.0))
       '@tummycrypt/tinyvectors':
-        specifier: https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.5.tar.gz
-        version: https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.5.tar.gz(svelte@5.56.7(@typescript-eslint/types@8.65.0))
+        specifier: https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.6.tar.gz
+        version: https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.6.tar.gz(svelte@5.56.7(@typescript-eslint/types@8.65.0))
       effect:
         specifier: ^3.22.0
         version: 3.22.0
@@ -907,9 +907,9 @@ packages:
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7 || ^8
 
-  '@tummycrypt/tinyvectors@https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.5.tar.gz':
-    resolution: {tarball: https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.5.tar.gz}
-    version: 0.3.5
+  '@tummycrypt/tinyvectors@https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.6.tar.gz':
+    resolution: {tarball: https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.6.tar.gz}
+    version: 0.3.6
     engines: {node: '>=22.0.0'}
     peerDependencies:
       svelte: '>=5.20.0'
@@ -3695,7 +3695,7 @@ snapshots:
       tailwindcss: 4.3.3
       vite: 8.1.5(@types/node@22.20.1)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.1)
 
-  '@tummycrypt/tinyvectors@https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.5.tar.gz(svelte@5.56.7(@typescript-eslint/types@8.65.0))':
+  '@tummycrypt/tinyvectors@https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.6.tar.gz(svelte@5.56.7(@typescript-eslint/types@8.65.0))':
     dependencies:
       svelte: 5.56.7(@typescript-eslint/types@8.65.0)
 
