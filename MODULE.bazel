@@ -12,7 +12,7 @@ packages. package.json must pin the SAME versions — enforced by
 `scripts/check-inhouse-package-parity.py` (chained into `pnpm run lint`).
 @tummycrypt/tinyvectors in particular is never resolved from the public
 npm registry: package.json pins the GitHub tag archive listed in the
-registry's modules/tummycrypt_tinyvectors/0.3.4/source.json, and
+registry's modules/tummycrypt_tinyvectors/0.3.5/source.json, and
 scripts/build-tinyvectors.mjs compiles it after install.
 """
 
@@ -34,7 +34,7 @@ bazel_dep(name = "aspect_rules_js", version = "2.9.1")
 # (versions must match package.json + the registry; verify with `just inhouse-package-parity`).
 bazel_dep(name = "tummycrypt_vite_plugin_a11y", version = "0.2.2")
 bazel_dep(name = "tummycrypt_vite_plugin_skeleton_colors", version = "0.2.2")
-bazel_dep(name = "tummycrypt_tinyvectors", version = "0.3.4")
+bazel_dep(name = "tummycrypt_tinyvectors", version = "0.3.5")
 
 # Node 22.13.1
 node = use_extension("@rules_nodejs//nodejs:extensions.bzl", "node")
