@@ -1,6 +1,6 @@
 ---
 name: Feature request
-about: Suggest a new feature or improvement for the site.scaffold site
+about: Suggest a new feature or improvement for The DSA Woodshed site
 title: ''
 labels: ['enhancement']
 assignees: ''
@@ -26,4 +26,4 @@ assignees: ''
 
 ## Spec Reference
 
-<!-- Section(s) of the relevant docs/spec/*.md or docs/CI-SCHEMA.md this touches, if any. -->
+<!-- Link the relevant packet source, site route, or repository contract, if any. -->

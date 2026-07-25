@@ -21,8 +21,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
-  # Packet changes do not push this repository. A conservative daily GF-backed
-  # rebuild bounds public content lag without consuming GitHub-hosted minutes.
+  # Packet changes do not push this repository. A conservative daily
+  # self-hosted ARC rebuild bounds public content lag without consuming
+  # GitHub-hosted minutes.
   schedule:
     - cron: '17 8 * * *'
   workflow_dispatch:

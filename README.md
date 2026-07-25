@@ -63,15 +63,9 @@ required landing routes, and every result URL.
 
 ## Develop
 
-Use Node 22 and pnpm 10.13.1, as pinned by `.nvmrc` and `packageManager`.
-
-```sh
-pnpm install --frozen-lockfile
-pnpm run sync-content
-pnpm run dev
-```
-
-`just` is the shorter front door:
+Use `just` as the canonical front door. It wraps Node 22 and pnpm 10.13.1, as
+pinned by `.nvmrc` and `packageManager`, without hiding the underlying
+pnpm/Vite commands.
 
 ```sh
 just setup
@@ -82,13 +76,51 @@ just test
 just build
 just verify-booklet
 just e2e
+just repo-profile
 ```
 
+The equivalent underlying setup and development commands are
+`pnpm install --frozen-lockfile`, `pnpm run sync-content`, and `pnpm run dev`.
 `dev`, `check`, `test`, and `build` sync packet content first. The underlying
 `pnpm run check`, `pnpm run lint`, and `pnpm run test:unit` commands can validate
 site code against content that is already present. `just verify-booklet` checks
 the already-synced static PDF against its generated metadata without fetching it
-again.
+again. `just repo-profile` checks the repository's declared public-standalone
+profile against its tracked files and contributor documentation.
+
+## Repository profile
+
+This repository is a custom public-standalone site derived historically from
+`tinyland-inc/site.scaffold`; it is not a full scaffold implementation. The
+machine-readable contract in `tinyland.repo.json` is enforced by
+`just repo-profile` and the CI lint gate.
+
+- The canonical build is pnpm/Vite through `just`. Bazel proves only the module
+  graph and in-house package-pin parity; it does not build or run the site.
+- This site owns the public `/agent` orientation page and `static/llms.txt`.
+  The packet-synced `static/agent-map.md` remains authoritative in
+  `Jesssullivan/dsa-study-packet`.
+- The site does not inherit `.agents/skills`, `.claude-plugin`, or
+  `plugins/scaffold-core` merely for parity with the house scaffold.
+- Runtime backend, auth, payments, and apply authority are all absent.
+- CI and Pages currently prove `tinyland-docker` ARC runner pickup only. ARC
+  runner pickup does not prove GloriousFlywheel consumer enrollment,
+  shared-cache attachment, REAPI, or RBE; those remain unproved and unclaimed.
+
+### Selective scaffold audit ledger
+
+Status: pending the site.scaffold v0.4.0 release. After that release,
+maintainers review individual public-safe features against this table. These
+dispositions are the current baseline, not a claim that the post-release audit
+already ran. The audit updates each row in place; it does not create a
+wholesale convergence obligation.
+
+| Scaffold surface | Disposition | Woodshed boundary |
+| --- | --- | --- |
+| Public CI, security, and accessibility checks | Adopt | Only when publicly resolvable and relevant to this static site |
+| Public static-Svelte presentation primitives | Adapt | Preserve Woodshed IA, content authority, and product behavior |
+| `.agents/skills`, `.claude-plugin`, and `plugins/scaffold-core` | Reject | The Woodshed owns its smaller public `/agent` handoff |
+| Nix, private CI or registries, runtime/apply lanes, owner overlays | Reject | This repository has no runtime, auth, payments, or apply authority |
 
 ## Deploy
 
@@ -100,8 +132,9 @@ unit, build, and browser gates on pull requests.
 
 The app began as a private house SvelteKit scaffold. Estate coupling was
 removed: there is no Nix flake, private CI template, private-registry package,
-or agent projection surface here. The `MODULE.bazel` / `.bazelrc` pair is a
-version-parity proof surface against the public tinyland-inc/bazel-registry
-(the source of truth for `@tummycrypt/tinyvectors`, which is never resolved
-from the public npm registry — see `scripts/build-tinyvectors.mjs`); the site
-build itself is plain pnpm/Vite.
+or house projection bundle here. The deliberately retained public agent
+handoff is a Woodshed product surface, not a scaffold marketplace import. The
+`MODULE.bazel` / `.bazelrc` pair is a version-parity proof surface against the
+public tinyland-inc/bazel-registry (the source of truth for
+`@tummycrypt/tinyvectors`, which is never resolved from the public npm registry;
+see `scripts/build-tinyvectors.mjs`); the site build itself is plain pnpm/Vite.

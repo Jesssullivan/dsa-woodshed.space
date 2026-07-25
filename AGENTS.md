@@ -6,12 +6,21 @@ Guidance for AI agents and contributors working in this repo.
 
 A static SvelteKit reading surface for the DSA study packet. Prose and reference
 sheets are authored in `Jesssullivan/dsa-study-packet`; this repo renders a
-curated subset. It was forked from a private house scaffold and deliberately
-stripped of estate coupling (Nix flake, private `@tummycrypt` chrome, private
-CI templates, projection/agent surfaces).
+curated subset. It is a custom public-standalone site derived historically from
+`tinyland-inc/site.scaffold`, with estate coupling removed. It owns a small
+public product handoff at `/agent`, `static/llms.txt`, and
+`static/agent-map.md`; it does not inherit the scaffold's private projection or
+plugin marketplace.
 
 ## Ground rules
 
+- **The declared profile is binding.** `tinyland.repo.json` records this
+  repository's provenance, authority, toolchain, agent-handoff inventory, and
+  execution-evidence boundary. `just repo-profile` validates that declaration
+  against this guide, `README.md`, and the tracked tree. A post-v0.4.0 scaffold
+  audit may classify individual public-safe features as adopt, adapt, or reject;
+  it is not a bulk migration. Do not add `.agents/skills`, `.claude-plugin`, or
+  `plugins/scaffold-core` merely for scaffold parity.
 - **Public resolvability only.** No Nix `flake.nix`, no private CI templates,
   no private registries, no credentials. Every dependency must resolve
   unauthenticated from public infrastructure. The retained
@@ -25,7 +34,17 @@ CI templates, projection/agent surfaces).
   `.bazelrc` exist solely so `just bazel-graph` and
   `scripts/check-inhouse-package-parity.py` (chained into `pnpm run lint`) can
   prove the in-house package pins match tinyland-inc/bazel-registry. The
-  canonical site build is pnpm/Vite; never wire the site build through Bazel.
+  canonical site build is pnpm/Vite through `just`; never wire the site build
+  through Bazel.
+- **Runner pickup is the only current remote-execution evidence.** CI and Pages
+  use the `tinyland-docker` ARC capability. ARC runner pickup does not prove
+  GloriousFlywheel consumer enrollment, shared-cache attachment, REAPI, or RBE;
+  those remain unproved and unclaimed here.
+- **The public agent handoff stays product-owned.** Preserve `/agent`,
+  `static/llms.txt`, and the packet-synced `static/agent-map.md`, including
+  their prerender, sitemap, and browser coverage. This site owns `/agent` and
+  `static/llms.txt`; the machine-map authority remains
+  `Jesssullivan/dsa-study-packet`.
 - **Stack pins are a contract.** `src/lib/house-stack-contract.test.ts` asserts
   Skeleton 4.15.2, TypeScript 6.0.x, pnpm 10.13.1, scoped `@lucide/svelte`, no
   direct `@zag-js`, Node 22. Change the pin and the test in the same commit.

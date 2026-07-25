@@ -1,10 +1,17 @@
 {
 	"schema_version": 1,
-	"scaffold_tag": "v0.2.0",
 	"repo": {
 		"name": "dsa-woodshed.space",
 		"domain": "dsa-woodshed.space",
 		"description": "The DSA Woodshed — a static SvelteKit reading surface for the DSA study packet."
+	},
+	"profile": {
+		"kind": "custom-public-standalone",
+		"derived_from": "tinyland-inc/site.scaffold",
+		"adoption": "selective",
+		"selective_audit_status": "pending-release",
+		"selective_audit_after": "v0.4.0",
+		"selective_audit_outcomes": ["adopt", "adapt", "reject"]
 	},
 	"taxonomy": {
 		"primary_role": "static-site",
@@ -13,6 +20,24 @@
 	"content": {
 		"authority_repo": "Jesssullivan/dsa-study-packet",
 		"note": "Prose and reference sheets are authored in the study-packet repo and rendered here. Edit/view links resolve there (see src/lib/repo.ts)."
+	},
+	"tooling": {
+		"front_door": "just",
+		"canonical_build": "pnpm-vite",
+		"bazel_role": "module-graph-and-package-pin-proof-only"
+	},
+	"agent_handoff": {
+		"owner_repo": "Jesssullivan/dsa-woodshed.space",
+		"machine_map_authority_repo": "Jesssullivan/dsa-study-packet",
+		"public_surfaces": ["/agent", "/llms.txt", "/agent-map.md"],
+		"inherits_scaffold_marketplace": false
+	},
+	"execution_evidence": {
+		"github_actions_capability": "tinyland-docker",
+		"runner_pickup": "arc-only",
+		"gf_consumer_enrollment": "unproved",
+		"gf_shared_cache": "unproved",
+		"gf_reapi_rbe": "unproved"
 	},
 	"boundaries": {
 		"owns_runtime_backend": false,

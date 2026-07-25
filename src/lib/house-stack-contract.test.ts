@@ -3,16 +3,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-// House frontend-stack contract.
+// Selected frontend-stack pin contract.
 //
-// site.scaffold carries the house exact pins but — until this test — shipped no
-// CI-failing guard for them: the only check was the soft scaffold-doctor warn
-// (which reads `dependencies`, not `devDependencies`, so it never fired on the
-// real manifest). The house production spoke asserts the same invariants in
-// its own stack-contract test + `check:dep-hygiene`; this is
-// the scaffold-side twin so the two repos cannot re-diverge silently.
+// This site historically inherited these exact pins from site.scaffold. This
+// test owns the selected constraints locally; it does not imply wholesale
+// scaffold conformance or a shared release train.
 //
-// The invariants, per `context/house-frontend-stack.md`:
+// The locally selected invariants:
 // - Skeleton + skeleton-svelte are EXACT `4.15.2`. Skeleton v5 IS GA upstream
 //   (`5.0.0`, not just a `-next.*` prerelease) as of this writing, but the v4→v5
 //   jump is a breaking major (new theming/component APIs) and this repo is
@@ -48,7 +45,7 @@ const allDeclaredDeps: Record<string, string> = {
 	...(packageJson.peerDependencies ?? {}),
 };
 
-describe('house frontend-stack exact-pin contract', () => {
+describe('selected frontend-stack exact-pin contract', () => {
 	it('keeps Skeleton + skeleton-svelte EXACT at 4.15.2 (no phantom v5)', () => {
 		expect(packageJson.devDependencies?.['@skeletonlabs/skeleton']).toBe('4.15.2');
 		expect(packageJson.devDependencies?.['@skeletonlabs/skeleton-svelte']).toBe('4.15.2');
@@ -76,8 +73,7 @@ describe('house frontend-stack exact-pin contract', () => {
 		expect(packageJson.engines?.node).toBe('>=22 <25');
 	});
 
-	// NOTE: the original scaffold also asserted MODULE.bazel's ts_version matched
-	// the package.json typescript pin. The Bazel lane was stripped when forking
-	// The DSA Woodshed (LOCAL-ONLY, no estate cache/RBE), so that assertion — and
-	// the node:fs read of MODULE.bazel — was removed with it.
+	// The retained Bazel lane proves module-graph resolution and in-house package
+	// pin parity only. It does not own a separate TypeScript version: package.json
+	// and this test remain the exact TypeScript pin authority.
 });
