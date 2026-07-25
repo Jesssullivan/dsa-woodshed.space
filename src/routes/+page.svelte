@@ -7,7 +7,7 @@
 	const steps = [
 		{
 			title: 'Write the thinking',
-			body: "Restate the problem, work an example, and name an approach in comments or the function's docstring.",
+			body: 'Restate the problem, work an example, and name an approach.',
 		},
 		{
 			title: 'Build and test',
@@ -87,9 +87,7 @@
 			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The default</p>
 			<h2 id="choose-mode" class="mt-2 text-2xl font-bold">Start with ordinary comments</h2>
 			<p class="text-surface-700-300 mt-3 leading-relaxed">
-				Enter <code>/comments</code> in Copilot Chat to start a rep, then write your reasoning in the source file:
-				<code>#</code> comments and docstrings, the way you would write them anyway. There are no required prefixes or labels.
-				The interviewer reads and understands what you wrote; you never format comments for its sake.
+				Enter <code>/comments</code> in Copilot Chat to start a rep. There are no required prefixes or labels.
 			</p>
 			<p class="text-surface-500 mt-4 text-sm">
 				Name a problem and its source and test files open at once, for example <code>/comments arrays two_sum</code>. If
@@ -119,7 +117,7 @@
 			<p class="font-semibold">The interviewer conducts; you do the work.</p>
 			<p class="text-surface-700-300 mt-2">
 				It opens the problem's files, reports the next state, runs the focused tests, and asks interview questions
-				through the same <code>just</code> contract. It does not write your solution or tests.
+				through the same <code>just</code> contract.
 			</p>
 		</div>
 	</section>
@@ -129,11 +127,15 @@
 			<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">The point</p>
 			<h2 id="why-woodshed" class="mt-2 text-2xl font-bold">Practice the performance, not just the algorithms</h2>
 			<p class="text-surface-700-300 mt-3 leading-relaxed">
-				An interview is a performance under observation: a clock, a stranger, a whiteboard, no compiler. Most
-				preparation repeats the material and leaves the performing untrained, so panic gets the first word in the room.
+				An interview is a performance under observation: a clock, a stranger, a whiteboard, no compiler. Skilled
+				engineers have cried through these rooms; mind-blank under observation is common, and volume grinding does not
+				fix it. Competence is not the gap. Regulation under observation is.
 			</p>
 			<p class="text-surface-700-300 mt-4 leading-relaxed">
-				That is why the interviewer's first offer to a nervous candidate is regulation, not a problem:
+				The answer here is structural: a resident interviewer that checks you showed your work, never that you were a
+				genius, running a deterministic practice loop that reads your ordinary comments instead of demanding formats. It
+				places you on a rung, holds it until you say climb, de-escalates for free, and closes every rep with one fix and
+				a clean stop. Its first offer to a nervous candidate is regulation, not a problem:
 			</p>
 			<ul class="border-surface-200-800 mt-6 divide-y divide-surface-200-800 border-y">
 				<li class="py-5">
