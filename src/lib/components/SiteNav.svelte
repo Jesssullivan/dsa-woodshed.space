@@ -50,7 +50,7 @@
 							aria-current={current}
 							onclick={onNavigate}
 							class="flex min-h-11 items-center rounded-sm px-2 py-1 leading-snug transition-colors {current
-								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
+								? 'bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold'
 								: 'text-surface-700-300 hover:bg-surface-200-800'}"
 						>
 							{label}

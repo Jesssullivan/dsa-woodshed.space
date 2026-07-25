@@ -66,6 +66,17 @@
 	--typo-heading--font-family: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
 	--radius-base: 0;
 	--radius-container: 0;
+	/* AA muted-text stop: the theme's single oklch(0.56 0.018 60) surface-500
+	   (rgb(125,114,106) in both modes) measures 4.28:1 on surface-50, 3.81:1
+	   on surface-100 panels, and 4.26:1 on surface-950 — under the 4.5:1
+	   normal-text floor everywhere text-surface-500 renders (breadcrumbs,
+	   kickers, PrevNext labels, muted homepage lines at 12.8-14.9px). Same
+	   light-dark() mechanism as the theme's own -100-900 pairs (color-scheme
+	   is set per data-mode above); hue 60 / chroma 0.018 kept so the gray
+	   stays warm. Computed, not eyeballed: light 0.515 -> rgb(112,101,93) =
+	   5.18:1 on surface-50 and 4.61:1 on surface-100; dark 0.6 ->
+	   rgb(137,126,118) = 5.04:1 on surface-950 and 4.57:1 on surface-900. */
+	--color-surface-500: light-dark(oklch(0.515 0.018 60), oklch(0.6 0.018 60));
 }
 
 /* ===== Darker dark-mode accents (goth-editorial) =====
