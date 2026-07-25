@@ -1,6 +1,6 @@
 ---
 name: Bug
-about: Report a bug in the site.scaffold site
+about: Report a bug in The DSA Woodshed site
 title: ''
 labels: ['bug']
 assignees: ''
@@ -20,10 +20,8 @@ assignees: ''
 
 - Browser:
 - OS:
-- site.scaffold page:
+- Woodshed page:
 
 ## Additional Context
 
 <!-- Console errors, screenshots, network logs, etc. -->
-
-<!-- For oauth-mux CLI bugs, file at https://github.com/Jesssullivan/oauth-mux/issues. This template is for the website only. -->

@@ -34,6 +34,10 @@ lint:
 inhouse-package-parity:
 	python3 scripts/check-inhouse-package-parity.py
 
+# Verify the declared custom public-standalone repository profile.
+repo-profile:
+	pnpm run verify:repo-profile
+
 # Bazel mod graph smoke (registry-resolution proof)
 bazel-graph:
 	bazelisk --output_user_root="${BAZEL_OUTPUT_USER_ROOT:-${TMPDIR:-/tmp}/site-scaffold-bazel-user-root}" mod graph
