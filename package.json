@@ -3,13 +3,14 @@
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"description": "The DSA Woodshed \u2014 a static SvelteKit reading surface for the DSA study packet (Skeleton 4 + Tailwind v4 + mdsvex).",
+	"description": "The DSA Woodshed — a static SvelteKit reading surface for the DSA study packet (Skeleton 4 + Tailwind v4 + mdsvex).",
 	"license": "MIT",
 	"packageManager": "pnpm@10.13.1",
 	"engines": {
 		"node": ">=22 <25"
 	},
 	"scripts": {
+		"prepare": "node scripts/build-tinyvectors.mjs",
 		"sync-content": "node scripts/sync-content.mjs",
 		"dev": "vite dev",
 		"build": "vite build",
@@ -22,7 +23,7 @@
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --check . && eslint .",
+		"lint": "prettier --check . && eslint . && python3 scripts/check-inhouse-package-parity.py",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"test": "vitest",
@@ -37,6 +38,7 @@
 		"@fontsource/crimson-pro": "^5.3.0",
 		"@fontsource/inter": "^5.3.0",
 		"@lucide/svelte": "^1.25.0",
+		"@tummycrypt/tinyvectors": "https://github.com/tinyland-inc/tinyvectors/archive/refs/tags/v0.3.4.tar.gz",
 		"effect": "^3.22.0"
 	},
 	"devDependencies": {

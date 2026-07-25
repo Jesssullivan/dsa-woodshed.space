@@ -1,9 +1,11 @@
 # The DSA Woodshed — task runner.
 #
 # This is a minimal, self-contained Justfile: it wraps the pnpm scripts in
-# package.json and needs no Nix devshell, Bazel, or estate tooling (all of
-# which were stripped when this repo was forked from the house scaffold).
-# If pnpm is not on PATH, run inside `nix shell nixpkgs#nodejs nixpkgs#pnpm`.
+# package.json and needs no Nix devshell or estate tooling. The canonical
+# site build is pnpm/Vite; Bazel exists only for module-graph integrity
+# proofs against tinyland-inc/bazel-registry (`just bazel-graph`, see
+# MODULE.bazel). If pnpm is not on PATH, run inside
+# `nix shell nixpkgs#nodejs nixpkgs#pnpm`.
 
 set shell := ["bash", "-uc"]
 
@@ -24,9 +26,17 @@ sync-content:
 check: sync-content
 	pnpm run check
 
-# Lint (prettier --check + eslint).
+# Lint (prettier --check + eslint + in-house package parity).
 lint:
 	pnpm run lint
+
+# Verify @tummycrypt/@tinyland npm package versions match MODULE.bazel.
+inhouse-package-parity:
+	python3 scripts/check-inhouse-package-parity.py
+
+# Bazel mod graph smoke (registry-resolution proof)
+bazel-graph:
+	bazelisk --output_user_root="${BAZEL_OUTPUT_USER_ROOT:-${TMPDIR:-/tmp}/site-scaffold-bazel-user-root}" mod graph
 
 # Auto-format.
 format:

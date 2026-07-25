@@ -1,0 +1,12 @@
+.git
+node_modules
+.svelte-kit
+build
+dist
+coverage
+test-results
+playwright-report
+src/content
+.mermaid-cache
+static/optimized
+tmp

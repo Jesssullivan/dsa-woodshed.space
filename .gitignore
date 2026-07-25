@@ -7,6 +7,11 @@ node_modules/
 build/
 dist/
 
+# Bazel (module-graph integrity proofs only; see MODULE.bazel)
+bazel-*
+MODULE.bazel.lock
+user.bazelrc
+
 # Synced content (BUILD INPUT). The prose/reference SSOT is the DSA study packet;
 # scripts/sync-content.mjs regenerates these from a packet checkout. The manifest
 # is committed (it feeds the on-site content registry and pins the source commit);
