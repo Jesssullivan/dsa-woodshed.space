@@ -51,6 +51,10 @@ test: sync-content
 verify-booklet:
 	pnpm run verify:booklet
 
+# Verify generated packet bodies and the served agent map against the manifest.
+verify-content-sync:
+	pnpm run verify:content-sync
+
 # End-to-end tests (playwright).
 e2e:
 	pnpm run test:e2e

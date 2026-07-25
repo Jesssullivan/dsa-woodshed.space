@@ -30,8 +30,13 @@ rendering code.
 `scripts/sync-content.mjs` reads a packet checkout at
 `WOODSHED_PACKET_PATH`, or `../dsa-study-packet` by default, and writes build
 inputs under the gitignored `src/content/`. It also updates the committed
-`src/content/.manifest.json`. The source sync reads the packet at `HEAD`, is
-deterministic, and does not use the packet working tree.
+`src/content/.manifest.json` and refreshes the same-origin
+`static/agent-map.md` from the packet's machine-readable map. The manifest pins
+that map's source path and digest alongside the rendered content. The source
+sync resolves `HEAD` once and reads every commit-sourced packet artifact from
+that immutable commit. It is deterministic and does not use the packet working
+tree. `just verify-content-sync` rejects any body or map whose published bytes
+no longer match the manifest.
 
 The same command resolves the packet's latest stable GitHub release, downloads
 its single `booklet.pdf`, and verifies the release size, SHA-256 digest, and PDF

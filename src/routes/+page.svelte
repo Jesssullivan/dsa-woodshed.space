@@ -116,8 +116,8 @@
 		<div class="bg-surface-100-900 mt-6 rounded-lg p-5 text-sm leading-relaxed">
 			<p class="font-semibold">The interviewer conducts; you do the work.</p>
 			<p class="text-surface-700-300 mt-2">
-				It opens the problem's files, reports the next state, runs the focused tests, and asks interview questions
-				through the same <code>just</code> contract.
+				It opens the problem's files, reports the next state, runs focused tests when you ask, and asks interview
+				questions through the same <code>just</code> contract.
 			</p>
 		</div>
 	</section>
@@ -191,7 +191,8 @@
 			>
 		</div>
 		<p class="text-surface-700-300 mt-4 max-w-2xl leading-relaxed">
-			Review complete solutions only after a rep exposes a gap, or take a printable sheet away from the screen.
+			Study a committed solution and its reference tests before a rep, review a complete solution after a gap, or take a
+			printable sheet away from the screen.
 		</p>
 		<nav class="mt-5 flex flex-wrap gap-x-6 gap-y-1" aria-label="Library shortcuts">
 			{#each libraryLinks as item (item.href)}
@@ -208,7 +209,8 @@
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="other-surfaces">
 		<h2 id="other-surfaces" class="text-2xl font-bold">Match the surface to the skill</h2>
 		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
-			Editor reps are the default. Ask for an untimed conversation when you need to slow down and form a plan. Choose a
+			Editor reps are the default. Ask to study a problem first when you want the committed source and reference tests
+			open without starting a rep. Ask for an untimed conversation when you need to slow down and form a plan. Choose a
 			timed board-style rep when narration under a clock is the skill you intend to train.
 		</p>
 		<p class="text-surface-500 mt-4 text-sm">

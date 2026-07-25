@@ -1,4 +1,5 @@
-// Cross-repo content sync: copy the DSA study packet's docs into src/content/.
+// Cross-repo content sync: copy the DSA study packet's docs into src/content/
+// and its machine-readable agent map into static/agent-map.md.
 //
 // WHAT THIS IS
 //   The DSA Woodshed is a *reading surface*. Its prose and reference sheets are
@@ -16,20 +17,19 @@
 // GUARANTEES
 //   - Deterministic: no timestamps, entries sorted, byte-stable output.
 //   - Idempotent: running twice produces an identical tree and manifest.
-//   - HEAD-pinned: every byte read from the packet, planned inputs and snippet
-//     includes alike, comes from `git show HEAD:`, never the working tree, so a
-//     stripped practice file or uncommitted WIP prose in the packet checkout can
-//     never ship attributed to a commit that does not contain it.
-//   - Recorded: src/content/.manifest.json pins the packet commit and lists
-//     every entry (its source inputs, resolved output, lane, source-authored
-//     title/summary, and a content hash) so display metadata does not drift and
-//     the published input remains auditable.
+//   - Commit-pinned: HEAD is resolved once. Every byte read from the packet,
+//     planned inputs and snippet includes alike, comes from `git show <commit>:`,
+//     never the working tree or a later HEAD lookup, so a stripped practice file
+//     or concurrent ref move cannot be misattributed.
+//   - Recorded: src/content/.manifest.json pins the packet commit, the generated
+//     agent map, and every content entry (source inputs, resolved output, lane,
+//     source-authored title/summary, and content hash) so drift is auditable.
 //
 // PLAIN NODE. No dependencies or bundler. Runs under `node scripts/sync-content.mjs`.
 
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { syncAlgorithms } from './sync-algorithms.mjs';
@@ -40,6 +40,8 @@ const HERE = dirname(THIS_FILE);
 const REPO_ROOT = resolve(HERE, '..');
 const CONTENT_DIR = join(REPO_ROOT, 'src', 'content');
 const MANIFEST_PATH = join(CONTENT_DIR, '.manifest.json');
+const AGENT_MAP_INPUT = 'agent-map.md';
+const AGENT_MAP_PATH = join(REPO_ROOT, 'static', 'agent-map.md');
 
 // Source root: dev uses the sibling packet checkout; CI resolves a shallow clone
 // and passes its path through WOODSHED_PACKET_PATH.
@@ -171,21 +173,35 @@ const PLAN = [
 // ── Git-only packet reads (never the working tree) ─────────────────────────────
 // A packet checkout can carry working-tree-local state that must never ship: a
 // file stripped to a practice scaffold, or WIP prose that has not yet passed the
-// packet's commit-time public-boundary lint. The manifest pins `git rev-parse
-// HEAD` as provenance, so every byte published must come from that same commit:
-// read via `git show HEAD:`, exactly like the algorithms lane
+// packet's commit-time public-boundary lint. Resolve HEAD once, before any read,
+// then use that immutable commit for every byte published:
+// read via `git show <commit>:`, exactly like the algorithms lane
 // (scripts/sync-algorithms.mjs).
-function existsAtHead(rel) {
+export function resolvePacketCommit(packetPath = PACKET_PATH) {
+	const commit = execFileSync('git', ['-C', packetPath, 'rev-parse', '--verify', 'HEAD^{commit}'], {
+		encoding: 'utf8',
+	}).trim();
+	if (!/^[0-9a-f]{40}$/.test(commit)) {
+		throw new Error(`sync-content: packet HEAD did not resolve to a full commit SHA: ${JSON.stringify(commit)}`);
+	}
+	return commit;
+}
+
+export function packetFileExistsAtCommit(packetPath, sourceCommit, rel) {
 	try {
-		execFileSync('git', ['-C', PACKET_PATH, 'cat-file', '-e', `HEAD:${rel}`], { stdio: 'ignore' });
+		execFileSync('git', ['-C', packetPath, 'cat-file', '-e', `${sourceCommit}:${rel}`], { stdio: 'ignore' });
 		return true;
 	} catch {
 		return false;
 	}
 }
 
-function readAtHead(rel) {
-	return execFileSync('git', ['-C', PACKET_PATH, 'show', `HEAD:${rel}`], { encoding: 'utf8' });
+export function readPacketFileAtCommit(packetPath, sourceCommit, rel) {
+	return execFileSync('git', ['-C', packetPath, 'show', `${sourceCommit}:${rel}`], { encoding: 'utf8' });
+}
+
+function readAtCommit(sourceCommit, rel) {
+	return readPacketFileAtCommit(PACKET_PATH, sourceCommit, rel);
 }
 
 // ── Snippet resolution ─────────────────────────────────────────────────────────
@@ -202,9 +218,11 @@ const SNIPPET_RE = /^(\s*)--8<--\s+"([^"]+)"\s*$/;
  * @param {string[]} inputs accumulator of packet-relative files that fed this entry
  * @param {number} depth current recursion depth
  * @param {string[]} stack include chain, for cycle detection (packet-relative)
+ * @param {string} packetPath packet checkout used only as a Git object database
+ * @param {string} sourceCommit immutable packet commit resolved once at startup
  * @returns {string}
  */
-function resolveSnippets(content, inputs, depth, stack) {
+export function resolveSnippetsAtCommit(content, inputs, depth, stack, packetPath, sourceCommit) {
 	const file = stack[stack.length - 1];
 	return content
 		.split('\n')
@@ -226,19 +244,19 @@ function resolveSnippets(content, inputs, depth, stack) {
 			// Containment: the directive is packet-authored (untrusted); a path that
 			// escapes the packet root after normalization (`../`, absolute) must never
 			// be read on the build host, let alone published.
-			const rel = relative(resolve(PACKET_PATH), resolve(PACKET_PATH, raw));
+			const rel = relative(resolve(packetPath), resolve(packetPath, raw));
 			if (!rel || rel.startsWith('..') || isAbsolute(rel)) {
 				throw new Error(`snippet include escapes the packet root at ${file}:${i + 1}: "${raw}"`);
 			}
 			if (stack.includes(rel)) {
 				throw new Error(`snippet include cycle: ${[...stack, rel].join(' -> ')}`);
 			}
-			if (!existsAtHead(rel)) {
-				throw new Error(`snippet include not found at packet HEAD: "${raw}" (at ${file}:${i + 1})`);
+			if (!packetFileExistsAtCommit(packetPath, sourceCommit, rel)) {
+				throw new Error(`snippet include not found at packet commit ${sourceCommit}: "${raw}" (at ${file}:${i + 1})`);
 			}
 			if (!inputs.includes(rel)) inputs.push(rel);
-			const included = readAtHead(rel).replace(/\n$/, '');
-			const resolved = resolveSnippets(included, inputs, depth + 1, [...stack, rel]);
+			const included = readPacketFileAtCommit(packetPath, sourceCommit, rel).replace(/\n$/, '');
+			const resolved = resolveSnippetsAtCommit(included, inputs, depth + 1, [...stack, rel], packetPath, sourceCommit);
 			// Preserve the include line's indentation on every included line so an
 			// indented `--8<--` (e.g. inside a code block) stays inside it.
 			return indent
@@ -420,11 +438,59 @@ function writeFileDeep(absPath, text) {
 	writeFileSync(absPath, text);
 }
 
-function packetCommit() {
+/**
+ * Publish the two tracked sync outputs as one rollback unit after content
+ * generation succeeds. The replacements are sequential, not crash-atomic; the
+ * build-time digest verifier rejects an interrupted pair. If either replacement
+ * throws, restore both prior files and retain both errors if rollback also fails.
+ *
+ * @param {{
+ *   agentMapPath: string,
+ *   manifestPath: string,
+ *   agentMap: string,
+ *   manifestText: string,
+ *   replaceFile?: typeof import('node:fs').renameSync,
+ * }} args
+ */
+export function publishTrackedOutputs({
+	agentMapPath,
+	manifestPath,
+	agentMap,
+	manifestText,
+	replaceFile = renameSync,
+}) {
+	const priorMap = existsSync(agentMapPath) ? readFileSync(agentMapPath, 'utf8') : undefined;
+	const priorManifest = existsSync(manifestPath) ? readFileSync(manifestPath, 'utf8') : undefined;
+	const nonce = `${process.pid}-${Date.now()}`;
+	const mapTemp = `${agentMapPath}.tmp-${nonce}`;
+	const manifestTemp = `${manifestPath}.tmp-${nonce}`;
+
 	try {
-		return execFileSync('git', ['-C', PACKET_PATH, 'rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
-	} catch {
-		return 'unknown';
+		writeFileDeep(mapTemp, agentMap);
+		writeFileDeep(manifestTemp, manifestText);
+		replaceFile(mapTemp, agentMapPath);
+		replaceFile(manifestTemp, manifestPath);
+	} catch (error) {
+		const rollbackErrors = [];
+		try {
+			if (priorMap === undefined) rmSync(agentMapPath, { force: true });
+			else writeFileDeep(agentMapPath, priorMap);
+		} catch (rollbackError) {
+			rollbackErrors.push(rollbackError);
+		}
+		try {
+			if (priorManifest === undefined) rmSync(manifestPath, { force: true });
+			else writeFileDeep(manifestPath, priorManifest);
+		} catch (rollbackError) {
+			rollbackErrors.push(rollbackError);
+		}
+		if (rollbackErrors.length) {
+			throw new AggregateError([error, ...rollbackErrors], 'tracked output publication and rollback both failed');
+		}
+		throw error;
+	} finally {
+		rmSync(mapTemp, { force: true });
+		rmSync(manifestTemp, { force: true });
 	}
 }
 
@@ -436,17 +502,29 @@ async function main() {
 		process.exit(1);
 	}
 
+	const sourceCommit = resolvePacketCommit();
 	cleanContentDir();
+
+	if (!packetFileExistsAtCommit(PACKET_PATH, sourceCommit, AGENT_MAP_INPUT)) {
+		throw new Error(`sync-content: agent map missing at packet commit ${sourceCommit}: ${AGENT_MAP_INPUT}`);
+	}
+	const agentMap = readAtCommit(sourceCommit, AGENT_MAP_INPUT).replace(/\n*$/, '\n');
+	if (!agentMap.trim()) {
+		throw new Error(`sync-content: agent map is empty at packet commit ${sourceCommit}: ${AGENT_MAP_INPUT}`);
+	}
 
 	const entries = [];
 	for (const item of PLAN) {
-		if (!existsAtHead(item.input)) {
-			throw new Error(`sync-content: planned input missing at packet HEAD: ${item.input}`);
+		if (!packetFileExistsAtCommit(PACKET_PATH, sourceCommit, item.input)) {
+			throw new Error(`sync-content: planned input missing at packet commit ${sourceCommit}: ${item.input}`);
 		}
 		const inputs = [item.input];
-		const raw = readAtHead(item.input);
+		const raw = readAtCommit(sourceCommit, item.input);
 		// Resolve snippet includes, then normalize to exactly one trailing newline.
-		let resolved = resolveSnippets(raw, inputs, 0, [item.input]).replace(/\n*$/, '\n');
+		let resolved = resolveSnippetsAtCommit(raw, inputs, 0, [item.input], PACKET_PATH, sourceCommit).replace(
+			/\n*$/,
+			'\n',
+		);
 		if (item.lane === 'svx') {
 			assertSvxSafe(resolved, item.input);
 			resolved = rewriteSvxLinks(resolved, item.input);
@@ -472,10 +550,17 @@ async function main() {
 	// Algorithms lane: one markdown doc per packet src/algo/<topic>/<problem>.py
 	// implementation. A dedicated module (scripts/sync-algorithms.mjs) owns the
 	// docstring parsing and per-problem doc rendering; like the prose lane above,
-	// every file it reads comes from `git show HEAD:...`, never the working tree
-	// (see that file's header and the HEAD-pinned guarantee in this one).
+	// every file it reads comes from the same immutable sourceCommit, never the
+	// working tree or a second HEAD lookup.
 	entries.push(
-		...syncAlgorithms({ packetPath: PACKET_PATH, contentDir: CONTENT_DIR, mkdirSync, writeFileSync, sha256 }),
+		...syncAlgorithms({
+			packetPath: PACKET_PATH,
+			sourceCommit,
+			contentDir: CONTENT_DIR,
+			mkdirSync,
+			writeFileSync,
+			sha256,
+		}),
 	);
 
 	// Deterministic ordering: section, then display order, then slug.
@@ -484,16 +569,27 @@ async function main() {
 	const manifest = {
 		note: 'Generated by scripts/sync-content.mjs. Do not edit by hand; run `pnpm run sync-content`.',
 		sourceRepo: SOURCE_REPO,
-		sourceCommit: packetCommit(),
+		sourceCommit,
+		agentMap: {
+			input: AGENT_MAP_INPUT,
+			out: 'static/agent-map.md',
+			sha256: sha256(agentMap),
+		},
 		entries,
 	};
-	writeFileSync(MANIFEST_PATH, JSON.stringify(manifest, null, '\t') + '\n');
+	const manifestText = JSON.stringify(manifest, null, '\t') + '\n';
+
+	publishTrackedOutputs({
+		agentMapPath: AGENT_MAP_PATH,
+		manifestPath: MANIFEST_PATH,
+		agentMap,
+		manifestText,
+	});
 
 	const rel = (p) => relative(REPO_ROOT, p);
 	console.log(
 		`sync-content: wrote ${entries.length} entries to ${rel(CONTENT_DIR)}/ from ${SOURCE_REPO}@${manifest.sourceCommit.slice(0, 12)}`,
 	);
-
 	const booklet = await syncBookletRelease();
 	console.log(`sync-content: wrote verified ${booklet.asset.name} from ${SOURCE_REPO}@${booklet.tagName}`);
 }

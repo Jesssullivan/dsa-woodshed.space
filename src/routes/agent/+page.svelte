@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { agentMapMetadata, sourceCommit } from '$lib/docs/registry';
 	import { blobUrl, REPO_URL } from '$lib/repo';
 
 	const AGENTS_URL = blobUrl('AGENTS.md');
+	const AGENT_MAP_HREF = `/${agentMapMetadata.out.replace(/^static\//, '')}`;
+	const AGENT_MAP_URL = `${REPO_URL}/blob/${sourceCommit}/${agentMapMetadata.input}`;
 	const TRACK_CONTRACT_URL = blobUrl('TRACK-CONTRACT.md');
 	const COPILOT_INSTRUCTIONS_URL = blobUrl('.github/copilot-instructions.md');
 </script>
@@ -11,8 +14,8 @@
 		<p class="text-primary-600 text-xs font-semibold tracking-widest uppercase">For agents</p>
 		<h1 class="mt-3 max-w-3xl text-4xl leading-tight font-bold md:text-6xl">Read this first</h1>
 		<p class="text-surface-700-300 mt-6 max-w-2xl text-xl leading-relaxed font-semibold">
-			This site is a reading surface. The practice contract, the command surface, and the machine keys below all live in
-			the content repository; this page is a flat pointer to them, not a restatement.
+			This site is a reading surface. The practice contract, command surface, and machine keys live in the content
+			repository. This page points to that source instead of restating it.
 		</p>
 	</header>
 
@@ -46,48 +49,26 @@
 		</ol>
 	</section>
 
-	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="command-surface">
-		<h2 id="command-surface" class="text-2xl font-bold">Command surface</h2>
+	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="machine-map">
+		<h2 id="machine-map" class="text-2xl font-bold">Live machine map</h2>
 		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
-			<code>just</code> is the only front door, run inside a checkout of the content repository (typically GitHub Codespaces),
-			never on this site.
+			The command inventory and machine keys change with the packet. The same-origin copy below is regenerated from
+			<code>agent-map.md</code> at the exact packet commit used for each site build.
 		</p>
-		<ul class="mt-6 max-w-2xl space-y-2 text-sm">
-			<li><code>just practice-start comments|reacto|clarp|umpire</code></li>
-			<li><code>just practice-next</code></li>
-			<li><code>just practice-test</code></li>
-			<li><code>just practice-watch</code></li>
-			<li><code>just practice-repl</code></li>
-			<li><code>just practice-finish "&lt;one concrete fix&gt;"</code></li>
-			<li><code>just interview</code></li>
-			<li><code>just catalog "&lt;their words&gt;"</code></li>
-		</ul>
-	</section>
-
-	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="machine-keys">
-		<h2 id="machine-keys" class="text-2xl font-bold">Machine keys</h2>
-		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
-			Relayed verbatim between the interviewer persona and the candidate, never inferred or paraphrased.
-		</p>
-		<ul class="mt-6 max-w-2xl space-y-2 text-sm">
-			<li>
-				<code>STATE</code>, <code>START</code>, <code>QUEUE</code>, <code>MATCH</code>, <code>CHOOSE</code>,
-				<code>SUGGEST</code>
-				<span class="text-surface-700-300">: <code>just catalog</code> output.</span>
-			</li>
-			<li>
-				<code>READY</code>, <code>NOT_FOUND</code>
-				<span class="text-surface-700-300">: catalog resolution outcomes.</span>
-			</li>
-			<li>
-				<code>NEXT</code>
-				<span class="text-surface-700-300">: <code>just practice-next</code> progress relay.</span>
-			</li>
-			<li>
-				<code>PRACTICE: topic/problem</code>
-				<span class="text-surface-700-300">: a <code>just interview</code> draw.</span>
-			</li>
-		</ul>
+		<div class="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm">
+			<a
+				href={AGENT_MAP_HREF}
+				class="editorial-link text-primary-600 hover:text-primary-700 font-semibold underline underline-offset-2"
+				>Open the current agent map</a
+			>
+			<a
+				href={AGENT_MAP_URL}
+				target="_blank"
+				rel="noopener"
+				class="editorial-link text-primary-600 hover:text-primary-700 font-semibold underline underline-offset-2"
+				>View its packet source</a
+			>
+		</div>
 	</section>
 
 	<section class="mt-20 border-t border-surface-200-800 pt-12" aria-labelledby="what-never-happens">

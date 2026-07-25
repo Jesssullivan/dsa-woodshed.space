@@ -14,8 +14,9 @@
 //   A packet checkout can have working-tree-local session state (a file stripped
 //   to a scaffold for practice) that must never leak into the synced site. Every
 //   file this module reads — both the directory listing and each file's content —
-//   comes from `git show HEAD:<path>` / `git ls-tree HEAD`, never a working-tree
-//   read, so a stripped practice file in the packet checkout can't bleed through.
+//   comes from one immutable commit supplied by sync-content.mjs, never a
+//   working-tree read or a second moving HEAD lookup, so a stripped practice
+//   file in the packet checkout can't bleed through.
 //
 // PARSING
 //   Deliberately dumb and dependency-free: the docstring is the first triple-quoted
@@ -175,8 +176,8 @@ function renderProblemDoc(title, info, source) {
 
 // ── Git-only reads (never the working tree; see file header) ────────────────────
 
-function listAlgoFiles(packetPath) {
-	const out = execFileSync('git', ['-C', packetPath, 'ls-tree', '-r', '--name-only', 'HEAD', '--', 'src/algo'], {
+function listAlgoFiles(packetPath, sourceCommit) {
+	const out = execFileSync('git', ['-C', packetPath, 'ls-tree', '-r', '--name-only', sourceCommit, '--', 'src/algo'], {
 		encoding: 'utf8',
 	});
 	return out
@@ -185,8 +186,8 @@ function listAlgoFiles(packetPath) {
 		.filter((l) => l.endsWith('.py') && !l.endsWith('/__init__.py'));
 }
 
-function readAtHead(packetPath, relPath) {
-	return execFileSync('git', ['-C', packetPath, 'show', `HEAD:${relPath}`], { encoding: 'utf8' });
+function readAtCommit(packetPath, sourceCommit, relPath) {
+	return execFileSync('git', ['-C', packetPath, 'show', `${sourceCommit}:${relPath}`], { encoding: 'utf8' });
 }
 
 function writeFileDeep(mkdirSync, writeFileSync, absPath, text) {
@@ -203,14 +204,15 @@ function writeFileDeep(mkdirSync, writeFileSync, absPath, text) {
  *
  * @param {{
  *   packetPath: string,
+ *   sourceCommit: string,
  *   contentDir: string,
  *   mkdirSync: typeof import('node:fs').mkdirSync,
  *   writeFileSync: typeof import('node:fs').writeFileSync,
  *   sha256: (text: string) => string,
  * }} args
  */
-export function syncAlgorithms({ packetPath, contentDir, mkdirSync, writeFileSync, sha256 }) {
-	const files = listAlgoFiles(packetPath).sort();
+export function syncAlgorithms({ packetPath, sourceCommit, contentDir, mkdirSync, writeFileSync, sha256 }) {
+	const files = listAlgoFiles(packetPath, sourceCommit).sort();
 
 	// Group by topic first so each topic's problems get a stable, alphabetical
 	// display order (an explicit integer, matching the other lanes' convention).
@@ -229,7 +231,7 @@ export function syncAlgorithms({ packetPath, contentDir, mkdirSync, writeFileSyn
 		const problems = byTopic.get(topic).sort((a, b) => a.problem.localeCompare(b.problem));
 
 		problems.forEach(({ relPath, problem }, i) => {
-			const source = readAtHead(packetPath, relPath);
+			const source = readAtCommit(packetPath, sourceCommit, relPath);
 			const info = parseDocstring(source);
 			const title = titleFromFilename(problem);
 			const out = `algorithms/${topic}/${problem}.md`;

@@ -1,42 +1,53 @@
-# DSA Woodshed Agent Map
-
-A flat cheat sheet for an agent landing cold. This site is a reading surface;
-the command surface below runs in the content repository checkout, not here.
+# dsa-study-packet Agent Map
 
 ## Read Order
 
-1. Packet `AGENTS.md`: the practice and repository contract
-2. Packet `TRACK-CONTRACT.md`: per-language track requirements
-3. This site's `/agent` route
+1. `AGENTS.md`
+2. `TRACK-CONTRACT.md`
+3. `docs/guide/getting-started.md`
+4. `docs/guide/source-of-truth.md`
+5. `CLAUDE.md` (Claude overlay only, secondary to `AGENTS.md`)
 
-Packet repo: https://github.com/Jesssullivan/dsa-study-packet
+## Core Recipes
 
-## Just Command Surface (packet repo)
-
-- `just practice-start comments|reacto|clarp|umpire`
+- `just practice-start comments|reacto|clarp|umpire [topic problem]`
 - `just practice-next`
 - `just practice-test`
 - `just practice-watch`
 - `just practice-repl`
-- `just practice-finish "<one concrete fix>"`
-- `just interview`
-- `just catalog "<their words>"`
+- `just practice-open [topic problem]`
+- `just practice-study topic problem`
+- `just practice-start-tests topic problem`
+- `just practice-finish "<one fix>"`
+- `just interview [topic problem]`
+- `just rep-finish topic problem "<line>"`
+- `just catalog "<words>"`
+- `just packet`
+- `just docs`
+- `just pdf-all`
+- `just test`
+- `just lint`
+- `just doctor`
 
 ## Machine Keys
 
-Relayed verbatim between the interviewer persona and the candidate, never
-inferred:
+`STATE`, `SOURCE`, `TEST`, `NEXT`, `START`, `QUEUE`, `QUERY`, `MATCH`,
+`CHOOSE`, `SUGGEST`, `OPENED`, `OPEN_FAILED`, `STUDY_SOURCE`, `STUDY_TEST`,
+`REVISION`, `IMPLEMENT`, `TESTS_FIRST`, `FOCUS`, `PRACTICE`, `CLOSED`,
+`LOGGED`, `SPACED`, `TESTS`. Catalog
+readiness (`READY`, `CHOOSE`, `NOT_FOUND`) travels
+as a `STATE` value.
 
-- `STATE`, `START`, `QUEUE`, `MATCH`, `CHOOSE`, `SUGGEST`: `just catalog` output
-- `READY`, `NOT_FOUND`: catalog resolution outcomes
-- `NEXT`: `just practice-next` progress relay
-- `PRACTICE: topic/problem`: a `just interview` draw
+## Skills
+
+- `.claude/skills/interviewer/SKILL.md`: one practice rep
+- `.claude/skills/practice-day/SKILL.md`: a full day or multi-block session
 
 ## Prohibited
 
-- Never write, edit, or solve candidate-owned source or test files.
-- Never read, score, or log private arrival writing.
-- Never guess or search the tree for a named problem; resolve it through
-  `just catalog` first.
-- No estate or employer coupling: both the packet repository and this site
-  stay public and company-neutral.
+- Never write candidate source or tests; the candidate owns them.
+- Never read, score, or log private arrival writing. Read only command-emitted
+  candidate paths at save boundaries or study snapshots on explicit request.
+- `just` is the only front door; never invoke raw Bazel directly.
+- Never write employer names, interviewer notes, clearance facts, or
+  personal rep logs into tracked files.
