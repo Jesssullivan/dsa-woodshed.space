@@ -67,6 +67,11 @@ interface ManifestEntry {
 interface Manifest {
 	sourceRepo: string;
 	sourceCommit: string;
+	agentMap: {
+		input: string;
+		out: string;
+		sha256: string;
+	};
 	entries: ManifestEntry[];
 }
 
@@ -74,6 +79,8 @@ const manifest = manifestJson as Manifest;
 
 /** The packet commit the current src/content was synced from (for provenance UIs). */
 export const sourceCommit = manifest.sourceCommit;
+/** Source and published-path metadata for the generated machine-readable map. */
+export const agentMapMetadata = manifest.agentMap;
 
 // Compatibility summaries for packet commits that predate source-authored
 // frontmatter descriptions, keyed `${section}/${slug}`.

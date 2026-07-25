@@ -107,12 +107,20 @@ test('Project is current without also marking Method', async ({ page }) => {
 	await expect(page.getByRole('navigation', { name: 'Breadcrumb' })).toHaveCount(0);
 });
 
-test('/agent renders the read order, command surface, and packet links', async ({ page }) => {
+test('/agent renders and serves the read order, live machine map, and packet links', async ({ page, request }) => {
 	await page.setViewportSize({ width: 1440, height: 1200 });
 	await page.goto('/agent');
 	await expect(page.getByRole('heading', { level: 1, name: 'Read this first' })).toBeVisible();
-	await expect(page.getByRole('heading', { level: 2, name: 'Command surface' })).toBeVisible();
-	await expect(page.getByText('just practice-start comments|reacto|clarp|umpire')).toBeVisible();
+	await expect(page.getByRole('heading', { level: 2, name: 'Live machine map' })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Open the current agent map' })).toHaveAttribute('href', '/agent-map.md');
+	await expect(page.getByRole('link', { name: 'View its packet source' })).toHaveAttribute(
+		'href',
+		/^https:\/\/github\.com\/[^/]+\/[^/]+\/blob\/[0-9a-f]{40}\/agent-map\.md$/,
+	);
+	await expect(page.getByText('just practice-start comments|reacto|clarp|umpire')).toHaveCount(0);
+	const agentMap = await request.get('/agent-map.md');
+	expect(agentMap.ok()).toBe(true);
+	expect(await agentMap.text()).toMatch(/^# .+ Agent Map/m);
 	await expect(page.getByRole('link', { name: 'AGENTS.md', exact: true })).toHaveAttribute(
 		'href',
 		'https://github.com/Jesssullivan/dsa-study-packet/blob/main/AGENTS.md',
