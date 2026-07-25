@@ -1,6 +1,6 @@
 // ── HOUSE CANON IDIOM ────────────────────────────────────────────────────────
-// `$effect` that ALWAYS returns its teardown. Models the production scroll
-// pattern from MassageIthaca's +layout.svelte (TIN-2225):
+// `$effect` that ALWAYS returns its teardown. Models the house production
+// scroll pattern (+layout.svelte):
 //   • a rAF-throttled scroll handler (coalesces bursts to one read per frame),
 //   • a `{ passive: true }` listener (never blocks the scroll thread),
 //   • a `$effect` whose cleanup is returned on EVERY path — never a bare

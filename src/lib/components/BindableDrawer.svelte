@@ -5,8 +5,8 @@
 	// `$bindable(false)` and mirrors the library's `onOpenChange` back onto the
 	// same prop so programmatic closes (clicking a nav link) and user-driven
 	// closes (Esc / backdrop) both stay in sync. A `children` snippet fills the
-	// body so this stays generic. Lifted from MassageIthaca's MobileMenuDrawer
-	// (TIN-2225); Dialog usage mirrors site.scaffold's own +layout.svelte.
+	// body so this stays generic. House mobile-menu drawer pattern; Dialog
+	// usage mirrors site.scaffold's own +layout.svelte.
 	//
 	// Usage (in a parent component):
 	//   let open = $state(false);

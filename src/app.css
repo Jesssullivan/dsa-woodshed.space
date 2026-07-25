@@ -31,7 +31,8 @@
    listbox/combobox/tree-view item indicators). Without this @source line those
    utilities are silently never generated — the build stays green and the visual
    surface breaks (house scars: bare `rounded` → 0 radius, `m-y-4` → no spacing).
-   Keep it pointing at the vendored dist; MassageIthaca carries the same line. */
+   Keep it pointing at the vendored dist; the house production spoke carries
+   the same line. */
 @source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 
 @font-face {

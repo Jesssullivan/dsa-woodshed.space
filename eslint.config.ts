@@ -33,7 +33,7 @@ export default ts.config(
 		rules: {
 			'@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
 			'@typescript-eslint/no-explicit-any': 'error',
-			// House canon (TIN-2225): ban the `$derived(() => …)` thunk. Passing an
+			// House canon: ban the `$derived(() => …)` thunk. Passing an
 			// arrow to `$derived` stores the *function* as the rune's value instead
 			// of evaluating it — a silent reactivity bug. Correct forms:
 			//   • `$derived(expr)`        for a single expression
