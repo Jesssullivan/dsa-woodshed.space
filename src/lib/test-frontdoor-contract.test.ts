@@ -18,9 +18,14 @@ describe('cold-checkout test front door', () => {
 	});
 
 	it('exercises the public test front door before CI type-checking', () => {
+		const setupJust = ci.indexOf('extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3');
+		const pinnedJust = ci.indexOf("just-version: '1.57.0'");
 		const test = ci.indexOf('          just test');
 		const check = ci.indexOf('run: pnpm run check');
 
+		expect(setupJust).toBeGreaterThan(-1);
+		expect(pinnedJust).toBeGreaterThan(setupJust);
+		expect(test).toBeGreaterThan(pinnedJust);
 		expect(test).toBeGreaterThan(-1);
 		expect(check).toBeGreaterThan(test);
 		expect(ci).not.toContain('run: pnpm run test:unit');
