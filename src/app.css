@@ -426,6 +426,10 @@ a.editorial-link:visited:not(:hover) {
 	background: #fff;
 	overflow-x: auto;
 }
+.prose figure.diagram:focus-visible {
+	outline: 2px solid var(--color-primary-500);
+	outline-offset: 2px;
+}
 [data-mode='dark'] .prose figure.diagram {
 	background: var(--color-surface-950);
 }
@@ -448,6 +452,10 @@ a.editorial-link:visited:not(:hover) {
 	font-size: 0.8125rem;
 	font-style: italic;
 	color: var(--color-surface-500);
+}
+.prose figure.diagram > .diagram-note {
+	margin: 0 0 0.75rem;
+	font-size: 1rem;
 }
 
 /* pymdownx constructs lowered by $lib/docs/markdown.ts: '!!!' admonitions

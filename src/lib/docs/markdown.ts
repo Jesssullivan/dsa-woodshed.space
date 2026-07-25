@@ -58,6 +58,11 @@ export interface MarkdownOptions {
 	 * canonical GitHub blob). Anchors, absolute URLs, and mailto are left as-is.
 	 */
 	resolveLink?: (href: string) => string;
+	/**
+	 * Stable scope for Mermaid hint ids when separately rendered fragments can
+	 * share one document. The default preserves the single-render id contract.
+	 */
+	diagramIdScope?: string;
 }
 
 /** Highlight one fenced-code run; returns null when the language is unsupported. */
@@ -311,8 +316,10 @@ function diagramAtNaturalSize(svg: string): string {
 }
 
 /** A successfully build-time-rendered mermaid diagram, as inline SVG. */
-function mermaidFigure(svg: string): string {
-	return `<figure class="diagram">${diagramAtNaturalSize(svg)}</figure>`;
+function mermaidFigure(svg: string, index: number, scope?: string): string {
+	const scopePrefix = scope ? `${slugify(scope)}-` : '';
+	const hintId = `${scopePrefix}diagram-scroll-hint-${index + 1}`;
+	return `<figure class="diagram" tabindex="0" aria-describedby="${hintId}"><figcaption class="diagram-note" id="${hintId}">Scroll sideways if needed to explore the full diagram.</figcaption>${diagramAtNaturalSize(svg)}</figure>`;
 }
 
 const FENCE_RE = /^(```|~~~)\s*([\w-]*)\s*$/;
@@ -698,9 +705,9 @@ export async function renderMarkdown(src: string, options: MarkdownOptions = {})
 		// diagram in this document still gets its fallback figure instead of
 		// failing the whole page (and the build with it).
 		const rendered = await renderMermaidDiagrams(diagrams.map((d) => d.source)).catch(() => diagrams.map(() => null));
-		for (const [i, diagram] of diagrams.entries()) {
-			const svg = rendered[i];
-			const figure = svg ? mermaidFigure(svg) : mermaidFallbackFigure(diagram.source);
+		for (const [index, diagram] of diagrams.entries()) {
+			const svg = rendered[index];
+			const figure = svg ? mermaidFigure(svg, index, options.diagramIdScope) : mermaidFallbackFigure(diagram.source);
 			// The placeholder is almost always its own isolated paragraph (the
 			// blank lines forced around it in extractMermaidDiagrams); fall back to
 			// a raw swap for the one case that unwraps a lone <p>, a list item

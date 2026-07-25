@@ -24,10 +24,16 @@ export const load: PageServerLoad = async ({ params }) => {
 	const printableParts = entry.section === 'printables' ? splitPrintableMarkdown(raw) : undefined;
 	const html = printableParts ? '' : await renderMarkdown(raw, { resolveLink });
 	const beforeReaderHtml = printableParts
-		? await renderMarkdown(printableParts.beforeReader, { resolveLink })
+		? await renderMarkdown(printableParts.beforeReader, {
+				resolveLink,
+				diagramIdScope: 'printables-before-reader',
+			})
 		: undefined;
 	const afterReaderHtml = printableParts
-		? await renderMarkdown(printableParts.afterReader, { resolveLink })
+		? await renderMarkdown(printableParts.afterReader, {
+				resolveLink,
+				diagramIdScope: 'printables-after-reader',
+			})
 		: undefined;
 	return {
 		section: entry.section,
