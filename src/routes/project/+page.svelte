@@ -21,7 +21,8 @@
 		<p class="text-surface-700-300 mt-3 max-w-2xl leading-relaxed">
 			The Python track: 43 core problems with reference solutions and focused tests, editor-first reps in GitHub
 			Codespaces with a resident interviewer, and a printable booklet with reference sheets you can also read on this
-			site. Python is the only runnable track today; other language tracks are deliberate future work, not stubs.
+			site. Python is the only runnable track today. R, TypeScript, and C++ are inert provisional reservations; Rust is
+			exploratory and not runnable. They remain inactive until the interview cycle is explicitly declared complete.
 		</p>
 	</section>
 

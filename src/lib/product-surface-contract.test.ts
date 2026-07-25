@@ -56,6 +56,16 @@ describe('public product surface', () => {
 		expect(sitemap).toContain('PROJECT_ROUTE');
 	});
 
+	it('states the runnable language-track boundary without placeholder claims', () => {
+		const project = read('src/routes/project/+page.svelte');
+		expect(project).toContain('Python is the only runnable track today.');
+		expect(project).toMatch(
+			/R, TypeScript, and C\+\+ are inert provisional reservations;\s+Rust\s+is\s+exploratory and not runnable\./,
+		);
+		expect(project).toContain('They remain inactive until the interview cycle is explicitly declared complete.');
+		expect(project).not.toContain('future work, not stubs');
+	});
+
 	it('does not use an em dash in visible not-found copy', () => {
 		expect(read('src/routes/404/+page.svelte')).not.toContain('Nothing lives at this address —');
 		expect(read('src/routes/+error.svelte')).not.toContain('Nothing lives at this address —');
