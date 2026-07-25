@@ -49,9 +49,18 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           WOODSHED_PACKET_PATH: ${{ github.workspace }}/dsa-study-packet
 
+      # Run the public test front door before svelte-check has generated
+      # .svelte-kit metadata. This keeps the cold-checkout contract observable.
+      - name: Test from a cold SvelteKit checkout
+        run: |
+          test ! -e .svelte-kit/tsconfig.json
+          just test
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          WOODSHED_PACKET_PATH: ${{ github.workspace }}/dsa-study-packet
+
       - run: pnpm run check
       - run: pnpm run lint
-      - run: pnpm run test:unit
 
       - name: Install playwright chromium
         # The runner image pre-bakes Playwright's system libs — browser
