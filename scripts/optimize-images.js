@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// site.scaffold — responsive image + SVG optimizer (TIN-2224).
+// site.scaffold — responsive image + SVG optimizer.
 //
-// Backfeed of MassageIthaca's proven web-perf craft, adapted to the
+// Backfeed of proven house web-perf craft, adapted to the
 // scaffold's static-spoke context. Two pipelines:
 //   • sharp  — rasters (jpg/jpeg/png/webp) -> webp + avif at responsive
 //              widths, plus an optimized original-size pair.
@@ -24,7 +24,7 @@ const STATIC_DIR = path.join(__dirname, '..', 'static');
 const OUTPUT_DIR = path.join(STATIC_DIR, 'optimized');
 const MANIFEST_PATH = path.join(__dirname, '..', 'src', 'lib', 'image-manifest.json');
 
-// Responsive widths (mirrors MassageIthaca/scripts/optimize-images.js).
+// Responsive widths (house responsive-width ladder).
 const SIZES = {
 	thumbnail: 150,
 	small: 400,

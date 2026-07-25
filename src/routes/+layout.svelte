@@ -111,7 +111,7 @@
 	});
 </script>
 
-<!-- House-canon SEO via the extracted <SEOHead> (TIN-2225). The single head
+<!-- House-canon SEO via the extracted <SEOHead>. The single head
      block for every route. Pages contribute via load data, never their own
      <svelte:head> meta, so built pages cannot stack duplicate descriptions. -->
 <SEOHead

@@ -6,11 +6,11 @@
 	//   2. `$props()` with literal defaults destructured from that interface,
 	//   3. `$derived.by(() => …)` for the multi-statement canonical-URL
 	//      normalization — NOT a `$derived` arrow-thunk (banned; see eslint.config.ts).
-	// Lifted from MassageIthaca's production SEOHead (TIN-2225). Copy this shape
+	// House production SEOHead pattern. Copy this shape
 	// for any site's <svelte:head>; never hand-roll ad-hoc inline meta blocks.
 	//
-	// NOTE vs. MassageIthaca: MI is SSR (adapter-node) and gates `noindex` on the
-	// live request host. site.scaffold is fully prerendered (adapter-static), so a
+	// NOTE vs. the SSR house spoke: it is SSR (adapter-node) and gates `noindex`
+	// on the live request host. site.scaffold is fully prerendered (adapter-static), so a
 	// host check would bake noindex into the static HTML at build time. We honor
 	// the explicit `noindex` prop ONLY and read just `page.url.pathname` (stable
 	// per-route during prerender) for the canonical path.

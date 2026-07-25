@@ -3,13 +3,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-// House frontend-stack contract (TIN-2348; prompt 34-frontend-stack-truth-bump).
+// House frontend-stack contract.
 //
 // site.scaffold carries the house exact pins but — until this test — shipped no
 // CI-failing guard for them: the only check was the soft scaffold-doctor warn
 // (which reads `dependencies`, not `devDependencies`, so it never fired on the
-// real manifest). MassageIthaca asserts the same invariants in
-// `src/tests/clinical-refresh-contract.test.ts` + `check:dep-hygiene`; this is
+// real manifest). The house production spoke asserts the same invariants in
+// its own stack-contract test + `check:dep-hygiene`; this is
 // the scaffold-side twin so the two repos cannot re-diverge silently.
 //
 // The invariants, per `context/house-frontend-stack.md`:

@@ -31,7 +31,7 @@ function skeletonTailwindV4Compat(): Plugin {
 	};
 }
 
-// Build-info constants (mirrors MassageIthaca's build-info `define`). Resolved
+// Build-info constants (house build-info `define` pattern). Resolved
 // once at config load. Env wins (CI), then a local git checkout, else unknown.
 function resolveCommitHash(): string {
 	const fromEnv = process.env.BUILD_COMMIT_SHA || process.env.GITHUB_SHA || process.env.CF_PAGES_COMMIT_SHA || '';
@@ -57,7 +57,7 @@ const buildInfo = {
 // interactive treemap at .bundle-stats/stats.html. Loaded lazily at module
 // scope so ordinary builds never touch the plugin (it is a devDependency
 // only). BUILD_ANALYZE is honored for backwards compatibility with the old
-// Justfile recipe. Mirrors MassageIthaca/vite.config.ts.
+// Justfile recipe. Mirrors the house vite.config pattern.
 const analyzePlugins: PluginOption[] = [];
 const analyzeRequested =
 	process.env.ANALYZE === '1' ||
@@ -108,7 +108,7 @@ export default defineConfig({
 		reportCompressedSize: true,
 		chunkSizeWarningLimit: 250,
 
-		// CSS code splitting + Lightning CSS minification (mirrors MI).
+		// CSS code splitting + Lightning CSS minification (house pattern).
 		cssCodeSplit: true,
 		cssMinify: 'lightningcss',
 
