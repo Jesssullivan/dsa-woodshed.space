@@ -37,6 +37,13 @@ jobs:
         with:
           node-version: '22'
 
+      # The ARC image intentionally carries no host-level `just`. Pin both
+      # the installer action and command version so the public front door is
+      # reproducible without coupling it to runner-image contents.
+      - uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4
+        with:
+          just-version: '1.57.0'
+
       - uses: pnpm/action-setup@v6
         with:
           version: 10.13.1
@@ -49,9 +56,18 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
           WOODSHED_PACKET_PATH: ${{ github.workspace }}/dsa-study-packet
 
+      # Run the public test front door before svelte-check has generated
+      # .svelte-kit metadata. This keeps the cold-checkout contract observable.
+      - name: Test from a cold SvelteKit checkout
+        run: |
+          test ! -e .svelte-kit/tsconfig.json
+          just test
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          WOODSHED_PACKET_PATH: ${{ github.workspace }}/dsa-study-packet
+
       - run: pnpm run check
       - run: pnpm run lint
-      - run: pnpm run test:unit
 
       - name: Install playwright chromium
         # The runner image pre-bakes Playwright's system libs — browser

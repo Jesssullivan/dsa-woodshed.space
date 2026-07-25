@@ -46,8 +46,10 @@ bazel-graph:
 format:
 	pnpm run format
 
-# Unit tests (vitest).
+# Unit tests (vitest). Generate only SvelteKit's derived TypeScript metadata;
+# unlike `just check`, this does not run the full type-check.
 test: sync-content
+	pnpm exec svelte-kit sync
 	pnpm run test:unit
 
 # Verify the already-synced static booklet against its generated metadata.
