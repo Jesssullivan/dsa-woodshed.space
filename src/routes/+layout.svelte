@@ -171,7 +171,7 @@
 						<a
 							href={link.href}
 							class="inline-flex min-h-11 items-center rounded-sm px-2 py-2 transition-colors {current
-								? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
+								? 'bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold'
 								: 'hover:text-primary-500'}"
 							aria-label={link.label}
 							aria-current={current}>{link.label}</a
@@ -215,7 +215,7 @@
 								aria-current={current}
 								onclick={() => (mobileOpen = false)}
 								class="flex min-h-11 items-center rounded-sm px-2 py-1.5 {current
-									? 'bg-primary-500/10 text-primary-600 dark:text-primary-400 font-semibold'
+									? 'bg-primary-500/10 text-primary-700 dark:text-primary-400 font-semibold'
 									: 'hover:bg-surface-200-800'}">{link.label}</a
 							>
 						{/each}
