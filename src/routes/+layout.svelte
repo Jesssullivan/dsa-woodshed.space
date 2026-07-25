@@ -5,11 +5,14 @@
 	import SaturnMark from '$lib/components/SaturnMark.svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import SiteNav from '$lib/components/SiteNav.svelte';
+	import VectorBlobs from '$lib/components/VectorBlobs.svelte';
 	import { AppBar } from '@skeletonlabs/skeleton-svelte';
 	import { REPO_SLUG, REPO_URL } from '$lib/repo';
 	import '../app.css';
 	import SearchDialog from '$lib/components/SearchDialog.svelte';
 	import ThemeSwitcher from '$lib/components/ThemeSwitcher.svelte';
+	import { buildSha, buildShaShort } from '$lib/build-info';
+	import { SITE_REPO_URL } from '$lib/site-repo';
 	import { PRIMARY_NAV_LINKS, SOURCE_OF_TRUTH_ROUTE, isPathInSection, primaryNavState } from '$lib/navigation';
 
 	let { children } = $props();
@@ -65,6 +68,7 @@
 />
 
 <div class="relative flex min-h-screen flex-col bg-transparent">
+	<VectorBlobs />
 	<a
 		href="#content"
 		class="focus:bg-primary-500 sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-sm focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"
@@ -170,9 +174,27 @@
 		data-pagefind-ignore
 	>
 		<div class="container mx-auto flex flex-col gap-4 px-6 py-8 text-sm md:flex-row md:items-center md:justify-between">
-			<p class="text-surface-700-300">
-				Editor-first interview practice. Content is tracked in git, and every packet page links to its source.
-			</p>
+			<div>
+				<p class="text-surface-700-300">
+					Editor-first interview practice. Content is tracked in git, and every packet page links to its source.
+				</p>
+				<!-- Build provenance: only rendered when the build actually knows its
+				     own commit (CI, or a local build run from a git checkout) — see
+				     $lib/build-info's fail-quiet contract. Degrades to nothing rather
+				     than a broken link on a build that can't resolve a sha. -->
+				{#if buildShaShort}
+					<p class="text-surface-500 mt-2 text-xs">
+						built from
+						<a
+							href={`${SITE_REPO_URL}/commit/${buildSha}`}
+							target="_blank"
+							rel="noopener"
+							class="hover:text-primary-500 inline-flex min-h-11 items-center font-mono transition-colors"
+							aria-label={`source commit ${buildShaShort} on GitHub`}>{buildShaShort}</a
+						>
+					</p>
+				{/if}
+			</div>
 			<nav class="flex flex-wrap gap-4" aria-label="Footer">
 				<a
 					href={REPO_URL}

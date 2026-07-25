@@ -14,6 +14,18 @@
 @import '@fontsource/inter/latin-600.css';
 @import '@fontsource/inter/latin-700.css';
 
+/* Goth-editorial typography pairing (self-hosted, FOUC-safe, font-display:
+   swap): Crimson Pro (serif) for body copy + .prose, Fraunces Variable
+   (display serif, wght axis) for headings. Layered on top of the Inter
+   imports above; Inter stays the fallback stack in the typo vars below and
+   still drives .font-mono-adjacent UI chrome that isn't retargeted by the
+   seam further down this file. */
+@import '@fontsource/crimson-pro/latin-400.css';
+@import '@fontsource/crimson-pro/latin-400-italic.css';
+@import '@fontsource/crimson-pro/latin-600.css';
+@import '@fontsource/crimson-pro/latin-700.css';
+@import '@fontsource-variable/fraunces';
+
 /* Tailwind v4 only generates utilities it can see at build time, and Skeleton's
    component markup ships utility classes of its own (e.g. `size-4` on the
    listbox/combobox/tree-view item indicators). Without this @source line those
@@ -41,6 +53,41 @@
 	font-display: swap;
 }
 
+/* ===== Goth-editorial typography seam =====
+   Import-order seam over the omux theme (NOT a fork): this selector has the
+   SAME specificity as omux.css's own [data-theme='omux'] block above, so
+   source order alone lets it win. Retargets the typo vars onto the Crimson
+   Pro (body/prose) / Fraunces Variable (headings) pairing and flattens both
+   theme radii to sharp (0); every other omux token (palette, spacing,
+   corner-shape) is left untouched. */
+[data-theme='omux'] {
+	--typo-base--font-family: 'Crimson Pro', Georgia, 'Times New Roman', serif;
+	--typo-heading--font-family: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+	--radius-base: 0;
+	--radius-container: 0;
+}
+
+/* ===== Darker dark-mode accents (goth-editorial) =====
+   Same seam idiom, additionally scoped to dark mode: only the primary
+   400-600 stops shift from the shared burnt-orange (hue 38) toward a deeper
+   oxblood/ember red (hue 24-30). Every other stop (50-300, 700-950) and all
+   of light mode are untouched.
+   Values are picked by measured contrast, not by eye: WCAG relative
+   luminance against this theme's own dark surfaces (--color-surface-950,
+   the dark-mode --body-background-color, and --color-surface-900) puts all
+   three stops at 4.5:1-6.5:1, so the tokens that actually render as text —
+   --typo-anchor--color-dark (400), .prose a (500), .prose a:hover (600) —
+   stay AA. A literal oklch(0.45-0.55 ...) reading (as dark/moody as the
+   hue/chroma band allows) tops out near 3.9:1 against --color-surface-950
+   at this hue/chroma, short of 4.5:1; these stops trade a little of that
+   lightness range back to keep the accent legible as body-copy text, not
+   only as a background fill. */
+[data-mode='dark'][data-theme='omux'] {
+	--color-primary-400: oklch(0.68 0.145 30);
+	--color-primary-500: oklch(0.645 0.14 27);
+	--color-primary-600: oklch(0.615 0.135 24);
+}
+
 /* Dark-mode strategy: data-mode attribute on <html>, set synchronously by the
    FOUC-prevention script in src/app.html. Color pairs (bg-surface-100-900) use
    the native light-dark() function which switches via document color-scheme. */
@@ -65,6 +112,14 @@ html {
 
 body {
 	font-family: var(--typo-base--font-family);
+	/* Crimson Pro editorial body: browser-default 16px serif reads tight at
+	   1.6; a slightly taller measure (1.7, matching .prose below) keeps long
+	   paragraphs comfortable without changing the base font-size. */
+	line-height: 1.7;
+	/* These cv0x/cv11 stylistic-set features are Inter-specific (alternate
+	   glyph shapes); Crimson Pro simply ignores unsupported feature tags, so
+	   this stays a harmless no-op rather than something worth branching on
+	   font-family. */
 	font-feature-settings:
 		'cv02' 1,
 		'cv03' 1,
