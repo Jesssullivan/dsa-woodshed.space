@@ -7,16 +7,25 @@ Guidance for AI agents and contributors working in this repo.
 A static SvelteKit reading surface for the DSA study packet. Prose and reference
 sheets are authored in `Jesssullivan/dsa-study-packet`; this repo renders a
 curated subset. It was forked from a private house scaffold and deliberately
-stripped of estate coupling (Bazel, Nix flake, private `@tummycrypt` chrome,
-private CI templates, projection/agent surfaces).
+stripped of estate coupling (Nix flake, private `@tummycrypt` chrome, private
+CI templates, projection/agent surfaces).
 
 ## Ground rules
 
-- **No estate coupling.** Do not re-introduce Bazel (`BUILD.bazel`,
-  `MODULE.bazel`), a Nix `flake.nix`, private CI templates, or private-registry
-  packages. The retained `@tummycrypt/vite-plugin-a11y` and
-  `@tummycrypt/vite-plugin-skeleton-colors` are published on the public npm
-  registry and are the a11y / Skeleton-color build lane.
+- **Public resolvability only.** No Nix `flake.nix`, no private CI templates,
+  no private registries, no credentials. Every dependency must resolve
+  unauthenticated from public infrastructure. The retained
+  `@tummycrypt/vite-plugin-a11y` and `@tummycrypt/vite-plugin-skeleton-colors`
+  come from the public npm registry; `@tummycrypt/tinyvectors` is pinned to the
+  public tinyland-inc/bazel-registry source seam (the GitHub tag archive named
+  by the registry's `source.json`) and is NEVER resolved from the public npm
+  registry — `scripts/build-tinyvectors.mjs` (the root `prepare` hook) compiles
+  it after install.
+- **Bazel is a proof surface, not a build.** `MODULE.bazel` / `BUILD.bazel` /
+  `.bazelrc` exist solely so `just bazel-graph` and
+  `scripts/check-inhouse-package-parity.py` (chained into `pnpm run lint`) can
+  prove the in-house package pins match tinyland-inc/bazel-registry. The
+  canonical site build is pnpm/Vite; never wire the site build through Bazel.
 - **Stack pins are a contract.** `src/lib/house-stack-contract.test.ts` asserts
   Skeleton 4.15.2, TypeScript 6.0.x, pnpm 10.13.1, scoped `@lucide/svelte`, no
   direct `@zag-js`, Node 22. Change the pin and the test in the same commit.

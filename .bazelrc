@@ -1,0 +1,20 @@
+# dsa-woodshed.space Bazel Configuration
+#
+# Bazel 8 + Bzlmod. Mirrors the greatfallstoolbus.org site scaffold's
+# two-registry chain: tinyland-inc/bazel-registry first, then BCR. The
+# site build remains `pnpm run build`; Bazel exists for module-graph
+# integrity proofs (`just bazel-graph`).
+
+common --enable_bzlmod
+common --registry=https://raw.githubusercontent.com/tinyland-inc/bazel-registry/main/
+common --registry=https://bcr.bazel.build
+
+# Build performance
+build --jobs=auto
+build --disk_cache=~/.cache/bazel-dsa-woodshed
+build --keep_going
+
+# Test output
+test --test_output=errors
+
+try-import %workspace%/user.bazelrc

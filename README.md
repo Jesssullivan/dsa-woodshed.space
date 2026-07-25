@@ -94,5 +94,9 @@ and the public packet, syncs content, builds the static site, and publishes
 unit, build, and browser gates on pull requests.
 
 The app began as a private house SvelteKit scaffold. Estate coupling was
-removed: there are no Bazel files, Nix flake, private CI templates,
-private-registry packages, or agent projection surfaces here.
+removed: there is no Nix flake, private CI template, private-registry package,
+or agent projection surface here. The `MODULE.bazel` / `.bazelrc` pair is a
+version-parity proof surface against the public tinyland-inc/bazel-registry
+(the source of truth for `@tummycrypt/tinyvectors`, which is never resolved
+from the public npm registry — see `scripts/build-tinyvectors.mjs`); the site
+build itself is plain pnpm/Vite.

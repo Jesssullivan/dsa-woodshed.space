@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { Menu } from '@lucide/svelte';
+	import { browser } from '$app/environment';
 	import { page } from '$app/state';
+	import { onMount } from 'svelte';
 	import BindableDrawer from '$lib/components/BindableDrawer.svelte';
 	import SaturnMark from '$lib/components/SaturnMark.svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import SiteNav from '$lib/components/SiteNav.svelte';
-	import VectorBlobs from '$lib/components/VectorBlobs.svelte';
+	import { TinyVectors } from '@tummycrypt/tinyvectors';
 	import { AppBar } from '@skeletonlabs/skeleton-svelte';
 	import { REPO_SLUG, REPO_URL } from '$lib/repo';
 	import '../app.css';
@@ -51,6 +53,62 @@
 	// fallback (home page, error surface).
 	const headTitle = $derived(page.data.title ? `${page.data.title} | ${SITE_NAME}` : SITE_TITLE);
 	const headDescription = $derived(page.data.summary || SITE_DESCRIPTION);
+
+	// Ambient background: the canonical @tummycrypt/tinyvectors component,
+	// resolved from the tinyland bazel-registry source seam (see
+	// scripts/build-tinyvectors.mjs), replacing the hand-rolled VectorBlobs.
+	//
+	// Palette is read at runtime from the omux theme's own CSS custom
+	// properties (getComputedStyle), so a theme or color-mode switch cascades
+	// into the blob colors without this layout knowing theme names; a
+	// MutationObserver watches the attributes the theme store flips
+	// (data-mode / data-theme on <html>) and re-reads the palette when they
+	// change. prefers-reduced-motion renders nothing at all: the component's
+	// own shouldLoad gate keeps its entire subtree out of the DOM (same for
+	// the first render, before colors resolve — TinyVectors renders nothing
+	// while `colors` is empty).
+	const BLOB_PALETTE_VARS = [
+		'--color-primary-500',
+		'--color-secondary-500',
+		'--color-tertiary-500',
+		'--color-surface-400',
+		'--color-surface-600',
+	] as const;
+	// Muted neutrals; only used if the theme vars above aren't resolvable yet
+	// (e.g. a render before the stylesheet has applied).
+	const BLOB_FALLBACK_PALETTE = ['#a8785a', '#6b8a94', '#8a6b94', '#8a8378', '#5a544a'];
+
+	let blobColors = $state<string[]>([]);
+	let reduceMotion = $state(true);
+
+	function readBlobPalette(): string[] {
+		const styles = getComputedStyle(document.documentElement);
+		const values = BLOB_PALETTE_VARS.map((name) => styles.getPropertyValue(name).trim());
+		return values.every((value) => value.length > 0) ? values : BLOB_FALLBACK_PALETTE;
+	}
+
+	onMount(() => {
+		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+		reduceMotion = motionQuery.matches;
+		const onMotionPreferenceChange = (event: MediaQueryListEvent) => {
+			reduceMotion = event.matches;
+		};
+		motionQuery.addEventListener('change', onMotionPreferenceChange);
+
+		blobColors = readBlobPalette();
+		const paletteObserver = new MutationObserver(() => {
+			blobColors = readBlobPalette();
+		});
+		paletteObserver.observe(document.documentElement, {
+			attributes: true,
+			attributeFilter: ['data-mode', 'data-theme'],
+		});
+
+		return () => {
+			motionQuery.removeEventListener('change', onMotionPreferenceChange);
+			paletteObserver.disconnect();
+		};
+	});
 </script>
 
 <!-- House-canon SEO via the extracted <SEOHead> (TIN-2225). The single head
@@ -68,7 +126,26 @@
 />
 
 <div class="relative flex min-h-screen flex-col bg-transparent">
-	<VectorBlobs />
+	<!-- Browser-only: TinyVectors touches window/navigator and must not run
+	     during prerender. Fixed full-viewport, behind everything, inert. -->
+	{#if browser}
+		<div
+			class="pointer-events-none fixed inset-0 -z-10"
+			style="overflow: hidden"
+			aria-hidden="true"
+			data-testid="vector-blobs-bg"
+		>
+			<TinyVectors
+				theme="custom"
+				colors={blobColors}
+				opacity={0.1}
+				blobCount={5}
+				enableScrollPhysics={true}
+				enableDeviceMotion={false}
+				shouldLoad={!reduceMotion}
+			/>
+		</div>
+	{/if}
 	<a
 		href="#content"
 		class="focus:bg-primary-500 sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:rounded-sm focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white"

@@ -1,0 +1,21 @@
+"""
+Root BUILD.bazel for dsa-woodshed.space.
+
+The SvelteKit static site keeps its ergonomic pnpm-backed Justfile
+recipes; Bazel owns the module-graph / lockfile-translation proof
+surface only (`//:node_modules` materialized from pnpm-lock.yaml).
+"""
+
+load("@npm//:defs.bzl", "npm_link_all_packages")
+
+npm_link_all_packages(name = "node_modules")
+
+exports_files(
+    [
+        ".npmrc",
+        "package.json",
+        "pnpm-lock.yaml",
+        "pnpm-workspace.yaml",
+    ],
+    visibility = ["//visibility:public"],
+)
