@@ -163,6 +163,63 @@ test('practice-table code tokens wrap within their cells at minimum width', asyn
 	expect(clipped).toEqual([]);
 });
 
+for (const bp of [
+	{ label: 'mobile-min', width: 320, height: 1200 },
+	{ label: 'desktop', width: 1440, height: 1200 },
+]) {
+	test(`Mermaid decision tree is discoverably keyboard-scrollable at ${bp.label}`, async ({ page }) => {
+		const consoleErrors: string[] = [];
+		page.on('console', (message) => {
+			if (message.type() === 'error') consoleErrors.push(message.text());
+		});
+		page.on('pageerror', (error) => consoleErrors.push(error.message));
+
+		await page.setViewportSize({ width: bp.width, height: bp.height });
+		await page.goto('/guide/when-to-use-what');
+		await page.waitForLoadState('networkidle');
+
+		const figure = page.locator('figure.diagram');
+		const hint = page.getByText('Scroll sideways if needed to explore the full diagram.', { exact: true });
+		await expect(figure).toHaveCount(1);
+		await expect(figure.locator('svg')).toHaveCount(1);
+		await expect(page.locator('figure.diagram-fallback')).toHaveCount(0);
+		await expect(figure).toHaveAttribute('tabindex', '0');
+		await expect(hint).toBeVisible();
+
+		const hintId = await hint.getAttribute('id');
+		expect(hintId).toBeTruthy();
+		await expect(figure).toHaveAttribute('aria-describedby', hintId!);
+
+		const overflow = await figure.evaluate((element) => ({
+			clientWidth: element.clientWidth,
+			scrollWidth: element.scrollWidth,
+		}));
+		expect(overflow.scrollWidth).toBeGreaterThan(overflow.clientWidth);
+
+		const documentWidth = await page.evaluate(() => ({
+			clientWidth: document.documentElement.clientWidth,
+			scrollWidth: document.documentElement.scrollWidth,
+		}));
+		expect(documentWidth.scrollWidth).toBeLessThanOrEqual(documentWidth.clientWidth + 1);
+
+		await figure.focus();
+		await expect(figure).toBeFocused();
+		const focusStyle = await figure.evaluate((element) => {
+			const style = getComputedStyle(element);
+			return { style: style.outlineStyle, width: Number.parseFloat(style.outlineWidth) };
+		});
+		expect(focusStyle.style).not.toBe('none');
+		expect(focusStyle.width).toBeGreaterThanOrEqual(2);
+
+		await figure.evaluate((element) => {
+			element.scrollLeft = 0;
+		});
+		await page.keyboard.press('ArrowRight');
+		await expect.poll(() => figure.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+		expect(consoleErrors).toEqual([]);
+	});
+}
+
 test('reading-path utility links retain 44px targets', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 1200 });
 	await page.goto('/guide/source-of-truth');

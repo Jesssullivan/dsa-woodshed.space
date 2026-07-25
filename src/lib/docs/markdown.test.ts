@@ -74,9 +74,11 @@ describe('renderMarkdown', () => {
 		const src = ['```mermaid', 'graph TD', 'A["start"] --> B["end"]', '```'].join('\n');
 		const html = await renderMarkdown(src);
 		expect(renderMermaidDiagramsMock).toHaveBeenCalledWith(['graph TD\nA["start"] --> B["end"]']);
+		expect(html).toContain('<figure class="diagram" tabindex="0" aria-describedby="diagram-scroll-hint-1">');
 		expect(html).toContain(
-			'<figure class="diagram"><svg viewBox="0 0 10 10" style="width:10px;max-width:none;height:auto">',
+			'<figcaption class="diagram-note" id="diagram-scroll-hint-1">Scroll sideways if needed to explore the full diagram.</figcaption>',
 		);
+		expect(html).toContain('<svg viewBox="0 0 10 10" style="width:10px;max-width:none;height:auto">');
 		expect(html).not.toContain('diagram-fallback');
 	});
 
@@ -88,6 +90,33 @@ describe('renderMarkdown', () => {
 		const html = await renderMarkdown(src);
 		expect(html).toContain('style="width:8143px;max-width:none;height:auto"');
 		expect(html).not.toContain('width="100%"');
+	});
+
+	it('gives every rendered diagram a unique scroll-hint description', async () => {
+		renderMermaidDiagramsMock.mockResolvedValue([
+			'<svg viewBox="0 0 10 10"><g/></svg>',
+			'<svg viewBox="0 0 20 10"><g/></svg>',
+		]);
+		const src = ['```mermaid', 'graph LR', 'A --> B', '```', '', '```mermaid', 'graph LR', 'C --> D', '```'].join('\n');
+		const html = await renderMarkdown(src);
+
+		expect(html.match(/aria-describedby="diagram-scroll-hint-\d+"/g)).toEqual([
+			'aria-describedby="diagram-scroll-hint-1"',
+			'aria-describedby="diagram-scroll-hint-2"',
+		]);
+		expect(html.match(/id="diagram-scroll-hint-\d+"/g)).toEqual([
+			'id="diagram-scroll-hint-1"',
+			'id="diagram-scroll-hint-2"',
+		]);
+	});
+
+	it('scopes diagram hint ids when separately rendered fragments share a document', async () => {
+		renderMermaidDiagramsMock.mockResolvedValue(['<svg viewBox="0 0 10 10"><g/></svg>']);
+		const src = ['```mermaid', 'graph LR', 'A --> B', '```'].join('\n');
+		const html = await renderMarkdown(src, { diagramIdScope: 'printables-before' });
+
+		expect(html).toContain('aria-describedby="printables-before-diagram-scroll-hint-1"');
+		expect(html).toContain('id="printables-before-diagram-scroll-hint-1"');
 	});
 
 	it('keeps the labelled-source fallback figure when the build-time render fails (broken diagram)', async () => {
